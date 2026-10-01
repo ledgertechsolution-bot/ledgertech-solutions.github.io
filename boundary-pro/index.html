@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boundary Monitoring System Pro</title>
+    
+    <!-- PWA / Home Screen App Settings -->
+    <meta name="theme-color" content="#2e7d32">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Boundary Pro">
+    
+    <!-- Inline App Manifest para sa Home Screen Icon -->
+    <link rel="manifest" href='data:application/manifest+json,{
+        "name": "Boundary Monitoring System Pro",
+        "short_name": "Boundary Pro",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f4f9f4",
+        "theme_color": "#2e7d32",
+        "icons": [
+            {
+                "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%232e7d32%22/><path d=%22M130 220h252l-30-80H160z%22 fill=%22%23fff%22/><circle cx=%22170%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><circle cx=%22342%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><path d=%22M110 220l-30 60h352l-30-60z%22 fill=%22%2381c784%22/></svg>",
+                "sizes": "512x512",
+                "type": "image/svg+xml",
+                "purpose": "any maskable"
+            }
+        ]
+    }'>
+    
+    <!-- Custom SVG Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%232e7d32%22/><path d=%22M130 220h252l-30-80H160z%22 fill=%22%23fff%22/><circle cx=%22170%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><circle cx=%22342%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/></svg>">
+
+    <style>
+        :root {
+            --bg-color: #f4f9f4;
+            --card-bg: #ffffff;
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --text-main: #2c3e50;
+            --border-color: #c8e6c9;
+            --danger: #c62828;
+            --success: #1b5e20;
+            --warning: #f0ad4e;
+            --coding-bg: #fff3e0;
+            --coding-text: #e65100;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #81c784;
+            --primary-light: #1b3320;
+            --text-main: #e0e0e0;
+            --border-color: #333333;
+            --danger: #ef5350;
+            --success: #66bb6a;
+            --warning: #ffb74d;
+            --coding-bg: #3e2723;
+            --coding-text: #ffb74d;
+        }
+
+        [data-theme="blue"] {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --primary: #1976d2;
+            --primary-light: #e3f2fd;
+            --text-main: #1e293b;
+            --border-color: #bbdefb;
+            --danger: #d32f2f;
+            --success: #0d47a1;
+            --warning: #ffa000;
+            --coding-bg: #e1f5fe;
+            --coding-text: #0288d1;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        header h1 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .table-header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .table-title-left {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .table-actions-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .page-nav-right {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .page-arrow-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--primary);
+            padding: 2px 5px;
+            font-weight: bold;
+        }
+
+        .page-arrow-btn:hover {
+            opacity: 0.7;
+        }
+
+        .btn-clear-month {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 3px 8px;
+            font-size: 0.65rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-clear-month:hover {
+            opacity: 0.85;
+        }
+
+        .theme-selector {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .theme-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 3px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .theme-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            text-align: center;
+        }
+
+        .summary-box {
+            background: var(--primary-light);
+            padding: 8px 4px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .summary-box h3 {
+            font-size: 0.65rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+
+        .summary-box p {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+            color: var(--text-main);
+            opacity: 0.8;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .button-group button {
+            flex: 1;
+            min-width: 110px;
+            padding: 8px 6px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+
+        .btn-save { background-color: var(--primary); }
+        .btn-export { background-color: #1b5e20; }
+        .btn-pdf { background-color: #d32f2f; }
+
+        .driver-dropdown-container {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .driver-select-box {
+            width: 100%;
+            padding: 7px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .driver-list-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+            max-height: 220px;
+            overflow-y: auto;
+            margin-top: 2px;
+        }
+
+        .dropdown-search-wrapper {
+            padding: 6px;
+            border-bottom: 1px solid var(--border-color);
+            background: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+
+        .dropdown-search-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        .driver-option-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 7px 10px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .driver-option-item:hover {
+            opacity: 0.8;
+        }
+
+        .driver-option-item.active {
+            background-color: var(--primary-light);
+            font-weight: bold;
+        }
+
+        .btn-remove-driver {
+            background-color: var(--danger);
+            color: white;
+            border: none;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 380px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            margin-top: 8px;
+            white-space: nowrap;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 5px 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .coding-badge {
+            background-color: var(--coding-bg);
+            color: var(--coding-text);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            font-size: 0.7rem;
+        }
+
+        .text-danger {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        .text-success {
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .print-signature {
+            display: none;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                color: #000000;
+                padding: 0;
+            }
+            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month {
+                display: none !important;
+            }
+            .card {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+                margin-bottom: 0px;
+            }
+            .table-responsive {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            table {
+                font-size: 0.75rem;
+                width: 100%;
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            th, td {
+                border: 1px solid #000;
+                color: #000;
+                padding: 5px;
+            }
+            th {
+                background-color: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact;
+                position: static !important;
+            }
+            .print-signature {
+                display: block !important;
+                margin-top: 96px; 
+                text-align: right;
+                font-size: 0.9rem;
+                font-weight: bold;
+                color: #000;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="container">
+    <header>
+        <h1>Boundary Monitoring Pro</h1>
+        <div class="theme-selector">
+            <button class="theme-btn" onclick="setTheme('light')">Light Green</button>
+            <button class="theme-btn" onclick="setTheme('dark')">Dark Mode</button>
+            <button class="theme-btn" onclick="setTheme('blue')">Modern Blue</button>
+        </div>
+        <p id="displayMonthYear" style="font-size: 0.8rem; opacity: 0.7; font-weight: 600;"></p>
+    </header>
+
+    <div class="card" id="configCard" style="padding: 10px 12px;">
+        <div class="form-group" style="margin-bottom: 6px;">
+            <label>Driver:</label>
+            <div class="driver-dropdown-container">
+                <div class="driver-select-box" id="driverSelectBox">
+                    <span id="selectedDriverText">Pumili ng Driver...</span>
+                    <span>▼</span>
+                </div>
+                <div class="driver-list-dropdown" id="driverListDropdown"></div>
+            </div>
+        </div>
+        
+        <div class="button-group" style="margin-bottom: 6px; justify-content: flex-start; gap: 4px;">
+            <button type="button" id="btnAddDriver" style="background-color: #2851a3; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;">+ Bagong Driver</button>
+            <button type="button" id="exportJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-download ang lahat ng data bilang backup">💾 Backup</button>
+            <button type="button" id="importJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-restore ang data mula sa backup file">📂 Restore</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+        </div>
+        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 6px 0;">
+        
+        <div class="form-row" style="margin-bottom: 6px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Buwan:</label>
+                <select id="selectMonth">
+                    <option value="January">January</option>
+                    <option value="February">February</option>
+                    <option value="March">March</option>
+                    <option value="April">April</option>
+                    <option value="May">May</option>
+                    <option value="June">June</option>
+                    <option value="July">July</option>
+                    <option value="August">August</option>
+                    <option value="September">September</option>
+                    <option value="October">October</option>
+                    <option value="November">November</option>
+                    <option value="December">December</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Taon:</label>
+                <input type="number" id="selectYear" value="2026">
+            </div>
+        </div>
+
+        <div class="form-row" style="margin-top: 6px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Pangalan:</label>
+                <input type="text" id="driverName" placeholder="Pangalan ng Driver">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Plate Number (Coding: <span id="codingDisplay" style="color: var(--primary); font-weight: bold;">Wala</span>):</label>
+                <input type="text" id="plateNumber" placeholder="ABC-1234" style="text-transform: uppercase;">
+            </div>
+        </div>
+        
+        <div class="form-row" style="margin-top: 6px;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Standard Expected Boundary:</label>
+                <input type="number" id="standardExpected" value="1200">
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Previous Balance:</label>
+                <input type="number" id="previousBalance" value="0" placeholder="Utang/Balanse galing nakaraang buwan">
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="summary-grid">
+            <div class="summary-box">
+                <h3>Total Expected</h3>
+                <p id="lblExpected">0</p>
+            </div>
+            <div class="summary-box">
+                <h3>Total Given</h3>
+                <p id="lblGiven">0</p>
+            </div>
+            <div class="summary-box">
+                <h3>Running Bal</h3>
+                <p id="lblBalance">0</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <form id="entryForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date:</label>
+                    <input type="number" id="dayDate" placeholder="Ex. 1, 5..." required min="1" max="31">
+                </div>
+                <div class="form-group">
+                    <label>Amount Given:</label>
+                    <input type="number" id="givenAmt" placeholder="0" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date Covered:</label>
+                    <input type="text" id="dateCovered" placeholder="6/1-6/7">
+                </div>
+                <div class="form-group">
+                    <label>Ref No.:</label>
+                    <input type="text" id="refNo" placeholder="GCash Ref #">
+                </div>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="btn-save" id="btnSave">I-save</button>
+                <button type="button" class="btn-export" id="exportCsvBtn">Export CSV</button>
+                <button type="button" class="btn-pdf" id="exportPdfBtn">Export PDF</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="table-header-container">
+            <span class="table-title-left">Tala Hanggang sa Huling Hulog</span>
+            <div class="table-actions-right">
+                <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
+                <div class="page-nav-right">
+                    <button type="button" class="page-arrow-btn" id="prevMonthBtn" title="Previous Month">◀</button>
+                    <span id="pageIndicator">September 2026</span>
+                    <button type="button" class="page-arrow-btn" id="nextMonthBtn" title="Next Month">▶</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Date</th>
+                        <th>Expected</th>
+                        <th>Given</th>
+                        <th>Date Covered</th>
+                        <th>Ref No.</th>
+                        <th>Short / Over</th>
+                        <th>Running Bal</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div class="print-signature" id="printSignatureName">Driver: ____________________</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function checkAppLicense() {
+        // TRIAL_HOURS: Pwede mong palitan ang 24 kung ilang oras mo gusto (Halimbawa: 2 = 2 hours, 12 = 12 hours, 24 = 24 hours / 1 day)
+        const TRIAL_HOURS = 1; 
+        const KEY_VALIDITY_DAYS = 365;
+
+        let deviceId = localStorage.getItem('boundary_device_id');
+        if (!deviceId) {
+            deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+            localStorage.setItem('boundary_device_id', deviceId);
+        }
+
+        let installDate = localStorage.getItem('boundary_install_date');
+        if (!installDate) {
+            installDate = Date.now();
+            localStorage.setItem('boundary_install_date', installDate);
+        }
+
+        const licenseKey = localStorage.getItem('boundary_active_key');
+        const licenseActivationTime = parseInt(localStorage.getItem('boundary_activation_time') || '0');
+        const licenseDevice = localStorage.getItem('boundary_license_device');
+        
+        let isLicensed = false;
+        if (licenseKey && licenseDevice === deviceId) {
+            const daysSinceActivation = (Date.now() - licenseActivationTime) / (1000 * 60 * 60 * 24);
+            if (daysSinceActivation <= KEY_VALIDITY_DAYS) {
+                isLicensed = true;
+            }
+        }
+
+        if (!isLicensed) {
+            const hoursSinceInstall = (Date.now() - parseInt(installDate)) / (1000 * 60 * 60);
+            if (hoursSinceInstall > TRIAL_HOURS) {
+                alert(`Na-expire na ang iyong ${TRIAL_HOURS}-hour Free Trial. Mag-redirect sa Activation & Pricing page.`);
+                window.location.href = 'Payment final.html';
+            }
+        }
+    })();
+
+    function getTierDriverLimit() {
+        const tier = localStorage.getItem('boundary_active_tier') || 'starter';
+        if (tier.includes('starter') || tier.includes('Tier 1')) return 3;
+        if (tier.includes('standard') || tier.includes('Tier 2')) return 5;
+        if (tier.includes('unli') || tier.includes('Tier 3') || tier.includes('unlimited')) return 999999;
+        return 3;
+    }
+
+    function setTheme(themeName) {
+        document.body.setAttribute('data-theme', themeName);
+        localStorage.setItem('boundary_theme', themeName);
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.textContent.toLowerCase().includes(themeName) || (themeName === 'light' && btn.textContent.includes('Light'))) {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    const savedTheme = localStorage.getItem('boundary_theme') || 'light';
+    setTheme(savedTheme);
+
+    let driversList = JSON.parse(localStorage.getItem('boundary_drivers_list')) || [];
+    driversList = driversList.filter(d => d.name !== 'NO DRIVER' && d.id !== 'no_driver_default');
+    localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+
+    let currentDriverId = localStorage.getItem('boundary_current_driver_id') || (driversList.length > 0 ? driversList[0].id : null);
+    
+    const currentDateObj = new Date();
+    let activeMonthIndex = currentDateObj.getMonth();
+    let activeYearVal = currentDateObj.getFullYear();
+
+    const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    const driverSelectBox = document.getElementById('driverSelectBox');
+    const selectedDriverText = document.getElementById('selectedDriverText');
+    const driverListDropdown = document.getElementById('driverListDropdown');
+    const btnAddDriver = document.getElementById('btnAddDriver');
+    
+    document.getElementById('exportJsonBtn').addEventListener('click', function() {
+        const backupData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('boundary_')) {
+                backupData[key] = localStorage.getItem(key);
+            }
+        }
+        
+        const dataStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", url);
+        downloadAnchor.setAttribute("download", `Boundary_Pro_Backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
+        URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('importJsonBtn').addEventListener('click', function() {
+        document.getElementById('importFile').click();
+    });
+
+    document.getElementById('importFile').addEventListener('change', function(event) {
+        const fileReader = new FileReader();
+        if (event.target.files[0]) {
+            fileReader.readAsText(event.target.files[0], "UTF-8");
+            fileReader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (confirm("Gusto mo bang i-restore ang mga datang ito? Mapapalitan ang mga kasalukuyang nakalagay sa app mo.")) {
+                        for (const key in importedData) {
+                            if (key.startsWith('boundary_')) {
+                                localStorage.setItem(key, importedData[key]);
+                            }
+                        }
+                        alert("Matagumpay na naibalik ang mga datos! Mag-re-reload ang pahina.");
+                        location.reload();
+                    }
+                } catch (error) {
+                    alert("May problema sa file na iyong in-upload. Siguraduhing valid JSON backup file ito.");
+                }
+            };
+        }
+    });
+
+    const selectMonth = document.getElementById('selectMonth');
+    const selectYear = document.getElementById('selectYear');
+    const driverNameInput = document.getElementById('driverName');
+    const plateNumberInput = document.getElementById('plateNumber');
+    const standardExpectedInput = document.getElementById('standardExpected');
+    const previousBalanceInput = document.getElementById('previousBalance');
+    const displayMonthYear = document.getElementById('displayMonthYear');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const codingDisplay = document.getElementById('codingDisplay');
+    const printSignatureName = document.getElementById('printSignatureName');
+
+    selectMonth.value = monthsArray[activeMonthIndex];
+    selectYear.value = activeYearVal;
+
+    driverSelectBox.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isOpen = driverListDropdown.style.display === 'block';
+        driverListDropdown.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) {
+            const searchInput = document.getElementById('dropdownSearchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                filterDropdownList('');
+                setTimeout(() => searchInput.focus(), 50);
+            }
+        }
+    });
+
+    window.addEventListener('click', function(e) {
+        if (!driverSelectBox.contains(e.target) && !driverListDropdown.contains(e.target)) {
+            driverListDropdown.style.display = 'none';
+        }
+    });
+
+    function getCodingFromPlate(plate) {
+        if (!plate) return 'None';
+        const cleanPlate = plate.trim().toUpperCase();
+        const lastChar = cleanPlate.slice(-1);
+        
+        if (['1', '2'].includes(lastChar)) return 'Monday';
+        if (['3', '4'].includes(lastChar)) return 'Tuesday';
+        if (['5', '6'].includes(lastChar)) return 'Wednesday';
+        if (['7', '8'].includes(lastChar)) return 'Thursday';
+        if (['9', '0'].includes(lastChar)) return 'Friday';
+        return 'None';
+    }
+
+    plateNumberInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        let codingVal = getCodingFromPlate(this.value);
+        codingDisplay.innerText = codingVal;
+        
+        let driver = driversList.find(d => d.id === currentDriverId);
+        if(driver) {
+            driver.plate = this.value;
+            driver.coding = codingVal;
+            saveConfig();
+        }
+    });
+
+    function filterDropdownList(filterText) {
+        const items = driverListDropdown.querySelectorAll('.driver-option-item');
+        const query = filterText.toLowerCase().trim();
+        
+        items.forEach(item => {
+            const text = item.getAttribute('data-search') || '';
+            if (text.includes(query)) {
+                item.style.display = 'flex';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function initDriversDropdown() {
+        driverListDropdown.innerHTML = '';
+        let activeDriverName = '';
+
+        if (driversList.length === 0) {
+            selectedDriverText.textContent = 'Walang Driver (Magdagdag ng Driver)';
+            displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+            return;
+        }
+
+        const searchWrapper = document.createElement('div');
+        searchWrapper.className = 'dropdown-search-wrapper';
+        searchWrapper.onclick = function(e) { e.stopPropagation(); };
+
+        const searchInput = document.createElement('input');
+        searchInput.type = 'text';
+        searchInput.id = 'dropdownSearchInput';
+        searchInput.className = 'dropdown-search-input';
+        searchInput.placeholder = '🔍 Hanapin ang pangalan ng driver...';
+        
+        searchInput.addEventListener('input', function(e) {
+            filterDropdownList(e.target.value);
+        });
+
+        searchWrapper.appendChild(searchInput);
+        driverListDropdown.appendChild(searchWrapper);
+
+        driversList.forEach(d => {
+            const item = document.createElement('div');
+            item.className = 'driver-option-item' + (d.id === currentDriverId ? ' active' : '');
+            
+            const driverInfoStr = `${d.name || 'Walang Pangalan'} (Plate: ${d.plate || 'N/A'})`;
+            item.setAttribute('data-search', (d.name || '').toLowerCase());
+
+            const nameSpan = document.createElement('span');
+            nameSpan.textContent = driverInfoStr;
+            nameSpan.style.flex = '1';
+            nameSpan.onclick = function() {
+                currentDriverId = d.id;
+                localStorage.setItem('boundary_current_driver_id', currentDriverId);
+                driverListDropdown.style.display = 'none';
+                loadActiveDriverConfig();
+            };
+
+            if (d.id === currentDriverId) {
+                activeDriverName = driverInfoStr;
+            }
+
+            item.appendChild(nameSpan);
+
+            const delBtn = document.createElement('button');
+            delBtn.className = 'btn-remove-driver';
+            delBtn.textContent = 'Tanggalin';
+            delBtn.onclick = function(e) {
+                e.stopPropagation();
+                deleteDriver(d.id, d.name);
+            };
+            item.appendChild(delBtn);
+
+            driverListDropdown.appendChild(item);
+        });
+
+        selectedDriverText.textContent = activeDriverName || 'Pumili ng Driver...';
+    }
+
+    function deleteDriver(id, name) {
+        if (confirm(`Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'} at ang lahat ng records niya?`)) {
+            monthsArray.forEach(m => {
+                for(let y = 2024; y <= 2030; y++) {
+                    localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
+                    localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
+                }
+            });
+            driversList = driversList.filter(d => d.id !== id);
+            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+            
+            if (driversList.length > 0) {
+                currentDriverId = driversList[0].id;
+                localStorage.setItem('boundary_current_driver_id', currentDriverId);
+                loadActiveDriverConfig();
+            } else {
+                currentDriverId = null;
+                localStorage.removeItem('boundary_current_driver_id');
+                driverNameInput.value = '';
+                plateNumberInput.value = '';
+                initDriversDropdown();
+                renderTable();
+            }
+        }
+    }
+
+    function getDriverMonthConfigKey() {
+        return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    }
+
+    function loadActiveDriverConfig() {
+        if (!currentDriverId || driversList.length === 0) {
+            initDriversDropdown();
+            return;
+        }
+
+        let driver = driversList.find(d => d.id === currentDriverId);
+        if(!driver) {
+            driver = driversList[0];
+            currentDriverId = driver.id;
+            localStorage.setItem('boundary_current_driver_id', currentDriverId);
+        }
+        
+        if (driver.month && monthsArray.includes(driver.month)) {
+            selectMonth.value = driver.month;
+            activeMonthIndex = monthsArray.indexOf(driver.month);
+        } else {
+            selectMonth.value = monthsArray[activeMonthIndex];
+        }
+
+        if (driver.year) {
+            selectYear.value = driver.year;
+            activeYearVal = parseInt(driver.year) || currentDateObj.getFullYear();
+        } else {
+            selectYear.value = activeYearVal;
+        }
+
+        driverNameInput.value = driver.name || '';
+        plateNumberInput.value = driver.plate || '';
+        standardExpectedInput.value = driver.expected || 1200;
+        
+        let calculatedCoding = getCodingFromPlate(driver.plate);
+        driver.coding = calculatedCoding;
+        codingDisplay.innerText = calculatedCoding;
+
+        let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
+        previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : (driver.prevBal || 0);
+
+        updateHeaderTitle();
+        renderTable();
+        initDriversDropdown();
+    }
+
+    btnAddDriver.addEventListener('click', function() {
+        const maxAllowedDrivers = getTierDriverLimit();
+        if (driversList.length >= maxAllowedDrivers) {
+            alert(`Naabot mo na ang limit ng iyong Tier (${maxAllowedDrivers} drivers maximum). Mag-upgrade para makapagdagdag pa.`);
+            window.location.href = 'Payment final.html';
+            return;
+        }
+
+        const newName = prompt("Pangalan ng Bagong Driver:", "");
+        if(!newName) return;
+        const newPlate = prompt("Plate Number (Hal. ABC-1234):", "");
+        if(!newPlate) return;
+        
+        const newId = 'driver_' + Date.now();
+        const calculatedCoding = getCodingFromPlate(newPlate);
+        
+        const newDriverObj = {
+            id: newId,
+            name: newName,
+            plate: newPlate.toUpperCase(),
+            expected: 1200,
+            prevBal: 0,
+            coding: calculatedCoding,
+            month: selectMonth.value,
+            year: selectYear.value
+        };
+
+        driversList.push(newDriverObj);
+        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+        currentDriverId = newId;
+        localStorage.setItem('boundary_current_driver_id', currentDriverId);
+        loadActiveDriverConfig();
+    });
+
+    function saveConfig() {
+        if (!currentDriverId) return;
+        let driver = driversList.find(d => d.id === currentDriverId);
+        if(driver) {
+            driver.month = selectMonth.value;
+            driver.year = selectYear.value;
+            driver.name = driverNameInput.value;
+            driver.plate = plateNumberInput.value.toUpperCase();
+            driver.expected = parseFloat(standardExpectedInput.value) || 1200;
+            driver.coding = getCodingFromPlate(plateNumberInput.value);
+            driver.prevBal = parseFloat(previousBalanceInput.value) || 0;
+            
+            activeMonthIndex = monthsArray.indexOf(selectMonth.value);
+            activeYearVal = parseInt(selectYear.value) || currentDateObj.getFullYear();
+
+            localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
+            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+            initDriversDropdown();
+        }
+        updateHeaderTitle();
+        renderTable();
+    }
+
+    function updateHeaderTitle() {
+        if (!currentDriverId || driversList.length === 0) {
+            displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+            if (printSignatureName) printSignatureName.innerText = `Driver: ____________________`;
+            return;
+        }
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let codingVal = driver ? driver.coding : 'None';
+        let currentDriverName = driverNameInput.value || 'Walang Pangalan';
+        displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Driver: ${currentDriverName} (${plateNumberInput.value || 'N/A'}) | Coding: ${codingVal}`;
+        
+        if (printSignatureName) {
+            printSignatureName.innerText = `Driver: ${currentDriverName}`;
+        }
+    }
+
+    [driverNameInput, plateNumberInput].forEach(el => {
+        el.addEventListener('change', saveConfig);
+        el.addEventListener('blur', saveConfig);
+    });
+
+    [selectMonth, selectYear, standardExpectedInput, previousBalanceInput].forEach(el => {
+        el.addEventListener('input', saveConfig);
+        el.addEventListener('change', saveConfig);
+    });
+
+    function getDriverRecordsKey() {
+        return `boundary_records_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    }
+
+    const form = document.getElementById('entryForm');
+    const tableBody = document.getElementById('tableBody');
+    const lblExpected = document.getElementById('lblExpected');
+    const lblGiven = document.getElementById('lblGiven');
+    const lblBalance = document.getElementById('lblBalance');
+    const exportCsvBtn = document.getElementById('exportCsvBtn');
+    const exportPdfBtn = document.getElementById('exportPdfBtn');
+    const dayDateInput = document.getElementById('dayDate');
+
+    function getDayOfWeek(dayNum, monthIdx, yearNum) {
+        const dateObj = new Date(yearNum, monthIdx, dayNum);
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        return days[dateObj.getDay()];
+    }
+
+    function getDaysInMonth(monthIdx, yearNum) {
+        return new Date(yearNum, monthIdx + 1, 0).getDate();
+    }
+
+    function updateNextDaySuggestion(records) {
+        const savedDays = Object.keys(records).map(Number);
+        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+        if (savedDays.length > 0) {
+            const maxDay = Math.max(...savedDays);
+            if (maxDay < maxDaysInCurrentMonth) {
+                dayDateInput.value = maxDay + 1;
+            } else {
+                dayDateInput.value = 1;
+            }
+        } else {
+            dayDateInput.value = 1;
+        }
+    }
+
+    function changeMonth(direction) {
+        activeMonthIndex += direction;
+        if (activeMonthIndex > 11) {
+            activeMonthIndex = 0;
+            activeYearVal++;
+        } else if (activeMonthIndex < 0) {
+            activeMonthIndex = 11;
+            activeYearVal--;
+        }
+
+        selectMonth.value = monthsArray[activeMonthIndex];
+        selectYear.value = activeYearVal;
+        
+        if (pageIndicator) {
+            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
+        }
+        
+        let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
+        previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : 0;
+
+        saveConfig();
+    }
+
+    document.getElementById('prevMonthBtn').addEventListener('click', function() {
+        changeMonth(-1);
+    });
+
+    document.getElementById('nextMonthBtn').addEventListener('click', function() {
+        changeMonth(1);
+    });
+
+    window.clearCurrentMonthData = function() {
+        if (!currentDriverId) {
+            alert("Walang driver na napili.");
+            return;
+        }
+
+        if (confirm(`Sigurado ka bang gusto mong i-clear ang lahat ng tala at balanse para sa buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`)) {
+            localStorage.removeItem(getDriverRecordsKey());
+            localStorage.removeItem(getDriverMonthConfigKey());
+            previousBalanceInput.value = 0;
+            saveConfig();
+            renderTable();
+            form.reset();
+            alert(`Matagumpay na na-clear ang buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
+        }
+    };
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!currentDriverId) {
+            alert("Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
+            return;
+        }
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        const date = parseInt(dayDateInput.value);
+        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+        
+        if (date < 1 || date > maxDaysInCurrentMonth) {
+            alert(`Mali ang petsa. Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
+            return;
+        }
+
+        const given = parseFloat(document.getElementById('givenAmt').value) || 0;
+        const dateCovered = document.getElementById('dateCovered').value;
+        const refNo = document.getElementById('refNo').value;
+        const expected = parseFloat(standardExpectedInput.value) || 1200;
+
+        records[date] = { expected, given, dateCovered, refNo };
+        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+        renderTable();
+        form.reset();
+        updateNextDaySuggestion(records);
+    });
+
+    exportPdfBtn.addEventListener('click', function() {
+        if (!currentDriverId) {
+            alert("Walang driver na napili para i-export.");
+            return;
+        }
+        window.print();
+    });
+
+    exportCsvBtn.addEventListener('click', function() {
+        if (!currentDriverId) {
+            alert("Walang driver na napili para i-export.");
+            return;
+        }
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let codingVal = driver ? driver.coding : 'None';
+        let currentDriverName = driverNameInput.value || 'Driver';
+        
+        const savedDays = Object.keys(records).map(Number);
+        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+        csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
+
+        let totalExpected = 0;
+        let totalGiven = 0;
+        let runningBalance = initialBalance;
+
+        for (let i = 1; i <= limitDay; i++) {
+            let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
+            let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
+            let expVal = dayData.expected || currentExpected;
+            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            
+            totalExpected += expVal;
+            totalGiven += dayData.given;
+            let shortOver = dayData.given - expVal;
+            runningBalance += (expVal - dayData.given);
+
+            let row = [
+                dayOfWeek,
+                i < 10 ? '0' + i : i,
+                expVal,
+                dayData.given,
+                `"${dayData.dateCovered || '-'}"`,
+                `"${dayData.refNo || '-'}"`,
+                shortOver,
+                runningBalance
+            ];
+            csvContent += row.join(",") + "\r\n";
+        }
+
+        csvContent += "\r\n\r\n";
+        csvContent += `,,,,,,,Driver: "${currentDriverName}"\r\n`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+
+    function renderTable() {
+        if (!currentDriverId || driversList.length === 0) {
+            tableBody.innerHTML = '';
+            lblExpected.innerText = '0';
+            lblGiven.innerText = '0';
+            lblBalance.innerText = '0';
+            initDriversDropdown();
+            return;
+        }
+
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        tableBody.innerHTML = '';
+        
+        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+        let totalExpected = 0;
+        let totalGiven = 0;
+        let runningBalance = initialBalance;
+
+        const savedDays = Object.keys(records).map(Number);
+        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+        let driver = driversList.find(d => d.id === currentDriverId);
+        const activeCoding = driver ? driver.coding : 'None';
+
+        if (pageIndicator) {
+            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
+        }
+
+        for (let i = 1; i <= limitDay; i++) {
+            let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
+            let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
+            
+            let expVal = dayData.expected || currentExpected;
+
+            totalExpected += expVal;
+            totalGiven += dayData.given;
+            let shortOver = dayData.given - expVal;
+            runningBalance += (expVal - dayData.given);
+
+            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+
+            const row = document.createElement('tr');
+            let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
+            const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+            let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
+            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+            if (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+                dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
+            }
+
+            row.innerHTML = `
+                <td>${dayDisplayHtml}</td>
+                <td>${i < 10 ? '0' + i : i}</td>
+                <td>${fmt(expVal)}</td>
+                <td>${fmt(dayData.given)}</td>
+                <td>${dayData.dateCovered || '-'}</td>
+                <td>${dayData.refNo || '-'}</td>
+                <td class="${shortClass}">${fmt(shortOver)}</td>
+                <td>${fmt(runningBalance)}</td>
+            `;
+            tableBody.appendChild(row);
+        }
+
+        const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        lblExpected.innerText = `${fmt(totalExpected)}`;
+        lblGiven.innerText = `${fmt(totalGiven)}`;
+        lblBalance.innerText = `${fmt(runningBalance)}`;
+        updateNextDaySuggestion(records);
+    }
+
+    if (driversList.length > 0) {
+        loadActiveDriverConfig();
+    } else {
+        initDriversDropdown();
+    }
+</script>
+
+</body>
+</html>
