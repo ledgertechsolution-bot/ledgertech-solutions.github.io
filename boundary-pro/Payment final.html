@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boundary Pro - Activation & Pricing</title>
+    <style>
+        :root {
+            --bg-color: #f4f9f4;
+            --card-bg: #ffffff;
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --text-main: #2c3e50;
+            --border-color: #c8e6c9;
+            --danger: #c62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .activation-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            color: var(--danger);
+            margin-bottom: 4px;
+        }
+
+        p.subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .pricing-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+            text-align: left;
+        }
+
+        /* Binawasan ang padding para hindi masyadong mahaba at sumagad sa gilid */
+        .price-card {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            padding: 8px 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price-info h3 {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 2px;
+        }
+
+        .price-info p {
+            font-size: 0.65rem;
+            opacity: 0.7;
+        }
+
+        .price-tag {
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--text-main);
+        }
+
+        .btn-select-tier {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-select-tier:hover {
+            opacity: 0.85;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 360px;
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .payment-box {
+            margin: 10px 0;
+            padding: 12px;
+            background: #f4f9f4;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .payment-box h4 {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .payment-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .highlight-number {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--danger);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-messenger {
+            display: inline-block;
+            background: #0084ff;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin: 6px 0;
+        }
+
+        .activation-form {
+            text-align: left;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        button.btn-activate {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-close-modal {
+            background: #ccc;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 8px;
+        }
+
+        /* Success Modal Styles */
+        .success-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 300px;
+            padding: 20px 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .success-icon {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .success-content h3 {
+            color: var(--primary);
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .success-content p {
+            font-size: 0.75rem;
+            opacity: 0.85;
+            margin-bottom: 14px;
+            line-height: 1.3;
+        }
+
+        .btn-success-ok {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="activation-container">
+        <h1>Na-expire na ang Free Trial!</h1>
+        <p class="subtitle">Lumampas na sa 3 araw ang iyong paggamit. Piliin ang iyong Tier para sa <strong>1-Year License</strong>.</p>
+
+        <!-- 3 Tiers Pricing -->
+        <div class="pricing-grid">
+            <div class="price-card">
+                <div class="price-info">
+                    <h3>Tier 1: Starter</h3>
+                    <p>Hanggang 3 Units • 1 Taon</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="price-tag" style="margin-bottom: 2px;">₱1,500</div>
+                    <button class="btn-select-tier" onclick="openPaymentModal('Tier 1 (Starter)', '1,500')">Select</button>
+                </div>
+            </div>
+
+            <div class="price-card">
+                <div class="price-info">
+                    <h3>Tier 2: Standard</h3>
+                    <p>Hanggang 5 Units • 1 Taon</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="price-tag" style="margin-bottom: 2px;">₱2,000</div>
+                    <button class="btn-select-tier" onclick="openPaymentModal('Tier 2 (Standard)', '2,000')">Select</button>
+                </div>
+            </div>
+
+            <div class="price-card" style="border-color: var(--primary); background: var(--card-bg);">
+                <div class="price-info">
+                    <h3>Tier 3: Unlimited</h3>
+                    <p>Unli Drivers/Units • 1 Taon</p>
+                </div>
+                <div style="text-align: right;">
+                    <div class="price-tag" style="color: var(--primary); margin-bottom: 2px;">₱3,000</div>
+                    <button class="btn-select-tier" onclick="openPaymentModal('Tier 3 (Unlimited)', '3,000')">Select</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT MODAL -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <h3 id="modalTierTitle" style="color: var(--primary); margin-bottom: 2px; font-size: 0.95rem;">Magbayad sa GCash</h3>
+            <p style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 6px;">Halaga na dapat bayaran: <strong id="modalTierPrice" style="color: var(--danger);">₱0</strong></p>
+            
+            <!-- GCash Details Box -->
+            <div class="payment-box">
+                <h4>GCASH ACCOUNT DETAILS</h4>
+                <div class="payment-name">Daniel Pabilona</div>
+                <div class="highlight-number">0977-755-7170</div>
+            </div>
+
+            <p style="font-size: 0.68rem; opacity: 0.9; margin-bottom: 4px;">Pagkatapos magbayad, i-send ang screenshot ng resibo sa Messenger para makuha ang key:</p>
+            <a href="https://m.me/61594282516194" target="_blank" class="btn-messenger">I-send ang Resibo sa Messenger</a>
+
+            <div class="activation-form">
+                <label>Ilagay ang Activation Key:</label>
+                <input type="text" id="promptKeyInput" placeholder="ILAGAY ANG KEY DITO">
+                <button type="button" class="btn-activate" onclick="verifyPromptKey()">I-activate ang App</button>
+            </div>
+
+            <button type="button" class="btn-close-modal" onclick="closePaymentModal()">Isara</button>
+        </div>
+    </div>
+
+    <!-- SUCCESS ACTIVATED MODAL -->
+    <div class="modal-overlay" id="successModal">
+        <div class="success-content">
+            <div class="success-icon">✔</div>
+            <h3>Tagumpay ang Activation!</h3>
+            <p>Maraming salamat! Ang iyong app ay lisensyado na at magagamit na nang buo sa loob ng 1 taon.</p>
+            <button type="button" class="btn-success-ok" onclick="closeSuccessModal()">OK / Gamitin ang App</button>
+        </div>
+    </div>
+
+    <script>
+        function openPaymentModal(tierName, price) {
+            document.getElementById('modalTierTitle').innerText = `Magbayad para sa ${tierName}`;
+            document.getElementById('modalTierPrice').innerText = `₱${price}`;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+
+        function verifyPromptKey() {
+            const key = document.getElementById('promptKeyInput').value.trim();
+            if(!key) {
+                alert("Mangyaring ilagay ang activation key.");
+                return;
+            }
+            
+            closePaymentModal();
+            document.getElementById('successModal').style.display = 'flex';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').style.display = 'none';
+            alert("Handa na ang iyong Boundary Pro app!");
+        }
+    </script>
+
+</body>
+</html>
