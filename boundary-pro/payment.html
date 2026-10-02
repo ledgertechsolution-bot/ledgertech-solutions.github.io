@@ -363,9 +363,6 @@
     </div>
 
     <script>
-        const trialMins = localStorage.getItem('boundary_trial_minutes') || '120';
-        document.getElementById('subtitleTrialText').innerHTML = `Lumampas na sa ${trialMins}-minute trial. Piliin ang estado ng iyong negosyo para sa <strong>1-Year License</strong>`;
-
         let selectedTierCode = '';
 
         function openPaymentModal(tierName, price, tierCode) {
@@ -380,58 +377,58 @@
             document.getElementById('paymentModal').style.display = 'none';
         }
 
-       function verifyPromptKey() {
-    const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
-    if(!key) {
-        alert("Mangyaring ilagay ang activation key");
-        return;
-    }
-    
-    if (!key.startsWith('BMPRO-')) {
-        alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
-        return;
-    }
+        function verifyPromptKey() {
+            const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
+            if(!key) {
+                alert("Mangyaring ilagay ang activation key");
+                return;
+            }
+            
+            if (!key.startsWith('BMPRO-')) {
+                alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
+                return;
+            }
 
-    if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
-        alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
-        return;
-    }
-    if (selectedTierCode === 'T2' && !key.endsWith('-T2')) {
-        alert("Mali ang key na ito! Ito ay hindi para sa Established package.");
-        return;
-    }
-    if (selectedTierCode === 'T3' && !key.endsWith('-T3')) {
-        alert("Mali ang key na ito! Ito ay hindi para sa Prime package.");
-        return;
-    }
+            if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
+                alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
+                return;
+            }
+            if (selectedTierCode === 'T2' && !key.endsWith('-T2')) {
+                alert("Mali ang key na ito! Ito ay hindi para sa Established package.");
+                return;
+            }
+            if (selectedTierCode === 'T3' && !key.endsWith('-T3')) {
+                alert("Mali ang key na ito! Ito ay hindi para sa Prime package.");
+                return;
+            }
 
-    let deviceId = localStorage.getItem('boundary_device_id');
-    if (!deviceId) {
-        deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem('boundary_device_id', deviceId);
-    }
+            let deviceId = localStorage.getItem('boundary_device_id');
+            if (!deviceId) {
+                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+                localStorage.setItem('boundary_device_id', deviceId);
+            }
 
-    let assignedDevice = localStorage.getItem('boundary_key_device_' + key);
-    if (assignedDevice && assignedDevice !== deviceId) {
-        alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang gadget!");
-        return;
-    }
+            let assignedDevice = localStorage.getItem('boundary_key_device_' + key);
+            if (assignedDevice && assignedDevice !== deviceId) {
+                alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang gadget!");
+                return;
+            }
 
-    localStorage.setItem('boundary_key_device_' + key, deviceId);
+            localStorage.setItem('boundary_key_device_' + key, deviceId);
 
-    let assignedTierName = '';
-    if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
-    else if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
-    else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
-    
-    localStorage.setItem('boundary_active_key', key);
-    localStorage.setItem('boundary_activation_time', Date.now());
-    localStorage.setItem('boundary_license_device', deviceId);
-    localStorage.setItem('boundary_active_tier', assignedTierName);
+            let assignedTierName = '';
+            if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+            else if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+            else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
+            
+            localStorage.setItem('boundary_active_key', key);
+            localStorage.setItem('boundary_activation_time', Date.now());
+            localStorage.setItem('boundary_license_device', deviceId);
+            localStorage.setItem('boundary_active_tier', assignedTierName);
 
-    closePaymentModal();
-    document.getElementById('successModal').style.display = 'flex';
-}
+            closePaymentModal();
+            document.getElementById('successModal').style.display = 'flex';
+        }
 
         function closeSuccessModal() {
             document.getElementById('successModal').style.display = 'none';
