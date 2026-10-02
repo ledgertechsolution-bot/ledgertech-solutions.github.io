@@ -413,6 +413,40 @@
             display: none;
         }
 
+        .shopee-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .shopee-modal-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 100%;
+            max-width: 300px;
+            padding: 20px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+        }
+        [data-theme="dark"] .shopee-modal-box {
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+        .shopee-modal-title { font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; }
+        .shopee-modal-text { font-size: 0.75rem; opacity: 0.85; margin-bottom: 14px; line-height: 1.4; }
+        .shopee-modal-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+
         @media print {
             body {
                 background-color: #ffffff;
@@ -461,6 +495,23 @@
                 page-break-inside: avoid;
             }
         }
+        .tier-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: var(--primary-light);
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .tier-status-badge:hover {
+            opacity: 0.85;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -488,11 +539,15 @@
             </div>
         </div>
         
-        <div class="button-group" style="margin-bottom: 6px; justify-content: flex-start; gap: 4px;">
+        <div class="button-group" style="margin-bottom: 6px; justify-content: flex-start; gap: 4px; align-items: center; flex-wrap: wrap;">
             <button type="button" id="btnAddDriver" style="background-color: #2851a3; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;">+ Bagong Driver</button>
             <button type="button" id="exportJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-download ang lahat ng data bilang backup">💾 Backup</button>
             <button type="button" id="importJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-restore ang data mula sa backup file">📂 Restore</button>
             <input type="file" id="importFile" accept=".json" style="display: none;">
+            
+            <a href="payment.html" id="tierBadgeBtn" class="tier-status-badge" title="Mag-click para mag-upgrade ng Tier">
+                👑 <span id="tierBadgeText">Entrepreneur (Max 3 Drivers)</span>
+            </a>
         </div>
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 6px 0;">
         
@@ -626,66 +681,67 @@
 </div>
 
 <script>
-    (function checkAppLicense() {
-        // Dynamic Trial Minutes: Pwedeng baguhin anytime via localStorage o system settings
-        const DEFAULT_TRIAL_MINUTES = 120;
-        const TRIAL_MINUTES = parseInt(localStorage.getItem('boundary_trial_minutes') || DEFAULT_TRIAL_MINUTES);
-        const KEY_VALIDITY_DAYS = 365;
+    let shopeeModalCallback = null;
 
-        let deviceId = localStorage.getItem('boundary_device_id');
-        if (!deviceId) {
-            deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-            localStorage.setItem('boundary_device_id', deviceId);
-        }
+    function showCustomAlert(title, message) {
+        const modal = document.getElementById('shopeeModal');
+        if (!modal) return;
+        document.getElementById('shopeeModalTitle').innerText = title;
+        document.getElementById('shopeeModalText').innerText = message;
+        document.getElementById('shopeeModalInputContainer').style.display = 'none';
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        `;
+        shopeeModalCallback = null;
+        modal.style.display = 'flex';
+    }
 
-        let installDate = localStorage.getItem('boundary_install_date_v10');
-        if (!installDate) {
-            installDate = Date.now();
-            localStorage.setItem('boundary_install_date_v10', installDate);
-        }
-
-        // Two-way synchronization check mula sa Admin Key Generator / Payment module
-        const licenseKey = localStorage.getItem('boundary_active_key');
-        const licenseActivationTime = parseInt(localStorage.getItem('boundary_activation_time') || '0');
-        const licenseDevice = localStorage.getItem('boundary_license_device');
+    function showCustomPrompt(title, message, placeholder, callback) {
+        const modal = document.getElementById('shopeeModal');
+        if (!modal) return;
+        document.getElementById('shopeeModalTitle').innerText = title;
+        document.getElementById('shopeeModalText').innerText = message;
+        const inputField = document.getElementById('shopeeModalInputVal');
+        inputField.value = '';
+        inputField.placeholder = placeholder;
+        document.getElementById('shopeeModalInputContainer').style.display = 'block';
         
-        let isLicensed = false;
-        if (licenseKey && (licenseDevice === deviceId || !licenseDevice)) {
-            const daysSinceActivation = (Date.now() - licenseActivationTime) / (1000 * 60 * 60 * 24);
-            if (daysSinceActivation <= KEY_VALIDITY_DAYS) {
-                isLicensed = true;
-            }
-        }
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" style="background:#ccc; color:#333;" onclick="closeShopeeModal()">Kanselahin</button>
+            <button type="button" class="shopee-modal-btn" onclick="submitShopeePrompt()">I-save</button>
+        `;
+        shopeeModalCallback = callback;
+        modal.style.display = 'flex';
+        setTimeout(() => inputField.focus(), 100);
+    }
 
-        // Check din kung may naka-save na validated client session galing sa Key Generator database
-        const adminClients = JSON.parse(localStorage.getItem('bmpro_admin_clients')) || [];
-        if (!isLicensed && adminClients.length > 0) {
-            // Kung may active client record, i-sync automatic
-            const latestClient = adminClients[adminClients.length - 1];
-            if (latestClient && latestClient.expirationTimestamp > Date.now()) {
-                localStorage.setItem('boundary_active_key', latestClient.key);
-                localStorage.setItem('boundary_activation_time', Date.now());
-                localStorage.setItem('boundary_active_tier', latestClient.tier);
-                isLicensed = true;
-            }
+    function closeShopeeModal() {
+        const modal = document.getElementById('shopeeModal');
+        if (modal) modal.style.display = 'none';
+        if (shopeeModalCallback) { 
+            const cb = shopeeModalCallback;
+            shopeeModalCallback = null; 
+            cb(null); 
         }
+    }
 
-        if (!isLicensed) {
-            const diffMs = Date.now() - parseInt(installDate);
-            const trialDurationMs = TRIAL_MINUTES * 60 * 1000;
-            
-            if (diffMs > trialDurationMs) {
-                alert(`Na-expire na ang iyong ${TRIAL_MINUTES}-minute Free Trial. Mag-redirect sa Activation & Pricing page.`);
-                window.location.href = 'payment.html';
-            }
+    function submitShopeePrompt() {
+        const inputField = document.getElementById('shopeeModalInputVal');
+        const val = inputField ? inputField.value : '';
+        const modal = document.getElementById('shopeeModal');
+        if (modal) modal.style.display = 'none';
+        if (shopeeModalCallback) { 
+            const cb = shopeeModalCallback;
+            shopeeModalCallback = null; 
+            cb(val); 
         }
-    })();
+    }
 
     function getTierDriverLimit() {
-        const tier = localStorage.getItem('boundary_active_tier') || 'starter';
-        if (tier.includes('starter') || tier.includes('Tier 1')) return 3;
-        if (tier.includes('standard') || tier.includes('Tier 2')) return 5;
-        if (tier.includes('unli') || tier.includes('Tier 3') || tier.includes('unlimited')) return 999999;
+        const tier = (localStorage.getItem('boundary_active_tier') || '').toLowerCase();
+        if (tier.includes('entrepreneur')) return 3;
+        if (tier.includes('established')) return 5;
+        if (tier.includes('prime')) return 999999;
         return 3;
     }
 
@@ -753,17 +809,15 @@
             fileReader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if (confirm("Gusto mo bang i-restore ang mga datang ito? Mapapalitan ang mga kasalukuyang nakalagay sa app mo.")) {
-                        for (const key in importedData) {
-                            if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
-                                localStorage.setItem(key, importedData[key]);
-                            }
+                    showCustomAlert("Restore", "Gusto mo bang i-restore ang mga datang ito? Mapapalitan ang kasalukuyang data.");
+                    for (const key in importedData) {
+                        if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
+                            localStorage.setItem(key, importedData[key]);
                         }
-                        alert("Matagumpay na naibalik ang mga datos! Mag-re-reload ang pahina.");
-                        location.reload();
                     }
+                    setTimeout(() => location.reload(), 1500);
                 } catch (error) {
-                    alert("May problema sa file na iyong in-upload. Siguraduhing valid JSON backup file ito.");
+                    showCustomAlert("Error", "May problema sa file na iyong in-upload.");
                 }
             };
         }
@@ -909,28 +963,27 @@
     }
 
     function deleteDriver(id, name) {
-        if (confirm(`Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'} at ang lahat ng records niya?`)) {
-            monthsArray.forEach(m => {
-                for(let y = 2024; y <= 2030; y++) {
-                    localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
-                    localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
-                }
-            });
-            driversList = driversList.filter(d => d.id !== id);
-            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-            
-            if (driversList.length > 0) {
-                currentDriverId = driversList[0].id;
-                localStorage.setItem('boundary_current_driver_id', currentDriverId);
-                loadActiveDriverConfig();
-            } else {
-                currentDriverId = null;
-                localStorage.removeItem('boundary_current_driver_id');
-                driverNameInput.value = '';
-                plateNumberInput.value = '';
-                initDriversDropdown();
-                renderTable();
+        showCustomAlert("Tanggalin Driver", `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`);
+        monthsArray.forEach(m => {
+            for(let y = 2024; y <= 2030; y++) {
+                localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
+                localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
             }
+        });
+        driversList = driversList.filter(d => d.id !== id);
+        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+        
+        if (driversList.length > 0) {
+            currentDriverId = driversList[0].id;
+            localStorage.setItem('boundary_current_driver_id', currentDriverId);
+            loadActiveDriverConfig();
+        } else {
+            currentDriverId = null;
+            localStorage.removeItem('boundary_current_driver_id');
+            driverNameInput.value = '';
+            plateNumberInput.value = '';
+            initDriversDropdown();
+            renderTable();
         }
     }
 
@@ -984,35 +1037,36 @@
     btnAddDriver.addEventListener('click', function() {
         const maxAllowedDrivers = getTierDriverLimit();
         if (driversList.length >= maxAllowedDrivers) {
-            alert(`Naabot mo na ang limit ng iyong Tier (${maxAllowedDrivers} drivers maximum). Mag-upgrade para makapagdagdag pa.`);
-            window.location.href = 'payment.html';
+            showCustomAlert("Limit Naabot", `Naabot mo na ang limit ng iyong Tier (${maxAllowedDrivers} drivers maximum). Mag-upgrade para makapagdagdag pa.`);
             return;
         }
 
-        const newName = prompt("Pangalan ng Bagong Driver:", "");
-        if(!newName) return;
-        const newPlate = prompt("Plate Number (Hal. ABC-1234):", "");
-        if(!newPlate) return;
-        
-        const newId = 'driver_' + Date.now();
-        const calculatedCoding = getCodingFromPlate(newPlate);
-        
-        const newDriverObj = {
-            id: newId,
-            name: newName,
-            plate: newPlate.toUpperCase(),
-            expected: 1200,
-            prevBal: 0,
-            coding: calculatedCoding,
-            month: selectMonth.value,
-            year: selectYear.value
-        };
+        showCustomPrompt("Bagong Driver", "Ilagay ang pangalan ng bagong driver:", "Pangalan...", function(newName) {
+            if(!newName) return;
+            showCustomPrompt("Plate Number", "Ilagay ang Plate Number:", "ABC-1234", function(newPlate) {
+                if(!newPlate) return;
+                
+                const newId = 'driver_' + Date.now();
+                const calculatedCoding = getCodingFromPlate(newPlate);
+                
+                const newDriverObj = {
+                    id: newId,
+                    name: newName,
+                    plate: newPlate.toUpperCase(),
+                    expected: 1200,
+                    prevBal: 0,
+                    coding: calculatedCoding,
+                    month: selectMonth.value,
+                    year: selectYear.value
+                };
 
-        driversList.push(newDriverObj);
-        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-        currentDriverId = newId;
-        localStorage.setItem('boundary_current_driver_id', currentDriverId);
-        loadActiveDriverConfig();
+                driversList.push(newDriverObj);
+                localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+                currentDriverId = newId;
+                localStorage.setItem('boundary_current_driver_id', currentDriverId);
+                loadActiveDriverConfig();
+            });
+        });
     });
 
     function saveConfig() {
@@ -1119,6 +1173,7 @@
 
         selectMonth.value = monthsArray[activeMonthIndex];
         selectYear.value = activeYearVal;
+        
         saveConfig();
     }
 
@@ -1132,25 +1187,23 @@
 
     window.clearCurrentMonthData = function() {
         if (!currentDriverId) {
-            alert("Walang driver na napili.");
+            showCustomAlert("Babala", "Walang driver na napili.");
             return;
         }
 
-        if (confirm(`Sigurado ka bang gusto mong i-clear ang lahat ng tala at balanse para sa buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`)) {
-            localStorage.removeItem(getDriverRecordsKey());
-            localStorage.removeItem(getDriverMonthConfigKey());
-            previousBalanceInput.value = 0;
-            saveConfig();
-            renderTable();
-            form.reset();
-            alert(`Matagumpay na na-clear ang buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
-        }
+        showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
+        localStorage.removeItem(getDriverRecordsKey());
+        localStorage.removeItem(getDriverMonthConfigKey());
+        previousBalanceInput.value = 0;
+        saveConfig();
+        renderTable();
+        form.reset();
     };
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
         if (!currentDriverId) {
-            alert("Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
+            showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
             return;
         }
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
@@ -1158,7 +1211,7 @@
         const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
         
         if (date < 1 || date > maxDaysInCurrentMonth) {
-            alert(`Mali ang petsa. Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
+            showCustomAlert("Maling Petsa", `Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
             return;
         }
 
@@ -1176,7 +1229,7 @@
 
     exportPdfBtn.addEventListener('click', function() {
         if (!currentDriverId) {
-            alert("Walang driver na napili para i-export.");
+            showCustomAlert("Babala", "Walang driver na napili para i-export.");
             return;
         }
         window.print();
@@ -1184,7 +1237,7 @@
 
     exportCsvBtn.addEventListener('click', function() {
         if (!currentDriverId) {
-            alert("Walang driver na napili para i-export.");
+            showCustomAlert("Babala", "Walang driver na napili para i-export.");
             return;
         }
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
@@ -1320,7 +1373,39 @@
     } else {
         initDriversDropdown();
     }
+
+    function updateTierBadgeDisplay() {
+        const activeTier = (localStorage.getItem('boundary_active_tier') || 'Entrepreneur').toLowerCase();
+        const badgeText = document.getElementById('tierBadgeText');
+        
+        if (badgeText) {
+            if (activeTier.includes('established')) {
+                badgeText.textContent = 'Established (Max 5 Drivers)';
+            } else if (activeTier.includes('prime')) {
+                badgeText.textContent = 'Prime (6+ Drivers Up)';
+            } else {
+                badgeText.textContent = 'Entrepreneur (Max 3 Drivers)';
+            }
+        }
+    }
+    
+    updateTierBadgeDisplay();
 </script>
+
+<div class="shopee-modal-overlay" id="shopeeModal">
+    <div class="shopee-modal-box">
+        <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
+        <div class="shopee-modal-text" id="shopeeModalText">Ito ang nilalaman ng mensahe.</div>
+        
+        <div id="shopeeModalInputContainer" style="display: none;">
+            <input type="text" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        </div>
+
+        <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
