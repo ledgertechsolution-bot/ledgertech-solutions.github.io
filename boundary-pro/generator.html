@@ -446,19 +446,29 @@
     const savedTheme = localStorage.getItem('bmpro_admin_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
-    const trialMinutesInput = document.getElementById('trialMinutesInput');
-    const savedTrialMinutes = localStorage.getItem('boundary_trial_minutes') || '120';
-    trialMinutesInput.value = savedTrialMinutes;
+   // --- TRIAL MINUTES SETUP ---
+const trialMinutesInput = document.getElementById('trialMinutesInput');
 
-    document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
-        const val = parseInt(trialMinutesInput.value);
-        if (isNaN(val) || val <= 0) {
-            showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
-            return;
-        }
-        localStorage.setItem('boundary_trial_minutes', val);
-        showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes!`);
-    });
+// Kunin ang huling sinave sa localStorage, kung wala pa, saka lang maging 120
+let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
+if (currentSavedTrial !== null) {
+    trialMinutesInput.value = currentSavedTrial;
+} else {
+    trialMinutesInput.value = '120';
+    localStorage.setItem('boundary_trial_minutes', '120');
+}
+
+// Kapag clinick ang button para i-save
+document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
+    const val = parseInt(trialMinutesInput.value);
+    if (isNaN(val) || val <= 0) {
+        showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
+        return;
+    }
+    // I-save nang permanente sa localStorage
+    localStorage.setItem('boundary_trial_minutes', val);
+    showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes!`);
+});
 
     const nowObj = new Date();
     const formattedDateTimeToday = nowObj.toLocaleString();
