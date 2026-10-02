@@ -273,6 +273,40 @@
             background-color: var(--primary-light);
         }
 
+        .shopee-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            padding: 16px;
+        }
+        .shopee-modal-box {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            width: 100%;
+            max-width: 300px;
+            padding: 20px 16px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            text-align: center;
+            position: relative;
+        }
+        [data-theme="dark"] .shopee-modal-box {
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e0e0e0;
+        }
+        .shopee-modal-title { font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; }
+        .shopee-modal-text { font-size: 0.75rem; opacity: 0.85; margin-bottom: 14px; line-height: 1.4; }
+        .shopee-modal-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+
         footer {
             text-align: center;
             font-size: 0.7rem;
@@ -293,7 +327,6 @@
         </div>
     </header>
 
-    <!-- TRIAL MINUTES CONFIGURATOR CARD -->
     <div class="card" style="background: var(--primary-light);">
         <div class="form-row" style="margin-bottom: 0; align-items: center;">
             <div class="form-group" style="margin-bottom: 0;">
@@ -306,7 +339,6 @@
         </div>
     </div>
 
-    <!-- ADMIN INPUT SECTION -->
     <div class="card">
         <div class="form-row">
             <div class="form-group">
@@ -333,11 +365,11 @@
                 <input type="text" id="clientNameInput" placeholder="Pangalan ng Client">
             </div>
             <div class="form-group">
-                <label>Tier Up (Package):</label>
+                <label>Status / Package:</label>
                 <select id="tierSelect">
-                    <option value="Tier 1 (Starter - 3 Drivers)">Tier 1 (Starter - 3 Drivers)</option>
-                    <option value="Tier 2 (Standard - 5 Drivers)">Tier 2 (Standard - 5 Drivers)</option>
-                    <option value="Tier 3 (Unlimited Drivers)">Tier 3 (Unlimited Drivers)</option>
+                    <option value="Entrepreneur (Max 3 Drivers)">Entrepreneur (Max 3 Drivers)</option>
+                    <option value="Established (Max 5 Drivers)">Established (Max 5 Drivers)</option>
+                    <option value="Prime (6 Drivers Up)">Prime (6 Drivers Up)</option>
                 </select>
             </div>
         </div>
@@ -368,7 +400,6 @@
         </div>
     </div>
 
-    <!-- CLIENT SEARCH & LIST SECTION -->
     <div class="card">
         <div class="form-group" style="margin-bottom: 8px;">
             <label>Search Client Name:</label>
@@ -415,7 +446,6 @@
     const savedTheme = localStorage.getItem('bmpro_admin_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
-    // I-load ang nakasave na trial minutes sa input field
     const trialMinutesInput = document.getElementById('trialMinutesInput');
     const savedTrialMinutes = localStorage.getItem('boundary_trial_minutes') || '120';
     trialMinutesInput.value = savedTrialMinutes;
@@ -423,11 +453,11 @@
     document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
         const val = parseInt(trialMinutesInput.value);
         if (isNaN(val) || val <= 0) {
-            alert("Maglagay ng valid na numero para sa minutes.");
+            showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
             return;
         }
         localStorage.setItem('boundary_trial_minutes', val);
-        alert(`Matagumpay na nai-save ang Trial Duration sa ${val} minutes! Magagamit ito agad ng Main App.`);
+        showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes!`);
     });
 
     const nowObj = new Date();
@@ -473,7 +503,7 @@
     btnGenerateKey.addEventListener('click', function() {
         const name = clientNameInput.value.trim();
         if (!name) {
-            alert("Ilagay muna ang pangalan ng client bago mag-generate ng key.");
+            showCustomAlert("Babala", "Ilagay muna ang pangalan ng client bago mag-generate ng key.");
             clientNameInput.focus();
             return;
         }
@@ -497,8 +527,17 @@
         const expirationStr = expirationDateObj.toLocaleString();
         const durationStr = `${valNum} ${valUnit}`;
 
+        // Naayos na ang pagbasa ng Tier code para tumugma sa payment.html
+        let tierCode = 'T1';
+        const selectedTierVal = tierSelect.value;
+        if (selectedTierVal.includes('Established')) {
+            tierCode = 'T2';
+        } else if (selectedTierVal.includes('Prime')) {
+            tierCode = 'T3';
+        }
+
         const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const generatedKey = `BMKEY-${randomPart}-${valNum}${valUnit.charAt(0).toUpperCase()}`;
+        const generatedKey = `BMPRO-${randomPart}-${valNum}${valUnit.charAt(0).toUpperCase()}-${tierCode}`;
 
         generatedKeyOutput.value = generatedKey;
 
@@ -522,12 +561,12 @@
         const key = generatedKeyOutput.value.trim();
 
         if (!name) {
-            alert("Ilagay ang pangalan ng client.");
+            showCustomAlert("Babala", "Ilagay ang pangalan ng client.");
             clientNameInput.focus();
             return;
         }
         if (!key) {
-            alert("Mag-generate muna ng activation key bago i-save.");
+            showCustomAlert("Babala", "Mag-generate muna ng activation key bago i-save.");
             return;
         }
 
@@ -556,9 +595,6 @@
 
         const existingIndex = clientsList.findIndex(c => c.name.toLowerCase() === clientRecordToSave.name.toLowerCase());
         if (existingIndex >= 0) {
-            if (!confirm(`May umiiral nang record para kay "${clientRecordToSave.name}". Gusto mo ba itong i-update/i-replace?`)) {
-                return;
-            }
             clientsList[existingIndex] = clientRecordToSave;
         } else {
             clientsList.push(clientRecordToSave);
@@ -566,28 +602,25 @@
 
         localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
         
-        // I-sync din direct sa active key ng Main App para mag-apply kaagad dalawang direksyon
         localStorage.setItem('boundary_active_key', clientRecordToSave.key);
         localStorage.setItem('boundary_activation_time', Date.now());
         localStorage.setItem('boundary_active_tier', clientRecordToSave.tier);
         localStorage.setItem('boundary_license_device', localStorage.getItem('boundary_device_id') || 'dev_master');
 
-        alert("Matagumpay na na-save at naka-sync na ang client key sa system!");
+        showCustomAlert("Tagumpay", "Matagumpay na na-save at naka-sync na ang client key sa system!");
         renderTable();
         searchClientInput.value = '';
     });
 
     btnClearDb.addEventListener('click', function() {
         if (clientsList.length === 0) {
-            alert("Wala nang laman ang listahan.");
+            showCustomAlert("Babala", "Wala nang laman ang listahan.");
             return;
         }
-        if (confirm("Sigurado ka bang gusto mong burahin ang LAHAT ng naka-save na client records?")) {
-            localStorage.removeItem('bmpro_admin_clients');
-            clientsList = [];
-            renderTable();
-            alert("Nalinis na ang lahat ng saved data.");
-        }
+        showCustomAlert("Clear Database", "Nalinis na ang lahat ng saved data.");
+        localStorage.removeItem('bmpro_admin_clients');
+        clientsList = [];
+        renderTable();
     });
 
     searchClientInput.addEventListener('input', function() {
@@ -649,7 +682,43 @@
     }
 
     renderTable();
+
+    let shopeeModalCallback = null;
+
+    function showCustomAlert(title, message) {
+        document.getElementById('shopeeModalTitle').innerText = title;
+        document.getElementById('shopeeModalText').innerText = message;
+        document.getElementById('shopeeModalInputContainer').style.display = 'none';
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        `;
+        shopeeModalCallback = null;
+        document.getElementById('shopeeModal').style.display = 'flex';
+    }
+
+    function closeShopeeModal() {
+        document.getElementById('shopeeModal').style.display = 'none';
+        if (shopeeModalCallback) { 
+            shopeeModalCallback(null); 
+            shopeeModalCallback = null; 
+        }
+    }
 </script>
+
+<div class="shopee-modal-overlay" id="shopeeModal">
+    <div class="shopee-modal-box">
+        <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
+        <div class="shopee-modal-text" id="shopeeModalText">Ito ang nilalaman ng mensahe.</div>
+        
+        <div id="shopeeModalInputContainer" style="display: none;">
+            <input type="text" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        </div>
+
+        <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
