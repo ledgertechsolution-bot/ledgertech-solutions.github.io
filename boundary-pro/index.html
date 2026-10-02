@@ -681,6 +681,38 @@
 </div>
 
 <script>
+// --- TRIAL & LICENSE CHECKER ---
+function checkTrialAndLicenseStatus() {
+    // Kung mayroon nang active key, huwag nang i-block
+    const activeKey = localStorage.getItem('boundary_active_key');
+    if (activeKey) return;
+
+    // Kunin ang trial duration sa minutes (default 120 kung wala, o 1 min kung sinet mo)
+    const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 120;
+    
+    // Kunin o i-set ang simula ng trial kung wala pa
+    let activationTime = localStorage.getItem('boundary_activation_time');
+    if (!activationTime) {
+        activationTime = Date.now();
+        localStorage.setItem('boundary_activation_time', activationTime);
+    }
+
+    const elapsedTimeMs = Date.now() - parseInt(activationTime);
+    const trialDurationMs = trialMinutes * 60 * 1000;
+
+    // Kung lumipas na ang trial time, i-redirect sa payment.html o ipakita ang prompt
+    if (elapsedTimeMs > trialDurationMs) {
+        // Pwede mong direktang i-redirect sa payment page:
+        window.location.href = 'payment.html';
+    }
+}
+
+// Suriin ang status tuwing mag-a-load ang pahina
+window.addEventListener('DOMContentLoaded', () => {
+    checkTrialAndLicenseStatus();
+    // O kaya ay i-check kada segundo kung gusto mong mag-real-time expiration:
+    setInterval(checkTrialAndLicenseStatus, 5000);
+});
     let shopeeModalCallback = null;
 
     function showCustomAlert(title, message) {
