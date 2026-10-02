@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMPro Client Monitoring & Key Generator</title>
+    
+    <style>
+        :root {
+            --bg-color: #f4f9f4;
+            --card-bg: #ffffff;
+            --primary: #2e7d32;
+            --primary-light: #e8f5e9;
+            --text-main: #2c3e50;
+            --border-color: #c8e6c9;
+            --danger: #c62828;
+            --success: #1b5e20;
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --primary: #81c784;
+            --primary-light: #1b3320;
+            --text-main: #e0e0e0;
+            --border-color: #333333;
+            --danger: #ef5350;
+            --success: #66bb6a;
+            --input-bg: #2a2a2a;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 12px;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: var(--card-bg);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .theme-btn {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            color: var(--primary);
+            padding: 4px 8px;
+            font-size: 0.65rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .date-display-box {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            margin-bottom: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.7rem;
+            margin-bottom: 2px;
+            font-weight: 600;
+            color: var(--text-main);
+            opacity: 0.85;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: var(--input-bg);
+            color: var(--text-main);
+        }
+
+        .key-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .key-row button {
+            white-space: nowrap;
+            padding: 7px 12px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .key-row button:hover { opacity: 0.9; }
+
+        .btn-save-client {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 4px;
+        }
+
+        .btn-save-client:hover { opacity: 0.9; }
+
+        .list-actions {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            font-size: 0.7rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .btn-clear-db {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-toggle-list {
+            background-color: #374151;
+            color: white;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+
+        .show-box-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .show-box {
+            background: var(--primary-light);
+            padding: 6px 4px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+
+        .show-box span {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .show-box strong {
+            font-size: 0.7rem;
+            color: var(--text-main);
+        }
+
+        .list-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .list-title {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+            max-height: 320px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        tbody tr {
+            cursor: pointer;
+        }
+        tbody tr:hover {
+            background-color: var(--primary-light);
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            opacity: 0.6;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+<div class="container">
+    <header>
+        <h1>BMPro Key Generator & Admin</h1>
+        <div class="header-right">
+            <div class="date-display-box" id="currentCalendarDate">Petsa: --/--/----</div>
+            <button class="theme-btn" onclick="toggleTheme()">Dark/Light</button>
+        </div>
+    </header>
+
+    <!-- TRIAL MINUTES CONFIGURATOR CARD -->
+    <div class="card" style="background: var(--primary-light);">
+        <div class="form-row" style="margin-bottom: 0; align-items: center;">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label style="font-weight: bold; color: var(--primary);">Trial Duration (Minutes):</label>
+                <input type="number" id="trialMinutesInput" value="120" min="1" max="10080" placeholder="Hal. 120 minutes">
+            </div>
+            <div class="form-group" style="margin-bottom: 0; display: flex; align-items: flex-end; height: 100%;">
+                <button type="button" id="btnSaveTrialMinutes" style="width: 100%; padding: 7px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">I-save ang Trial Time</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN INPUT SECTION -->
+    <div class="card">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Validity Target (Duration):</label>
+                <div style="display: flex; gap: 4px;">
+                    <input type="number" id="validityValue" value="1" min="1" style="flex: 2;">
+                    <select id="validityUnit" style="flex: 3;">
+                        <option value="hours">Hour(s)</option>
+                        <option value="days">Day(s)</option>
+                        <option value="months" selected>Month(s)</option>
+                        <option value="years">Year(s)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Starting Date (Auto Calendar):</label>
+                <input type="text" id="startDateDisplay" readonly style="background: var(--primary-light); font-weight: bold; text-align: center;">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Client Name:</label>
+                <input type="text" id="clientNameInput" placeholder="Pangalan ng Client">
+            </div>
+            <div class="form-group">
+                <label>Tier Up (Package):</label>
+                <select id="tierSelect">
+                    <option value="Tier 1 (Starter - 3 Drivers)">Tier 1 (Starter - 3 Drivers)</option>
+                    <option value="Tier 2 (Standard - 5 Drivers)">Tier 2 (Standard - 5 Drivers)</option>
+                    <option value="Tier 3 (Unlimited Drivers)">Tier 3 (Unlimited Drivers)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Activation Key Generator:</label>
+            <div class="key-row">
+                <button type="button" id="btnGenerateKey">Generate Key</button>
+                <input type="text" id="generatedKeyOutput" placeholder="Key magpapakita rito..." readonly style="font-weight: bold; color: var(--primary);">
+            </div>
+        </div>
+
+        <button type="button" class="btn-save-client" id="btnSaveClient">Save Client & Key Record</button>
+
+        <div class="show-box-grid">
+            <div class="show-box">
+                <span>Duration Validity</span>
+                <strong id="boxDuration">--</strong>
+            </div>
+            <div class="show-box">
+                <span>Date Purchased (From)</span>
+                <strong id="boxPurchased">--</strong>
+            </div>
+            <div class="show-box">
+                <span>Expiration (Until)</span>
+                <strong id="boxExpiration">--</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENT SEARCH & LIST SECTION -->
+    <div class="card">
+        <div class="form-group" style="margin-bottom: 8px;">
+            <label>Search Client Name:</label>
+            <input type="text" id="searchClientInput" placeholder="I-type ang pangalan para hanapin...">
+        </div>
+
+        <div class="list-header-row">
+            <span class="list-title">Client Records List</span>
+            <div class="list-actions">
+                <button class="action-btn btn-clear-db" id="btnClearDb">Clear All Records</button>
+                <button class="action-btn btn-toggle-list" id="toggleListBtn">Hide List</button>
+            </div>
+        </div>
+
+        <div class="table-responsive" id="tableContainer">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Tier Up</th>
+                        <th>Generated Key</th>
+                        <th>Duration</th>
+                        <th>Purchased</th>
+                        <th>Expiration</th>
+                    </tr>
+                </thead>
+                <tbody id="clientTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        All Rights Reserved © 2026 Boundary Monitoring Pro (BMPro)
+    </footer>
+</div>
+
+<script>
+    function toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('bmpro_admin_theme', newTheme);
+    }
+    const savedTheme = localStorage.getItem('bmpro_admin_theme') || 'light';
+    document.body.setAttribute('data-theme', savedTheme);
+
+    // I-load ang nakasave na trial minutes sa input field
+    const trialMinutesInput = document.getElementById('trialMinutesInput');
+    const savedTrialMinutes = localStorage.getItem('boundary_trial_minutes') || '120';
+    trialMinutesInput.value = savedTrialMinutes;
+
+    document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
+        const val = parseInt(trialMinutesInput.value);
+        if (isNaN(val) || val <= 0) {
+            alert("Maglagay ng valid na numero para sa minutes.");
+            return;
+        }
+        localStorage.setItem('boundary_trial_minutes', val);
+        alert(`Matagumpay na nai-save ang Trial Duration sa ${val} minutes! Magagamit ito agad ng Main App.`);
+    });
+
+    const nowObj = new Date();
+    const formattedDateTimeToday = nowObj.toLocaleString();
+    document.getElementById('startDateDisplay').value = formattedDateTimeToday;
+    document.getElementById('currentCalendarDate').innerText = `Petsa: ${nowObj.toISOString().split('T')[0]}`;
+
+    let clientsList = JSON.parse(localStorage.getItem('bmpro_admin_clients')) || [];
+
+    function checkExpiredClients() {
+        const currentTime = new Date().getTime();
+        const initialLength = clientsList.length;
+        clientsList = clientsList.filter(client => {
+            const expTime = new Date(client.expirationTimestamp).getTime();
+            return expTime >= currentTime;
+        });
+        if (clientsList.length !== initialLength) {
+            localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
+        }
+    }
+    checkExpiredClients();
+
+    const clientNameInput = document.getElementById('clientNameInput');
+    const tierSelect = document.getElementById('tierSelect');
+    const validityValue = document.getElementById('validityValue');
+    const validityUnit = document.getElementById('validityUnit');
+    const btnGenerateKey = document.getElementById('btnGenerateKey');
+    const generatedKeyOutput = document.getElementById('generatedKeyOutput');
+    const btnSaveClient = document.getElementById('btnSaveClient');
+    const btnClearDb = document.getElementById('btnClearDb');
+    
+    const boxDuration = document.getElementById('boxDuration');
+    const boxPurchased = document.getElementById('boxPurchased');
+    const boxExpiration = document.getElementById('boxExpiration');
+    
+    const searchClientInput = document.getElementById('searchClientInput');
+    const clientTableBody = document.getElementById('clientTableBody');
+    const toggleListBtn = document.getElementById('toggleListBtn');
+    const tableContainer = document.getElementById('tableContainer');
+
+    let currentGeneratedKeyData = null;
+
+    btnGenerateKey.addEventListener('click', function() {
+        const name = clientNameInput.value.trim();
+        if (!name) {
+            alert("Ilagay muna ang pangalan ng client bago mag-generate ng key.");
+            clientNameInput.focus();
+            return;
+        }
+
+        const valNum = parseInt(validityValue.value) || 1;
+        const valUnit = validityUnit.value;
+        const purchasedDateObj = new Date();
+        
+        let expirationDateObj = new Date(purchasedDateObj);
+        if (valUnit === 'hours') {
+            expirationDateObj.setHours(expirationDateObj.getHours() + valNum);
+        } else if (valUnit === 'days') {
+            expirationDateObj.setDate(expirationDateObj.getDate() + valNum);
+        } else if (valUnit === 'months') {
+            expirationDateObj.setMonth(expirationDateObj.getMonth() + valNum);
+        } else if (valUnit === 'years') {
+            expirationDateObj.setFullYear(expirationDateObj.getFullYear() + valNum);
+        }
+
+        const purchasedStr = purchasedDateObj.toLocaleString();
+        const expirationStr = expirationDateObj.toLocaleString();
+        const durationStr = `${valNum} ${valUnit}`;
+
+        const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+        const generatedKey = `BMKEY-${randomPart}-${valNum}${valUnit.charAt(0).toUpperCase()}`;
+
+        generatedKeyOutput.value = generatedKey;
+
+        boxDuration.innerText = durationStr;
+        boxPurchased.innerText = purchasedStr;
+        boxExpiration.innerText = expirationStr;
+
+        currentGeneratedKeyData = {
+            name: name,
+            tier: tierSelect.value,
+            key: generatedKey,
+            duration: durationStr,
+            purchasedDate: purchasedStr,
+            expirationDate: expirationStr,
+            expirationTimestamp: expirationDateObj.getTime()
+        };
+    });
+
+    btnSaveClient.addEventListener('click', function() {
+        const name = clientNameInput.value.trim();
+        const key = generatedKeyOutput.value.trim();
+
+        if (!name) {
+            alert("Ilagay ang pangalan ng client.");
+            clientNameInput.focus();
+            return;
+        }
+        if (!key) {
+            alert("Mag-generate muna ng activation key bago i-save.");
+            return;
+        }
+
+        let clientRecordToSave = currentGeneratedKeyData;
+        if (!clientRecordToSave || clientRecordToSave.name.toLowerCase() !== name.toLowerCase() || clientRecordToSave.key !== key) {
+            const valNum = parseInt(validityValue.value) || 1;
+            const valUnit = validityUnit.value;
+            const purchasedDateObj = new Date();
+            let expirationDateObj = new Date(purchasedDateObj);
+            
+            if (valUnit === 'hours') expirationDateObj.setHours(expirationDateObj.getHours() + valNum);
+            else if (valUnit === 'days') expirationDateObj.setDate(expirationDateObj.getDate() + valNum);
+            else if (valUnit === 'months') expirationDateObj.setMonth(expirationDateObj.getMonth() + valNum);
+            else if (valUnit === 'years') expirationDateObj.setFullYear(expirationDateObj.getFullYear() + valNum);
+
+            clientRecordToSave = {
+                name: name,
+                tier: tierSelect.value,
+                key: key,
+                duration: `${valNum} ${valUnit}`,
+                purchasedDate: purchasedDateObj.toLocaleString(),
+                expirationDate: expirationDateObj.toLocaleString(),
+                expirationTimestamp: expirationDateObj.getTime()
+            };
+        }
+
+        const existingIndex = clientsList.findIndex(c => c.name.toLowerCase() === clientRecordToSave.name.toLowerCase());
+        if (existingIndex >= 0) {
+            if (!confirm(`May umiiral nang record para kay "${clientRecordToSave.name}". Gusto mo ba itong i-update/i-replace?`)) {
+                return;
+            }
+            clientsList[existingIndex] = clientRecordToSave;
+        } else {
+            clientsList.push(clientRecordToSave);
+        }
+
+        localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
+        
+        // I-sync din direct sa active key ng Main App para mag-apply kaagad dalawang direksyon
+        localStorage.setItem('boundary_active_key', clientRecordToSave.key);
+        localStorage.setItem('boundary_activation_time', Date.now());
+        localStorage.setItem('boundary_active_tier', clientRecordToSave.tier);
+        localStorage.setItem('boundary_license_device', localStorage.getItem('boundary_device_id') || 'dev_master');
+
+        alert("Matagumpay na na-save at naka-sync na ang client key sa system!");
+        renderTable();
+        searchClientInput.value = '';
+    });
+
+    btnClearDb.addEventListener('click', function() {
+        if (clientsList.length === 0) {
+            alert("Wala nang laman ang listahan.");
+            return;
+        }
+        if (confirm("Sigurado ka bang gusto mong burahin ang LAHAT ng naka-save na client records?")) {
+            localStorage.removeItem('bmpro_admin_clients');
+            clientsList = [];
+            renderTable();
+            alert("Nalinis na ang lahat ng saved data.");
+        }
+    });
+
+    searchClientInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase().trim();
+        renderTable(query);
+    });
+
+    function loadClientToForm(client) {
+        clientNameInput.value = client.name;
+        tierSelect.value = client.tier;
+        generatedKeyOutput.value = client.key;
+        
+        boxDuration.innerText = client.duration;
+        boxPurchased.innerText = client.purchasedDate;
+        boxExpiration.innerText = client.expirationDate;
+
+        currentGeneratedKeyData = client;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    let isListVisible = true;
+    toggleListBtn.addEventListener('click', function() {
+        isListVisible = !isListVisible;
+        if (isListVisible) {
+            tableContainer.style.display = 'block';
+            toggleListBtn.innerText = 'Hide List';
+        } else {
+            tableContainer.style.display = 'none';
+            toggleListBtn.innerText = 'Show List';
+        }
+    });
+
+    function renderTable(filterQuery = '') {
+        checkExpiredClients();
+        clientTableBody.innerHTML = '';
+        
+        const filteredList = clientsList.filter(c => c.name.toLowerCase().includes(filterQuery));
+
+        if (filteredList.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td colspan="6" style="opacity: 0.6; padding: 10px;">Walang nakitang client records.</td>`;
+            clientTableBody.appendChild(tr);
+            return;
+        }
+
+        filteredList.forEach((client) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><strong>${client.name}</strong></td>
+                <td>${client.tier}</td>
+                <td><code style="background:var(--primary-light); padding:2px 4px; border-radius:4px; font-weight:bold;">${client.key}</code></td>
+                <td>${client.duration}</td>
+                <td>${client.purchasedDate}</td>
+                <td style="color:var(--danger); font-weight:bold;">${client.expirationDate}</td>
+            `;
+            tr.addEventListener('click', () => loadClientToForm(client));
+            clientTableBody.appendChild(tr);
+        });
+    }
+
+    renderTable();
+</script>
+
+</body>
+</html>
