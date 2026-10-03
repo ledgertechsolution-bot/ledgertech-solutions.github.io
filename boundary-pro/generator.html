@@ -186,11 +186,6 @@
             white-space: nowrap;
         }
 
-        .btn-clear-db {
-            background-color: var(--danger);
-            color: white;
-        }
-
         .btn-toggle-list {
             background-color: #374151;
             color: white;
@@ -409,7 +404,9 @@
         <div class="list-header-row">
             <span class="list-title">Client Records List</span>
             <div class="list-actions">
-                <button class="action-btn btn-clear-db" id="btnClearDb">Clear All Records</button>
+                <button class="action-btn" id="exportAdminJsonBtn" style="background-color: #374151; color: white;" title="I-download ang lahat ng client records bilang backup">💾 Backup</button>
+                <button class="action-btn" id="importAdminJsonBtn" style="background-color: #374151; color: white;" title="I-restore ang client records mula sa backup file">📂 Restore</button>
+                <input type="file" id="importAdminFile" accept=".json" style="display: none;">
                 <button class="action-btn btn-toggle-list" id="toggleListBtn">Hide List</button>
             </div>
         </div>
@@ -447,28 +444,25 @@
     document.body.setAttribute('data-theme', savedTheme);
 
    // --- TRIAL MINUTES SETUP ---
-const trialMinutesInput = document.getElementById('trialMinutesInput');
+    const trialMinutesInput = document.getElementById('trialMinutesInput');
 
-// Kunin ang huling sinave sa localStorage, kung wala pa, saka lang maging 120
-let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
-if (currentSavedTrial !== null) {
-    trialMinutesInput.value = currentSavedTrial;
-} else {
-    trialMinutesInput.value = '120';
-    localStorage.setItem('boundary_trial_minutes', '120');
-}
-
-// Kapag clinick ang button para i-save
-document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
-    const val = parseInt(trialMinutesInput.value);
-    if (isNaN(val) || val <= 0) {
-        showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
-        return;
+    let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
+    if (currentSavedTrial !== null) {
+        trialMinutesInput.value = currentSavedTrial;
+    } else {
+        trialMinutesInput.value = '120';
+        localStorage.setItem('boundary_trial_minutes', '120');
     }
-    // I-save nang permanente sa localStorage
-    localStorage.setItem('boundary_trial_minutes', val);
-    showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes!`);
-});
+
+    document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
+        const val = parseInt(trialMinutesInput.value);
+        if (isNaN(val) || val <= 0) {
+            showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
+            return;
+        }
+        localStorage.setItem('boundary_trial_minutes', val);
+        showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes!`);
+    });
 
     const nowObj = new Date();
     const formattedDateTimeToday = nowObj.toLocaleString();
@@ -497,7 +491,6 @@ document.getElementById('btnSaveTrialMinutes').addEventListener('click', functio
     const btnGenerateKey = document.getElementById('btnGenerateKey');
     const generatedKeyOutput = document.getElementById('generatedKeyOutput');
     const btnSaveClient = document.getElementById('btnSaveClient');
-    const btnClearDb = document.getElementById('btnClearDb');
     
     const boxDuration = document.getElementById('boxDuration');
     const boxPurchased = document.getElementById('boxPurchased');
@@ -537,7 +530,6 @@ document.getElementById('btnSaveTrialMinutes').addEventListener('click', functio
         const expirationStr = expirationDateObj.toLocaleString();
         const durationStr = `${valNum} ${valUnit}`;
 
-        // Naayos na ang pagbasa ng Tier code para tumugma sa payment.html
         let tierCode = 'T1';
         const selectedTierVal = tierSelect.value;
         if (selectedTierVal.includes('Established')) {
@@ -622,17 +614,6 @@ document.getElementById('btnSaveTrialMinutes').addEventListener('click', functio
         searchClientInput.value = '';
     });
 
-    btnClearDb.addEventListener('click', function() {
-        if (clientsList.length === 0) {
-            showCustomAlert("Babala", "Wala nang laman ang listahan.");
-            return;
-        }
-        showCustomAlert("Clear Database", "Nalinis na ang lahat ng saved data.");
-        localStorage.removeItem('bmpro_admin_clients');
-        clientsList = [];
-        renderTable();
-    });
-
     searchClientInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         renderTable(query);
@@ -713,6 +694,55 @@ document.getElementById('btnSaveTrialMinutes').addEventListener('click', functio
             shopeeModalCallback = null; 
         }
     }
+
+    // --- ADMIN BACKUP / EXPORT CLIENT RECORDS ---
+    document.getElementById('exportAdminJsonBtn').addEventListener('click', function() {
+        const backupData = {};
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('bmpro_admin_') || key.startsWith('boundary_')) {
+                backupData[key] = localStorage.getItem(key);
+            }
+        }
+        
+        const dataStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", url);
+        downloadAnchor.setAttribute("download", `BMPro_Admin_Backup_${new Date().toISOString().slice(0,10)}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
+        URL.revokeObjectURL(url);
+    });
+
+    // --- ADMIN RESTORE / IMPORT CLIENT RECORDS ---
+    document.getElementById('importAdminJsonBtn').addEventListener('click', function() {
+        document.getElementById('importAdminFile').click();
+    });
+
+    document.getElementById('importAdminFile').addEventListener('change', function(event) {
+        const fileReader = new FileReader();
+        if (event.target.files[0]) {
+            fileReader.readAsText(event.target.files[0], "UTF-8");
+            fileReader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    showCustomAlert("Restore", "Gusto mo bang i-restore ang mga client records na ito? Mapapalitan ang kasalukuyang data.");
+                    for (const key in importedData) {
+                        if (key.startsWith('bmpro_admin_') || key.startsWith('boundary_')) {
+                            localStorage.setItem(key, importedData[key]);
+                        }
+                    }
+                    setTimeout(() => location.reload(), 1500);
+                } catch (error) {
+                    showCustomAlert("Error", "May problema sa file na iyong in-upload.");
+                }
+            };
+        }
+    });
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
