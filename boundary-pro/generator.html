@@ -429,11 +429,20 @@
     </div>
 
     <footer>
-        All Rights Reserved © 2026 Boundary Monitoring Pro (BMPro)
+        All Rights Reserved &copy; 2026 Boundary Monitoring Pro (BMPro)
     </footer>
 </div>
 
 <script>
+    function getMasterHardwareId() {
+        let fp = localStorage.getItem('bmpro_master_hardware_id');
+        if (!fp) {
+            fp = 'HW-' + navigator.hardwareConcurrency + '-' + screen.width + 'x' + screen.height + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+            localStorage.setItem('bmpro_master_hardware_id', fp);
+        }
+        return fp;
+    }
+
     function toggleTheme() {
         const currentTheme = document.body.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
@@ -443,7 +452,6 @@
     const savedTheme = localStorage.getItem('bmpro_admin_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
-   // --- TRIAL MINUTES SETUP ---
     const trialMinutesInput = document.getElementById('trialMinutesInput');
 
     let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
@@ -604,10 +612,12 @@
 
         localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
         
+        let masterHardware = getMasterHardwareId();
         localStorage.setItem('boundary_active_key', clientRecordToSave.key);
         localStorage.setItem('boundary_activation_time', Date.now());
         localStorage.setItem('boundary_active_tier', clientRecordToSave.tier);
-        localStorage.setItem('boundary_license_device', localStorage.getItem('boundary_device_id') || 'dev_master');
+        localStorage.setItem('boundary_license_device', masterHardware);
+        localStorage.setItem('boundary_key_hardware_' + clientRecordToSave.key, masterHardware);
 
         showCustomAlert("Tagumpay", "Matagumpay na na-save at naka-sync na ang client key sa system!");
         renderTable();
@@ -695,12 +705,11 @@
         }
     }
 
-    // --- ADMIN BACKUP / EXPORT CLIENT RECORDS ---
     document.getElementById('exportAdminJsonBtn').addEventListener('click', function() {
         const backupData = {};
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key.startsWith('bmpro_admin_') || key.startsWith('boundary_')) {
+            if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
                 backupData[key] = localStorage.getItem(key);
             }
         }
@@ -718,7 +727,6 @@
         URL.revokeObjectURL(url);
     });
 
-    // --- ADMIN RESTORE / IMPORT CLIENT RECORDS ---
     document.getElementById('importAdminJsonBtn').addEventListener('click', function() {
         document.getElementById('importAdminFile').click();
     });
@@ -730,12 +738,12 @@
             fileReader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    showCustomAlert("Restore", "Gusto mo bang i-restore ang mga client records na ito? Mapapalitan ang kasalukuyang data.");
                     for (const key in importedData) {
-                        if (key.startsWith('bmpro_admin_') || key.startsWith('boundary_')) {
+                        if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
                             localStorage.setItem(key, importedData[key]);
                         }
                     }
+                    showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
                     setTimeout(() => location.reload(), 1500);
                 } catch (error) {
                     showCustomAlert("Error", "May problema sa file na iyong in-upload.");
