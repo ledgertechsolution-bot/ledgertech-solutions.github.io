@@ -365,6 +365,15 @@
     <script>
         let selectedTierCode = '';
 
+        function getDeviceFingerprint() {
+            let fp = localStorage.getItem('bmpro_master_hardware_id');
+            if (!fp) {
+                fp = 'HW-' + navigator.hardwareConcurrency + '-' + screen.width + 'x' + screen.height + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+                localStorage.setItem('bmpro_master_hardware_id', fp);
+            }
+            return fp;
+        }
+
         function openPaymentModal(tierName, price, tierCode) {
             selectedTierCode = tierCode; 
             document.getElementById('modalTierTitle').innerText = `Magbayad para sa ${tierName}`;
@@ -402,19 +411,15 @@
                 return;
             }
 
-            let deviceId = localStorage.getItem('boundary_device_id');
-            if (!deviceId) {
-                deviceId = 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-                localStorage.setItem('boundary_device_id', deviceId);
-            }
+            let hardwareId = getDeviceFingerprint();
 
-            let assignedDevice = localStorage.getItem('boundary_key_device_' + key);
-            if (assignedDevice && assignedDevice !== deviceId) {
-                alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang gadget!");
+            let assignedHardware = localStorage.getItem('boundary_key_hardware_' + key);
+            if (assignedHardware && assignedHardware !== hardwareId) {
+                alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang computer/gadget!");
                 return;
             }
 
-            localStorage.setItem('boundary_key_device_' + key, deviceId);
+            localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
 
             let assignedTierName = '';
             if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
@@ -423,7 +428,7 @@
             
             localStorage.setItem('boundary_active_key', key);
             localStorage.setItem('boundary_activation_time', Date.now());
-            localStorage.setItem('boundary_license_device', deviceId);
+            localStorage.setItem('boundary_license_device', hardwareId);
             localStorage.setItem('boundary_active_tier', assignedTierName);
 
             closePaymentModal();
