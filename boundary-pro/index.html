@@ -413,11 +413,12 @@
             display: none;
         }
 
+        /* Square at malaking modal box para sa 1 Browser Policy */
         .shopee-modal-overlay {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             -webkit-backdrop-filter: blur(4px);
             justify-content: center;
@@ -426,26 +427,46 @@
             padding: 16px;
         }
         .shopee-modal-box {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.98);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.5);
             width: 100%;
-            max-width: 300px;
-            padding: 20px 16px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            max-width: 440px;
+            padding: 30px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             text-align: center;
             position: relative;
         }
         [data-theme="dark"] .shopee-modal-box {
-            background: rgba(30, 30, 30, 0.9);
+            background: rgba(30, 30, 30, 0.98);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #e0e0e0;
         }
-        .shopee-modal-title { font-size: 0.9rem; font-weight: bold; color: var(--primary); margin-bottom: 6px; }
-        .shopee-modal-text { font-size: 0.75rem; opacity: 0.85; margin-bottom: 14px; line-height: 1.4; }
-        .shopee-modal-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; font-size: 0.75rem; cursor: pointer; }
+        .shopee-modal-title { 
+            font-size: 1.25rem; 
+            font-weight: bold; 
+            color: var(--primary); 
+            margin-bottom: 12px; 
+        }
+        .shopee-modal-text { 
+            font-size: 0.9rem; 
+            opacity: 0.95; 
+            margin-bottom: 22px; 
+            line-height: 1.6; 
+        }
+        .shopee-modal-btn { 
+            width: 100%; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-weight: bold; 
+            font-size: 0.85rem; 
+            cursor: pointer; 
+        }
 
         @media print {
             body {
@@ -681,38 +702,124 @@
 </div>
 
 <script>
-// --- TRIAL & LICENSE CHECKER ---
-function checkTrialAndLicenseStatus() {
-    // Kung mayroon nang active key, huwag nang i-block
-    const activeKey = localStorage.getItem('boundary_active_key');
-    if (activeKey) return;
-
-    // Kunin ang trial duration sa minutes (default 120 kung wala, o 1 min kung sinet mo)
-    const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 120;
-    
-    // Kunin o i-set ang simula ng trial kung wala pa
-    let activationTime = localStorage.getItem('boundary_activation_time');
-    if (!activationTime) {
-        activationTime = Date.now();
-        localStorage.setItem('boundary_activation_time', activationTime);
+    // --- DETECT BROWSER NAME ---
+    function getBrowserName() {
+        const ua = navigator.userAgent;
+        if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edg") === -1 && ua.indexOf("OPR") === -1) return "Google Chrome Browser";
+        if (ua.indexOf("Edg") > -1) return "Microsoft Edge Browser";
+        if (ua.indexOf("Firefox") > -1) return "Mozilla Firefox Browser";
+        if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) return "Apple Safari Browser";
+        if (ua.indexOf("Brave") > -1) return "Brave Browser";
+        return "paboritong web browser";
     }
 
-    const elapsedTimeMs = Date.now() - parseInt(activationTime);
-    const trialDurationMs = trialMinutes * 60 * 1000;
+   // --- BROWSER LOCK / 1-BROWSER POLICY FEATURE ---
+    function checkBrowserLock() {
+        const savedBrowserId = localStorage.getItem('boundary_locked_browser_id');
+        const currentBrowserId = sessionStorage.getItem('boundary_session_browser_flag');
 
-    // Kung lumipas na ang trial time, i-redirect sa payment.html o ipakita ang prompt
-    if (elapsedTimeMs > trialDurationMs) {
-        // Pwede mong direktang i-redirect sa payment page:
-        window.location.href = 'payment.html';
+        if (savedBrowserId && !currentBrowserId) {
+            // Lumipat ng ibang browser -> Ipakita ang Modal para sa lumipat ng browser
+            showBrowserSwitchWarningModal();
+            return true; 
+        } else if (!savedBrowserId) {
+            // Unang bukas sa device/browser na ito -> Ipakita ang Modal para sa Unang Gamit
+            showFirstTimeModal();
+            const uniqueBrowserKey = 'browser_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+            localStorage.setItem('boundary_locked_browser_id', uniqueBrowserKey);
+            sessionStorage.setItem('boundary_session_browser_flag', uniqueBrowserKey);
+            return false;
+        } else {
+            sessionStorage.setItem('boundary_session_browser_flag', savedBrowserId);
+        }
+        return false;
     }
-}
 
-// Suriin ang status tuwing mag-a-load ang pahina
-window.addEventListener('DOMContentLoaded', () => {
-    checkTrialAndLicenseStatus();
-    // O kaya ay i-check kada segundo kung gusto mong mag-real-time expiration:
-    setInterval(checkTrialAndLicenseStatus, 5000);
-});
+    // Modal para sa LUMIPAT NG IBANG BROWSER (Close Button Na Lang)
+    function showBrowserSwitchWarningModal() {
+        const modal = document.getElementById('shopeeModal');
+        if (!modal) return;
+        
+        document.getElementById('shopeeModalTitle').innerText = "⚠️ BROWSER SWITCH DETECTED";
+        document.getElementById('shopeeModalText').innerHTML = `
+            1 BROWSER POLICY PO TAYO. Gamitin ang pinaka-uanang Browser na ginamit mo para ituloy ang talaan.
+        `;
+        document.getElementById('shopeeModalInputContainer').style.display = 'none';
+        
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" style="background:#e53e3e; color:white; width:100%;" onclick="closeBrowserTab()">Close</button>
+        `;
+        document.getElementById('shopeeModalButtonContainer').style.display = 'flex';
+        modal.style.display = 'flex';
+    }
+
+    // Function para isara o patigilin ang tab
+    window.closeBrowserTab = function() {
+        try {
+            window.close();
+        } catch(e) {}
+        // Kung sakaling hindi i-allow ng browser ang window.close(), dadalhin sa blangkong pahina para hindi na magtuloy
+        window.location.href = "about:blank";
+    };
+
+ 
+   // Modal para sa UNANG GAMIT / SETUP (May Back at Continue para makapili ng browser)
+    function showFirstTimeModal() {
+        const modal = document.getElementById('shopeeModal');
+        if (!modal) return;
+        
+        document.getElementById('shopeeModalTitle').innerText = "🎉 WELCOME SA BOUNDARY MONITORING PRO";
+        document.getElementById('shopeeModalText').innerHTML = `
+            1 BROWSER POLICY. Piliin at gamitin ang iyong paboritong browser <strong>(Google Chrome Browser - Recommended)</strong> bilang default na tagabukas ng application na ito.
+        `;
+        document.getElementById('shopeeModalInputContainer').style.display = 'none';
+        
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" style="background:#e53e3e; color:white; flex:1;" onclick="closeBrowserTab()">Back</button>
+            <button type="button" class="shopee-modal-btn" style="background:#2e7d32; color:white; flex:1;" onclick="allowDifferentBrowser()">Continue</button>
+        `;
+        document.getElementById('shopeeModalButtonContainer').style.display = 'flex';
+        modal.style.display = 'flex';
+    }
+
+    window.allowDifferentBrowser = function() {
+        const newKey = 'browser_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+        localStorage.setItem('boundary_locked_browser_id', newKey);
+        sessionStorage.setItem('boundary_session_browser_flag', newKey);
+        closeShopeeModal();
+    };
+
+    // --- TRIAL & LICENSE CHECKER (SUSUNOD NA LANG KUNG HINDI LUMIPAT NG BROWSER) ---
+    function checkTrialAndLicenseStatus() {
+        const activeKey = localStorage.getItem('boundary_active_key');
+        if (activeKey) return;
+
+        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 1;
+        let activationTime = localStorage.getItem('boundary_activation_time');
+        if (!activationTime) {
+            activationTime = Date.now();
+            localStorage.setItem('boundary_activation_time', activationTime);
+        }
+
+        const elapsedTimeMs = Date.now() - parseInt(activationTime);
+        const trialDurationMs = trialMinutes * 60 * 1000;
+
+        if (elapsedTimeMs > trialDurationMs) {
+            window.location.href = 'payment.html';
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        // Unahin muna ang pag-check kung lumipat ng browser
+        const isBrowserSwitched = checkBrowserLock();
+        
+        // Kung HINDI lumipat ng browser, saka lang i-check ang trial o license status
+        if (!isBrowserSwitched) {
+            checkTrialAndLicenseStatus();
+            setInterval(checkTrialAndLicenseStatus, 5000);
+        }
+    });
+
     let shopeeModalCallback = null;
 
     function showCustomAlert(title, message) {
