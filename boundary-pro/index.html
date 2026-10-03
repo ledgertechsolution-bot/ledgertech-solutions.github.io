@@ -804,7 +804,7 @@
         const activeKey = localStorage.getItem('boundary_active_key');
         if (activeKey) return;
 
-        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) ||1;
+        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 1;
         let activationTime = localStorage.getItem('boundary_activation_time');
         
         if (!activationTime) {
