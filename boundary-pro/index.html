@@ -413,7 +413,6 @@
             display: none;
         }
 
-        /* Square at malaking modal box para sa 1 Browser Policy */
         .shopee-modal-overlay {
             display: none;
             position: fixed;
@@ -533,6 +532,96 @@
         .tier-status-badge:hover {
             opacity: 0.85;
         }
+
+        /* Upgrade Modal Styles */
+        .upgrade-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            padding: 16px;
+        }
+        .upgrade-modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            width: 100%;
+            max-width: 440px;
+            padding: 24px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        .upgrade-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            cursor: pointer;
+            color: var(--text-main);
+            opacity: 0.7;
+        }
+        .upgrade-modal-close:hover { opacity: 1; }
+        .upgrade-modal-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .upgrade-modal-subtitle {
+            font-size: 0.8rem;
+            text-align: center;
+            opacity: 0.8;
+            margin-bottom: 16px;
+        }
+        .tier-option-card {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tier-info h4 {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+        .tier-info p {
+            font-size: 0.7rem;
+            opacity: 0.8;
+        }
+        .tier-action {
+            text-align: right;
+        }
+        .tier-price {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: block;
+        }
+        .tier-select-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .tier-select-btn:hover { opacity: 0.9; }
     </style>
 </head>
 <body data-theme="light">
@@ -566,7 +655,7 @@
             <button type="button" id="importJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-restore ang data mula sa backup file">📂 Restore</button>
             <input type="file" id="importFile" accept=".json" style="display: none;">
             
-            <a href="payment.html" id="tierBadgeBtn" class="tier-status-badge" title="Mag-click para mag-upgrade ng Tier">
+            <a href="javascript:void(0);" id="tierBadgeBtn" class="tier-status-badge" onclick="openUpgradeModal()" title="Mag-click para mag-upgrade ng Tier">
                 👑 <span id="tierBadgeText">Entrepreneur (Max 3 Drivers)</span>
             </a>
         </div>
@@ -702,100 +791,22 @@
 </div>
 
 <script>
-    // --- DETECT BROWSER NAME ---
-    function getBrowserName() {
-        const ua = navigator.userAgent;
-        if (ua.indexOf("Chrome") > -1 && ua.indexOf("Edg") === -1 && ua.indexOf("OPR") === -1) return "Google Chrome Browser";
-        if (ua.indexOf("Edg") > -1) return "Microsoft Edge Browser";
-        if (ua.indexOf("Firefox") > -1) return "Mozilla Firefox Browser";
-        if (ua.indexOf("Safari") > -1 && ua.indexOf("Chrome") === -1) return "Apple Safari Browser";
-        if (ua.indexOf("Brave") > -1) return "Brave Browser";
-        return "paboritong web browser";
-    }
-
-   // --- BROWSER LOCK / 1-BROWSER POLICY FEATURE ---
-    function checkBrowserLock() {
-        const savedBrowserId = localStorage.getItem('boundary_locked_browser_id');
-        const currentBrowserId = sessionStorage.getItem('boundary_session_browser_flag');
-
-        if (savedBrowserId && !currentBrowserId) {
-            // Lumipat ng ibang browser -> Ipakita ang Modal para sa lumipat ng browser
-            showBrowserSwitchWarningModal();
-            return true; 
-        } else if (!savedBrowserId) {
-            // Unang bukas sa device/browser na ito -> Ipakita ang Modal para sa Unang Gamit
-            showFirstTimeModal();
-            const uniqueBrowserKey = 'browser_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-            localStorage.setItem('boundary_locked_browser_id', uniqueBrowserKey);
-            sessionStorage.setItem('boundary_session_browser_flag', uniqueBrowserKey);
-            return false;
-        } else {
-            sessionStorage.setItem('boundary_session_browser_flag', savedBrowserId);
+    function getDeviceFingerprint() {
+        let fp = localStorage.getItem('bmpro_master_hardware_id');
+        if (!fp) {
+            fp = 'HW-' + navigator.hardwareConcurrency + '-' + screen.width + 'x' + screen.height + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+            localStorage.setItem('bmpro_master_hardware_id', fp);
         }
-        return false;
+        return fp;
     }
 
-    // Modal para sa LUMIPAT NG IBANG BROWSER (Close Button Na Lang)
-    function showBrowserSwitchWarningModal() {
-        const modal = document.getElementById('shopeeModal');
-        if (!modal) return;
-        
-        document.getElementById('shopeeModalTitle').innerText = "⚠️ BROWSER SWITCH DETECTED";
-        document.getElementById('shopeeModalText').innerHTML = `
-            1 BROWSER POLICY PO TAYO. Gamitin ang pinaka-uanang Browser na ginamit mo para ituloy ang talaan.
-        `;
-        document.getElementById('shopeeModalInputContainer').style.display = 'none';
-        
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" style="background:#e53e3e; color:white; width:100%;" onclick="closeBrowserTab()">Close</button>
-        `;
-        document.getElementById('shopeeModalButtonContainer').style.display = 'flex';
-        modal.style.display = 'flex';
-    }
-
-    // Function para isara o patigilin ang tab
-    window.closeBrowserTab = function() {
-        try {
-            window.close();
-        } catch(e) {}
-        // Kung sakaling hindi i-allow ng browser ang window.close(), dadalhin sa blangkong pahina para hindi na magtuloy
-        window.location.href = "about:blank";
-    };
-
- 
-   // Modal para sa UNANG GAMIT / SETUP (May Back at Continue para makapili ng browser)
-    function showFirstTimeModal() {
-        const modal = document.getElementById('shopeeModal');
-        if (!modal) return;
-        
-        document.getElementById('shopeeModalTitle').innerText = "🎉 WELCOME SA BOUNDARY MONITORING PRO";
-        document.getElementById('shopeeModalText').innerHTML = `
-            1 BROWSER POLICY. Piliin at gamitin ang iyong paboritong browser <strong>(Google Chrome Browser - Recommended)</strong> bilang default na tagabukas ng application na ito.
-        `;
-        document.getElementById('shopeeModalInputContainer').style.display = 'none';
-        
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" style="background:#e53e3e; color:white; flex:1;" onclick="closeBrowserTab()">Back</button>
-            <button type="button" class="shopee-modal-btn" style="background:#2e7d32; color:white; flex:1;" onclick="allowDifferentBrowser()">Continue</button>
-        `;
-        document.getElementById('shopeeModalButtonContainer').style.display = 'flex';
-        modal.style.display = 'flex';
-    }
-
-    window.allowDifferentBrowser = function() {
-        const newKey = 'browser_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
-        localStorage.setItem('boundary_locked_browser_id', newKey);
-        sessionStorage.setItem('boundary_session_browser_flag', newKey);
-        closeShopeeModal();
-    };
-
-    // --- TRIAL & LICENSE CHECKER (SUSUNOD NA LANG KUNG HINDI LUMIPAT NG BROWSER) ---
     function checkTrialAndLicenseStatus() {
         const activeKey = localStorage.getItem('boundary_active_key');
         if (activeKey) return;
 
-        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 30;
+        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 120;
         let activationTime = localStorage.getItem('boundary_activation_time');
+        
         if (!activationTime) {
             activationTime = Date.now();
             localStorage.setItem('boundary_activation_time', activationTime);
@@ -810,14 +821,9 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        // Unahin muna ang pag-check kung lumipat ng browser
-        const isBrowserSwitched = checkBrowserLock();
-        
-        // Kung HINDI lumipat ng browser, saka lang i-check ang trial o license status
-        if (!isBrowserSwitched) {
-            checkTrialAndLicenseStatus();
-            setInterval(checkTrialAndLicenseStatus, 5000);
-        }
+        getDeviceFingerprint();
+        checkTrialAndLicenseStatus();
+        setInterval(checkTrialAndLicenseStatus, 5000);
     });
 
     let shopeeModalCallback = null;
@@ -948,12 +954,12 @@
             fileReader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    showCustomAlert("Restore", "Gusto mo bang i-restore ang mga datang ito? Mapapalitan ang kasalukuyang data.");
                     for (const key in importedData) {
                         if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
                             localStorage.setItem(key, importedData[key]);
                         }
                     }
+                    showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
                     setTimeout(() => location.reload(), 1500);
                 } catch (error) {
                     showCustomAlert("Error", "May problema sa file na iyong in-upload.");
@@ -1529,8 +1535,25 @@
     }
     
     updateTierBadgeDisplay();
+
+    // Upgrade Modal Functions
+    function openUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = 'flex';
+    }
+
+    function closeUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = 'none';
+    }
+
+    function selectTierAndPay(tierName) {
+        localStorage.setItem('boundary_active_tier', tierName);
+        updateTierBadgeDisplay();
+        closeUpgradeModal();
+        window.location.href = 'payment.html?tier=' + encodeURIComponent(tierName);
+    }
 </script>
 
+<!-- General Alert/Prompt Modal -->
 <div class="shopee-modal-overlay" id="shopeeModal">
     <div class="shopee-modal-box">
         <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
@@ -1542,6 +1565,48 @@
 
         <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
             <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- Dedicated Upgrade Modal (Wala nang label na 'Na-expire') -->
+<div class="upgrade-modal-overlay" id="upgradeModal">
+    <div class="upgrade-modal-box">
+        <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
+        <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
+        <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
+
+        <div class="tier-option-card">
+            <div class="tier-info">
+                <h4>Entrepreneur</h4>
+                <p>Max 3 Drivers • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱1,500</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Entrepreneur')">Select</button>
+            </div>
+        </div>
+
+        <div class="tier-option-card">
+            <div class="tier-info">
+                <h4>Established</h4>
+                <p>Max 5 Drivers • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱2,000</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Established')">Select</button>
+            </div>
+        </div>
+
+        <div class="tier-option-card" style="margin-bottom: 0;">
+            <div class="tier-info">
+                <h4>Prime</h4>
+                <p>6 Drivers Up • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱3,000</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Prime')">Select</button>
+            </div>
         </div>
     </div>
 </div>
