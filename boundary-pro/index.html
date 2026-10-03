@@ -1538,19 +1538,32 @@
 
     // Upgrade Modal Functions
     // Upgrade Modal Functions na may License Validity check
+// Upgrade Modal Functions na may License Validity check
+// Upgrade Modal Functions na may Free Trial at License Validity check
 function openUpgradeModal() {
     const activeKey = localStorage.getItem('boundary_active_key');
     const activationTime = localStorage.getItem('boundary_activation_time');
-    const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
+    const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur (Max 3 Drivers)';
+    const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 4320; // 3 days default trial
     const validityBox = document.getElementById('modalLicenseValidityBox');
     const validityText = document.getElementById('modalLicenseValidityText');
 
-    if (activeKey && activationTime) {
-        let actDate = new Date(parseInt(activationTime));
-        let expDate = new Date(actDate);
-        expDate.setFullYear(expDate.getFullYear() + 1); // 1 Taon validity mula sa activation
+    let expDate = new Date();
 
-        validityText.innerHTML = `Tier: <strong>${activeTier}</strong><br>Valid Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
+    if (activeKey && activationTime) {
+        // Kapag may binili o valid key na (1 Year validity mula activation)
+        let actDate = new Date(parseInt(activationTime));
+        expDate = new Date(actDate);
+        expDate.setFullYear(expDate.getFullYear() + 1); 
+
+        validityText.innerHTML = `Status: <span style="color: var(--primary);">Lisensyado (${activeTier})</span><br>Valid Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
+        validityBox.style.display = 'block';
+    } else if (activationTime) {
+        // Kapag wala pang valid key, ipapakita kung kailan matatapos ang Free Trial
+        let actDate = new Date(parseInt(activationTime));
+        expDate = new Date(actDate.getTime() + (trialMinutes * 60 * 1000));
+
+        validityText.innerHTML = `Status: <span style="color: var(--warning, #f0ad4e);">Free Trial Period</span><br>Trial Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
         validityBox.style.display = 'block';
     } else {
         validityBox.style.display = 'none';
@@ -1581,6 +1594,7 @@ function closeUpgradeModal() {
 </div>
 
 <!-- Dedicated Upgrade Modal (Wala nang label na 'Na-expire') -->
+<!-- Dedicated Upgrade Modal na may License Validity -->
 <!-- Dedicated Upgrade Modal na may License Validity -->
 <div class="upgrade-modal-overlay" id="upgradeModal">
     <div class="upgrade-modal-box">
