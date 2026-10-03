@@ -1537,20 +1537,31 @@
     updateTierBadgeDisplay();
 
     // Upgrade Modal Functions
-    function openUpgradeModal() {
-        document.getElementById('upgradeModal').style.display = 'flex';
+    // Upgrade Modal Functions na may License Validity check
+function openUpgradeModal() {
+    const activeKey = localStorage.getItem('boundary_active_key');
+    const activationTime = localStorage.getItem('boundary_activation_time');
+    const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
+    const validityBox = document.getElementById('modalLicenseValidityBox');
+    const validityText = document.getElementById('modalLicenseValidityText');
+
+    if (activeKey && activationTime) {
+        let actDate = new Date(parseInt(activationTime));
+        let expDate = new Date(actDate);
+        expDate.setFullYear(expDate.getFullYear() + 1); // 1 Taon validity mula sa activation
+
+        validityText.innerHTML = `Tier: <strong>${activeTier}</strong><br>Valid Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
+        validityBox.style.display = 'block';
+    } else {
+        validityBox.style.display = 'none';
     }
 
-    function closeUpgradeModal() {
-        document.getElementById('upgradeModal').style.display = 'none';
-    }
+    document.getElementById('upgradeModal').style.display = 'flex';
+}
 
-    function selectTierAndPay(tierName) {
-        localStorage.setItem('boundary_active_tier', tierName);
-        updateTierBadgeDisplay();
-        closeUpgradeModal();
-        window.location.href = 'payment.html?tier=' + encodeURIComponent(tierName);
-    }
+function closeUpgradeModal() {
+    document.getElementById('upgradeModal').style.display = 'none';
+}
 </script>
 
 <!-- General Alert/Prompt Modal -->
@@ -1570,11 +1581,18 @@
 </div>
 
 <!-- Dedicated Upgrade Modal (Wala nang label na 'Na-expire') -->
+<!-- Dedicated Upgrade Modal na may License Validity -->
 <div class="upgrade-modal-overlay" id="upgradeModal">
     <div class="upgrade-modal-box">
         <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
         <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
         <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
+
+        <!-- License Validity Display Box -->
+        <div id="modalLicenseValidityBox" style="background: var(--primary-light); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; text-align: center; display: none;">
+            <div style="font-size: 0.7rem; color: var(--primary); font-weight: bold; text-transform: uppercase;">Kasalukuyang Lisensya / Validity</div>
+            <div id="modalLicenseValidityText" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main); margin-top: 2px;">--</div>
+        </div>
 
         <div class="tier-option-card">
             <div class="tier-info">
