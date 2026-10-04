@@ -49,65 +49,6 @@
             margin: 0 auto;
         }
 
-        /* Istilo para sa Login Screen */
-        #loginOverlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-            padding: 16px;
-        }
-
-        .login-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 360px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        .login-box h2 {
-            font-size: 1.1rem;
-            color: var(--primary);
-            margin-bottom: 6px;
-        }
-
-        .login-box p {
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-bottom: 14px;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-            background: var(--input-bg);
-            color: var(--text-main);
-            text-align: center;
-        }
-
-        .login-box button {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 8px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
         header {
             display: flex;
             justify-content: space-between;
@@ -134,7 +75,7 @@
             gap: 6px;
         }
 
-        .theme-btn {
+        .theme-btn, .lock-btn {
             background: var(--primary-light);
             border: 1px solid var(--border-color);
             color: var(--primary);
@@ -143,6 +84,17 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
+        }
+
+        .lock-btn {
+            background-color: #ffebee;
+            color: var(--danger);
+            border-color: #ffcdd2;
+        }
+        [data-theme="dark"] .lock-btn {
+            background-color: #331a1a;
+            color: #ef5350;
+            border-color: #552222;
         }
 
         .date-display-box {
@@ -372,22 +324,13 @@
 </head>
 <body data-theme="light">
 
-<!-- Login Screen Overlay -->
-<div id="loginOverlay">
-    <div class="login-box">
-        <h2>Admin Authentication</h2>
-        <p>Ilagay ang iyong Admin Password para buksan ang Key Generator.</p>
-        <input type="password" id="adminPasswordInput" placeholder="Password dito...">
-        <button type="button" onclick="verifyAdminPassword()">Mag-login</button>
-    </div>
-</div>
-
-<div class="container">
+<div class="container" id="mainAppContainer" style="display: none;">
     <header>
         <h1>BMPro Key Generator & Admin</h1>
         <div class="header-right">
             <div class="date-display-box" id="currentCalendarDate">Petsa: --/--/----</div>
             <button class="theme-btn" onclick="toggleTheme()">Dark/Light</button>
+            <button class="lock-btn" id="lockAppBtn" onclick="lockAdminSession()">🔒 Lock Admin</button>
         </div>
     </header>
 
@@ -395,7 +338,7 @@
         <div class="form-row" style="margin-bottom: 0; align-items: center;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label style="font-weight: bold; color: var(--primary);">Trial Duration (Minutes):</label>
-                <input type="number" id="trialMinutesInput" value="7200" min="1" max="10080" placeholder="Hal. 1 minute">
+                <input type="number" id="trialMinutesInput" value="1" min="1" max="10080" placeholder="Hal. 1 minute">
             </div>
             <div class="form-group" style="margin-bottom: 0; display: flex; align-items: flex-end; height: 100%;">
                 <button type="button" id="btnSaveTrialMinutes" style="width: 100%; padding: 7px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">I-save ang Trial Time</button>
@@ -495,25 +438,63 @@
 </div>
 
 <script>
-    // --- ADMIN PASSWORD PROTECTION ---
-    const ADMIN_PASSWORD = "Daneyale11@g"; 
+    // ================= ADMIN PASSWORD CONFIG =================
+    const ADMIN_PASSWORD = "Daneyale11@g"; // Pwede mong palitan ang password na ito manual
+    // =========================================================
 
-    function verifyAdminPassword() {
-        const inputVal = document.getElementById('adminPasswordInput').value;
-        if (inputVal === ADMIN_PASSWORD) {
-            document.getElementById('loginOverlay').style.display = 'none';
+    function checkAdminAuth() {
+        const isAuth = sessionStorage.getItem('bmpro_admin_logged');
+        if (isAuth === 'true') {
+            document.getElementById('mainAppContainer').style.display = 'block';
+            initAdminApp();
         } else {
-            alert("Mali ang password!");
-            document.getElementById('adminPasswordInput').value = '';
+            showLoginModal();
         }
     }
 
-    // Laging hihingi ng password sa bawat bukas ng pahina
+    function showLoginModal() {
+        document.getElementById('shopeeModalTitle').innerText = "Admin Login";
+        document.getElementById('shopeeModalText').innerText = "Ilagay ang iyong password para ma-access ang Key Generator.";
+        
+        const inputContainer = document.getElementById('shopeeModalInputContainer');
+        inputContainer.style.display = 'block';
+        const inputField = document.getElementById('shopeeModalInputVal');
+        inputField.type = "password";
+        inputField.value = "";
+        inputField.placeholder = "Enter Admin Password...";
+        inputField.focus();
+
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" onclick="verifyAdminPassword()">Mag-log in</button>
+        `;
+        document.getElementById('shopeeModal').style.display = 'flex';
+    }
+
+    function verifyAdminPassword() {
+        const passVal = document.getElementById('shopeeModalInputVal').value;
+        if (passVal === ADMIN_PASSWORD) {
+            sessionStorage.setItem('bmpro_admin_logged', 'true');
+            document.getElementById('shopeeModal').style.display = 'none';
+            document.getElementById('mainAppContainer').style.display = 'block';
+            initAdminApp();
+        } else {
+            showCustomAlert("Mali", "Mali ang password na iyong inilagay!");
+            setTimeout(showLoginModal, 1200);
+        }
+    }
+
+    function lockAdminSession() {
+        sessionStorage.removeItem('bmpro_admin_logged');
+        location.reload();
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') verifyAdminPassword();
-        });
+        checkAdminAuth();
     });
+
+    function initAdminApp() {
+        setupAppLogic();
+    }
 
     function getMasterHardwareId() {
         let fp = localStorage.getItem('bmpro_master_hardware_id');
@@ -533,245 +514,319 @@
     const savedTheme = localStorage.getItem('bmpro_admin_theme') || 'light';
     document.body.setAttribute('data-theme', savedTheme);
 
-    const trialMinutesInput = document.getElementById('trialMinutesInput');
+    function setupAppLogic() {
+        const trialMinutesInput = document.getElementById('trialMinutesInput');
 
-    let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
-    if (currentSavedTrial !== null) {
-        trialMinutesInput.value = currentSavedTrial;
-    } else {
-        trialMinutesInput.value = '7200';
-        localStorage.setItem('boundary_trial_minutes', '7200');
-    }
-
-    document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
-        const val = parseInt(trialMinutesInput.value);
-        if (isNaN(val) || val <= 0) {
-            showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
-            return;
+        let currentSavedTrial = localStorage.getItem('boundary_trial_minutes');
+        if (currentSavedTrial !== null) {
+            trialMinutesInput.value = currentSavedTrial;
+        } else {
+            trialMinutesInput.value = '1';
+            localStorage.setItem('boundary_trial_minutes', '1');
         }
-        localStorage.setItem('boundary_trial_minutes', val);
-        localStorage.setItem('boundary_activation_time', Date.now());
-        localStorage.removeItem('boundary_active_key');
+
+        const btnSaveTrialMinutes = document.getElementById('btnSaveTrialMinutes');
+        if(btnSaveTrialMinutes && !btnSaveTrialMinutes.hasAttribute('data-bound')) {
+            btnSaveTrialMinutes.setAttribute('data-bound', 'true');
+            btnSaveTrialMinutes.addEventListener('click', function() {
+                const val = parseInt(trialMinutesInput.value);
+                if (isNaN(val) || val <= 0) {
+                    showCustomAlert("Babala", "Maglagay ng valid na numero para sa minutes.");
+                    return;
+                }
+                localStorage.setItem('boundary_trial_minutes', val);
+                localStorage.setItem('boundary_activation_time', Date.now());
+                localStorage.removeItem('boundary_active_key');
+                
+                showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes at na-reset ang trial timer!`);
+            });
+        }
+
+        const nowObj = new Date();
+        const formattedDateTimeToday = nowObj.toLocaleString();
+        document.getElementById('startDateDisplay').value = formattedDateTimeToday;
+        document.getElementById('currentCalendarDate').innerText = `Petsa: ${nowObj.toISOString().split('T')[0]}`;
+
+        let clientsList = JSON.parse(localStorage.getItem('bmpro_admin_clients')) || [];
+
+        function checkExpiredClients() {
+            const currentTime = new Date().getTime();
+            const initialLength = clientsList.length;
+            clientsList = clientsList.filter(client => {
+                const expTime = new Date(client.expirationTimestamp).getTime();
+                return expTime >= currentTime;
+            });
+            if (clientsList.length !== initialLength) {
+                localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
+            }
+        }
+        checkExpiredClients();
+
+        const clientNameInput = document.getElementById('clientNameInput');
+        const tierSelect = document.getElementById('tierSelect');
+        const validityDays = document.getElementById('validityDays');
+        const btnGenerateKey = document.getElementById('btnGenerateKey');
+        const generatedKeyOutput = document.getElementById('generatedKeyOutput');
+        const btnSaveClient = document.getElementById('btnSaveClient');
         
-        showCustomAlert("Tagumpay", `Matagumpay na nai-save ang Trial Duration sa ${val} minutes at na-reset ang trial timer!`);
-    });
-
-    const nowObj = new Date();
-    const formattedDateTimeToday = nowObj.toLocaleString();
-    document.getElementById('startDateDisplay').value = formattedDateTimeToday;
-    document.getElementById('currentCalendarDate').innerText = `Petsa: ${nowObj.toISOString().split('T')[0]}`;
-
-    let clientsList = JSON.parse(localStorage.getItem('bmpro_admin_clients')) || [];
-
-    function checkExpiredClients() {
-        const currentTime = new Date().getTime();
-        const initialLength = clientsList.length;
-        clientsList = clientsList.filter(client => {
-            const expTime = new Date(client.expirationTimestamp).getTime();
-            return expTime >= currentTime;
-        });
-        if (clientsList.length !== initialLength) {
-            localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
-        }
-    }
-    checkExpiredClients();
-
-    const clientNameInput = document.getElementById('clientNameInput');
-    const tierSelect = document.getElementById('tierSelect');
-    const validityDays = document.getElementById('validityDays');
-    const btnGenerateKey = document.getElementById('btnGenerateKey');
-    const generatedKeyOutput = document.getElementById('generatedKeyOutput');
-    const btnSaveClient = document.getElementById('btnSaveClient');
-    
-    const boxDuration = document.getElementById('boxDuration');
-    const boxPurchased = document.getElementById('boxPurchased');
-    const boxExpiration = document.getElementById('boxExpiration');
-    
-    const searchClientInput = document.getElementById('searchClientInput');
-    const clientTableBody = document.getElementById('clientTableBody');
-    const toggleListBtn = document.getElementById('toggleListBtn');
-    const tableContainer = document.getElementById('tableContainer');
-
-    let currentGeneratedKeyData = null;
-
-    btnGenerateKey.addEventListener('click', function() {
-        const name = clientNameInput.value.trim();
-        if (!name) {
-            showCustomAlert("Babala", "Ilagay muna ang pangalan ng client bago mag-generate ng key.");
-            clientNameInput.focus();
-            return;
-        }
-
-        const daysNum = parseInt(validityDays.value) || 365;
-        const purchasedDateObj = new Date();
+        const boxDuration = document.getElementById('boxDuration');
+        const boxPurchased = document.getElementById('boxPurchased');
+        const boxExpiration = document.getElementById('boxExpiration');
         
-        let expirationDateObj = new Date(purchasedDateObj);
-        expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
+        const searchClientInput = document.getElementById('searchClientInput');
+        const clientTableBody = document.getElementById('clientTableBody');
+        const toggleListBtn = document.getElementById('toggleListBtn');
+        const tableContainer = document.getElementById('tableContainer');
 
-        const purchasedStr = purchasedDateObj.toLocaleString();
-        const expirationStr = expirationDateObj.toLocaleString();
-        const durationStr = `${daysNum} Araw (Days)`;
+        let currentGeneratedKeyData = null;
 
-        let tierCode = 'T1';
-        const selectedTierVal = tierSelect.value;
-        if (selectedTierVal.includes('Established')) {
-            tierCode = 'T2';
-        } else if (selectedTierVal.includes('Prime')) {
-            tierCode = 'T3';
+        if(btnGenerateKey && !btnGenerateKey.hasAttribute('data-bound')) {
+            btnGenerateKey.setAttribute('data-bound', 'true');
+            btnGenerateKey.addEventListener('click', function() {
+                const name = clientNameInput.value.trim();
+                if (!name) {
+                    showCustomAlert("Babala", "Ilagay muna ang pangalan ng client bago mag-generate ng key.");
+                    clientNameInput.focus();
+                    return;
+                }
+
+                const daysNum = parseInt(validityDays.value) || 365;
+                const purchasedDateObj = new Date();
+                
+                let expirationDateObj = new Date(purchasedDateObj);
+                expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
+
+                const purchasedStr = purchasedDateObj.toLocaleString();
+                const expirationStr = expirationDateObj.toLocaleString();
+                const durationStr = `${daysNum} Araw (Days)`;
+
+                let tierCode = 'T1';
+                const selectedTierVal = tierSelect.value;
+                if (selectedTierVal.includes('Established')) {
+                    tierCode = 'T2';
+                } else if (selectedTierVal.includes('Prime')) {
+                    tierCode = 'T3';
+                }
+
+                const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+                const generatedKey = `BMPRO-${randomPart}-${daysNum}D-${tierCode}`;
+
+                generatedKeyOutput.value = generatedKey;
+
+                boxDuration.innerText = durationStr;
+                boxPurchased.innerText = purchasedStr;
+                boxExpiration.innerText = expirationStr;
+
+                currentGeneratedKeyData = {
+                    name: name,
+                    tier: tierSelect.value,
+                    key: generatedKey,
+                    duration: durationStr,
+                    purchasedDate: purchasedStr,
+                    expirationDate: expirationStr,
+                    expirationTimestamp: expirationDateObj.getTime()
+                };
+            });
         }
 
-        const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const generatedKey = `BMPRO-${randomPart}-${daysNum}D-${tierCode}`;
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
 
-        generatedKeyOutput.value = generatedKey;
+        if(btnSaveClient && !btnSaveClient.hasAttribute('data-bound')) {
+            btnSaveClient.setAttribute('data-bound', 'true');
+            btnSaveClient.addEventListener('click', function() {
+                const name = clientNameInput.value.trim();
+                const key = generatedKeyOutput.value.trim();
 
-        boxDuration.innerText = durationStr;
-        boxPurchased.innerText = purchasedStr;
-        boxExpiration.innerText = expirationStr;
+                if (!name) {
+                    showCustomAlert("Babala", "Ilagay ang pangalan ng client.");
+                    clientNameInput.focus();
+                    return;
+                }
+                if (!key) {
+                    showCustomAlert("Babala", "Mag-generate muna ng activation key bago i-save.");
+                    return;
+                }
 
-        currentGeneratedKeyData = {
-            name: name,
-            tier: tierSelect.value,
-            key: generatedKey,
-            duration: durationStr,
-            purchasedDate: purchasedStr,
-            expirationDate: expirationStr,
-            expirationTimestamp: expirationDateObj.getTime()
-        };
-    });
+                let clientRecordToSave = currentGeneratedKeyData;
+                const daysNum = parseInt(validityDays.value) || 365;
+                const purchasedDateObj = new Date();
+                let expirationDateObj = new Date(purchasedDateObj);
+                expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
+                if (!clientRecordToSave || clientRecordToSave.name.toLowerCase() !== name.toLowerCase() || clientRecordToSave.key !== key) {
+                    clientRecordToSave = {
+                        name: name,
+                        tier: tierSelect.value,
+                        key: key,
+                        duration: `${daysNum} Araw (Days)`,
+                        purchasedDate: purchasedDateObj.toLocaleString(),
+                        expirationDate: expirationDateObj.toLocaleString(),
+                        expirationTimestamp: expirationDateObj.getTime()
+                    };
+                }
 
-    btnSaveClient.addEventListener('click', function() {
-        const name = clientNameInput.value.trim();
-        const key = generatedKeyOutput.value.trim();
+                fetch(WEB_APP_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "saveKeyRecord",
+                        key: key,
+                        name: name,
+                        tier: tierSelect.value,
+                        duration: clientRecordToSave.duration
+                    })
+                })
+                .then(() => {
+                    const existingIndex = clientsList.findIndex(c => c.name.toLowerCase() === clientRecordToSave.name.toLowerCase());
+                    if (existingIndex >= 0) {
+                        clientsList[existingIndex] = clientRecordToSave;
+                    } else {
+                        clientsList.push(clientRecordToSave);
+                    }
 
-        if (!name) {
-            showCustomAlert("Babala", "Ilagay ang pangalan ng client.");
-            clientNameInput.focus();
-            return;
+                    localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
+                    
+                    let masterHardware = getMasterHardwareId();
+                    localStorage.setItem('boundary_active_key', clientRecordToSave.key);
+                    localStorage.setItem('boundary_activation_time', Date.now());
+                    localStorage.setItem('boundary_active_tier', clientRecordToSave.tier);
+                    localStorage.setItem('boundary_license_device', masterHardware);
+                    localStorage.setItem('boundary_key_hardware_' + clientRecordToSave.key, masterHardware);
+
+                    showCustomAlert("Tagumpay", "Matagumpay na na-save at naka-sync na ang client key sa Google Sheet!");
+                    renderTable();
+                    searchClientInput.value = '';
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    alert("May error sa pagkonekta sa Google Sheets database.");
+                });
+            });
         }
-        if (!key) {
-            showCustomAlert("Babala", "Mag-generate muna ng activation key bago i-save.");
-            return;
+
+        if(searchClientInput && !searchClientInput.hasAttribute('data-bound')) {
+            searchClientInput.setAttribute('data-bound', 'true');
+            searchClientInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                renderTable(query);
+            });
         }
 
-        let clientRecordToSave = currentGeneratedKeyData;
-        const daysNum = parseInt(validityDays.value) || 365;
-        const purchasedDateObj = new Date();
-        let expirationDateObj = new Date(purchasedDateObj);
-        expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
+        function loadClientToForm(client) {
+            clientNameInput.value = client.name;
+            tierSelect.value = client.tier;
+            generatedKeyOutput.value = client.key;
+            
+            boxDuration.innerText = client.duration;
+            boxPurchased.innerText = client.purchasedDate;
+            boxExpiration.innerText = client.expirationDate;
 
-        if (!clientRecordToSave || clientRecordToSave.name.toLowerCase() !== name.toLowerCase() || clientRecordToSave.key !== key) {
-            clientRecordToSave = {
-                name: name,
-                tier: tierSelect.value,
-                key: key,
-                duration: `${daysNum} Araw (Days)`,
-                purchasedDate: purchasedDateObj.toLocaleString(),
-                expirationDate: expirationDateObj.toLocaleString(),
-                expirationTimestamp: expirationDateObj.getTime()
-            };
+            currentGeneratedKeyData = client;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        fetch(WEB_APP_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                action: "saveKeyRecord",
-                key: key,
-                name: name,
-                tier: tierSelect.value,
-                duration: clientRecordToSave.duration
-            })
-        })
-        .then(() => {
-            const existingIndex = clientsList.findIndex(c => c.name.toLowerCase() === clientRecordToSave.name.toLowerCase());
-            if (existingIndex >= 0) {
-                clientsList[existingIndex] = clientRecordToSave;
-            } else {
-                clientsList.push(clientRecordToSave);
+        let isListVisible = true;
+        if(toggleListBtn && !toggleListBtn.hasAttribute('data-bound')) {
+            toggleListBtn.setAttribute('data-bound', 'true');
+            toggleListBtn.addEventListener('click', function() {
+                isListVisible = !isListVisible;
+                if (isListVisible) {
+                    tableContainer.style.display = 'block';
+                    toggleListBtn.innerText = 'Hide List';
+                } else {
+                    tableContainer.style.display = 'none';
+                    toggleListBtn.innerText = 'Show List';
+                }
+            });
+        }
+
+        function renderTable(filterQuery = '') {
+            checkExpiredClients();
+            clientTableBody.innerHTML = '';
+            
+            const filteredList = clientsList.filter(c => c.name.toLowerCase().includes(filterQuery));
+
+            if (filteredList.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="6" style="opacity: 0.6; padding: 10px;">Walang nakitang client records.</td>`;
+                clientTableBody.appendChild(tr);
+                return;
             }
 
-            localStorage.setItem('bmpro_admin_clients', JSON.stringify(clientsList));
-            
-            let masterHardware = getMasterHardwareId();
-            localStorage.setItem('boundary_active_key', clientRecordToSave.key);
-            localStorage.setItem('boundary_activation_time', Date.now());
-            localStorage.setItem('boundary_active_tier', clientRecordToSave.tier);
-            localStorage.setItem('boundary_license_device', masterHardware);
-            localStorage.setItem('boundary_key_hardware_' + clientRecordToSave.key, masterHardware);
-
-            showCustomAlert("Tagumpay", "Matagumpay na na-save at naka-sync na ang client key sa Google Sheet!");
-            renderTable();
-            searchClientInput.value = '';
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("May error sa pagkonekta sa Google Sheets database.");
-        });
-    });
-
-    searchClientInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        renderTable(query);
-    });
-
-    function loadClientToForm(client) {
-        clientNameInput.value = client.name;
-        tierSelect.value = client.tier;
-        generatedKeyOutput.value = client.key;
-        
-        boxDuration.innerText = client.duration;
-        boxPurchased.innerText = client.purchasedDate;
-        boxExpiration.innerText = client.expirationDate;
-
-        currentGeneratedKeyData = client;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    let isListVisible = true;
-    toggleListBtn.addEventListener('click', function() {
-        isListVisible = !isListVisible;
-        if (isListVisible) {
-            tableContainer.style.display = 'block';
-            toggleListBtn.innerText = 'Hide List';
-        } else {
-            tableContainer.style.display = 'none';
-            toggleListBtn.innerText = 'Show List';
-        }
-    });
-
-    function renderTable(filterQuery = '') {
-        checkExpiredClients();
-        clientTableBody.innerHTML = '';
-        
-        const filteredList = clientsList.filter(c => c.name.toLowerCase().includes(filterQuery));
-
-        if (filteredList.length === 0) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td colspan="6" style="opacity: 0.6; padding: 10px;">Walang nakitang client records.</td>`;
-            clientTableBody.appendChild(tr);
-            return;
+            filteredList.forEach((client) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${client.name}</strong></td>
+                    <td>${client.tier}</td>
+                    <td><code style="background:var(--primary-light); padding:2px 4px; border-radius:4px; font-weight:bold;">${client.key}</code></td>
+                    <td>${client.duration}</td>
+                    <td>${client.purchasedDate}</td>
+                    <td style="color:var(--danger); font-weight:bold;">${client.expirationDate}</td>
+                `;
+                tr.addEventListener('click', () => loadClientToForm(client));
+                clientTableBody.appendChild(tr);
+            });
         }
 
-        filteredList.forEach((client) => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${client.name}</strong></td>
-                <td>${client.tier}</td>
-                <td><code style="background:var(--primary-light); padding:2px 4px; border-radius:4px; font-weight:bold;">${client.key}</code></td>
-                <td>${client.duration}</td>
-                <td>${client.purchasedDate}</td>
-                <td style="color:var(--danger); font-weight:bold;">${client.expirationDate}</td>
-            `;
-            tr.addEventListener('click', () => loadClientToForm(client));
-            clientTableBody.appendChild(tr);
-        });
-    }
+        renderTable();
 
-    renderTable();
+        const exportBtn = document.getElementById('exportAdminJsonBtn');
+        if(exportBtn && !exportBtn.hasAttribute('data-bound')) {
+            exportBtn.setAttribute('data-bound', 'true');
+            exportBtn.addEventListener('click', function() {
+                const backupData = {};
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
+                        backupData[key] = localStorage.getItem(key);
+                    }
+                }
+                
+                const dataStr = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const downloadAnchor = document.createElement('a');
+                downloadAnchor.setAttribute("href", url);
+                downloadAnchor.setAttribute("download", `BMPro_Admin_Backup_${new Date().toISOString().slice(0,10)}.json`);
+                document.body.appendChild(downloadAnchor);
+                downloadAnchor.click();
+                document.body.removeChild(downloadAnchor);
+                URL.revokeObjectURL(url);
+            });
+        }
+
+        const importBtn = document.getElementById('importAdminJsonBtn');
+        const importFile = document.getElementById('importAdminFile');
+        if(importBtn && !importBtn.hasAttribute('data-bound')) {
+            importBtn.setAttribute('data-bound', 'true');
+            importBtn.addEventListener('click', function() {
+                importFile.click();
+            });
+
+            importFile.addEventListener('change', function(event) {
+                const fileReader = new FileReader();
+                if (event.target.files[0]) {
+                    fileReader.readAsText(event.target.files[0], "UTF-8");
+                    fileReader.onload = function(e) {
+                        try {
+                            const importedData = JSON.parse(e.target.result);
+                            for (const key in importedData) {
+                                if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
+                                    localStorage.setItem(key, importedData[key]);
+                                }
+                            }
+                            showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
+                            setTimeout(() => location.reload(), 1500);
+                        } catch (error) {
+                            showCustomAlert("Error", "May problema sa file na iyong in-upload.");
+                        }
+                    };
+                }
+            });
+        }
+    }
 
     let shopeeModalCallback = null;
 
@@ -793,66 +848,19 @@
             shopeeModalCallback = null; 
         }
     }
-
-    document.getElementById('exportAdminJsonBtn').addEventListener('click', function() {
-        const backupData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
-                backupData[key] = localStorage.getItem(key);
-            }
-        }
-        
-        const dataStr = JSON.stringify(backupData, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", url);
-        downloadAnchor.setAttribute("download", `BMPro_Admin_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
-        URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('importAdminJsonBtn').addEventListener('click', function() {
-        document.getElementById('importAdminFile').click();
-    });
-
-    document.getElementById('importAdminFile').addEventListener('change', function(event) {
-        const fileReader = new FileReader();
-        if (event.target.files[0]) {
-            fileReader.readAsText(event.target.files[0], "UTF-8");
-            fileReader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    for (const key in importedData) {
-                        if (key.startsWith('bmpro_') || key.startsWith('boundary_')) {
-                            localStorage.setItem(key, importedData[key]);
-                        }
-                    }
-                    showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
-                    setTimeout(() => location.reload(), 1500);
-                } catch (error) {
-                    showCustomAlert("Error", "May problema sa file na iyong in-upload.");
-                }
-            };
-        }
-    });
 </script>
 
-<div class="shopee-modal-overlay" id="shopeeModal">
+<div class="shopee-modal-overlay" id="shopeeModal" style="display: flex;">
     <div class="shopee-modal-box">
-        <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
-        <div class="shopee-modal-text" id="shopeeModalText">Ito ang nilalaman ng mensahe.</div>
+        <div class="shopee-modal-title" id="shopeeModalTitle">Admin Login</div>
+        <div class="shopee-modal-text" id="shopeeModalText">Ilagay ang iyong password para ma-access ang Key Generator.</div>
         
-        <div id="shopeeModalInputContainer" style="display: none;">
-            <input type="text" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        <div id="shopeeModalInputContainer" style="display: block;">
+            <input type="password" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="Enter Admin Password..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
         </div>
 
         <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
-            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+            <button type="button" class="shopee-modal-btn" onclick="verifyAdminPassword()">Mag-log in</button>
         </div>
     </div>
 </div>
