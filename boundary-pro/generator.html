@@ -326,7 +326,7 @@
         <div class="form-row" style="margin-bottom: 0; align-items: center;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label style="font-weight: bold; color: var(--primary);">Trial Duration (Minutes):</label>
-                <input type="number" id="trialMinutesInput" value="120" min="1" max="10080" placeholder="Hal. 120 minutes">
+                <input type="number" id="trialMinutesInput" value="7200" min="1" max="10080" placeholder="Hal. 120 minutes">
             </div>
             <div class="form-group" style="margin-bottom: 0; display: flex; align-items: flex-end; height: 100%;">
                 <button type="button" id="btnSaveTrialMinutes" style="width: 100%; padding: 7px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">I-save ang Trial Time</button>
@@ -337,16 +337,8 @@
     <div class="card">
         <div class="form-row">
             <div class="form-group">
-                <label>Validity Target (Duration):</label>
-                <div style="display: flex; gap: 4px;">
-                    <input type="number" id="validityValue" value="1" min="1" style="flex: 2;">
-                    <select id="validityUnit" style="flex: 3;">
-                        <option value="hours">Hour(s)</option>
-                        <option value="days">Day(s)</option>
-                        <option value="months" selected>Month(s)</option>
-                        <option value="years">Year(s)</option>
-                    </select>
-                </div>
+                <label>Validity Target (Bilang ng Araw):</label>
+                <input type="number" id="validityDays" value="365" min="1" placeholder="Hal. 30 o 365 araw">
             </div>
             <div class="form-group">
                 <label>Starting Date (Auto Calendar):</label>
@@ -458,8 +450,8 @@
     if (currentSavedTrial !== null) {
         trialMinutesInput.value = currentSavedTrial;
     } else {
-        trialMinutesInput.value = '120';
-        localStorage.setItem('boundary_trial_minutes', '120');
+        trialMinutesInput.value = '7200';
+        localStorage.setItem('boundary_trial_minutes', '7200');
     }
 
     document.getElementById('btnSaveTrialMinutes').addEventListener('click', function() {
@@ -494,8 +486,7 @@
 
     const clientNameInput = document.getElementById('clientNameInput');
     const tierSelect = document.getElementById('tierSelect');
-    const validityValue = document.getElementById('validityValue');
-    const validityUnit = document.getElementById('validityUnit');
+    const validityDays = document.getElementById('validityDays');
     const btnGenerateKey = document.getElementById('btnGenerateKey');
     const generatedKeyOutput = document.getElementById('generatedKeyOutput');
     const btnSaveClient = document.getElementById('btnSaveClient');
@@ -519,24 +510,15 @@
             return;
         }
 
-        const valNum = parseInt(validityValue.value) || 1;
-        const valUnit = validityUnit.value;
+        const daysNum = parseInt(validityDays.value) || 365;
         const purchasedDateObj = new Date();
         
         let expirationDateObj = new Date(purchasedDateObj);
-        if (valUnit === 'hours') {
-            expirationDateObj.setHours(expirationDateObj.getHours() + valNum);
-        } else if (valUnit === 'days') {
-            expirationDateObj.setDate(expirationDateObj.getDate() + valNum);
-        } else if (valUnit === 'months') {
-            expirationDateObj.setMonth(expirationDateObj.getMonth() + valNum);
-        } else if (valUnit === 'years') {
-            expirationDateObj.setFullYear(expirationDateObj.getFullYear() + valNum);
-        }
+        expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
 
         const purchasedStr = purchasedDateObj.toLocaleString();
         const expirationStr = expirationDateObj.toLocaleString();
-        const durationStr = `${valNum} ${valUnit}`;
+        const durationStr = `${daysNum} Araw (Days)`;
 
         let tierCode = 'T1';
         const selectedTierVal = tierSelect.value;
@@ -547,7 +529,7 @@
         }
 
         const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
-        const generatedKey = `BMPRO-${randomPart}-${valNum}${valUnit.charAt(0).toUpperCase()}-${tierCode}`;
+        const generatedKey = `BMPRO-${randomPart}-${daysNum}D-${tierCode}`;
 
         generatedKeyOutput.value = generatedKey;
 
@@ -582,21 +564,16 @@
 
         let clientRecordToSave = currentGeneratedKeyData;
         if (!clientRecordToSave || clientRecordToSave.name.toLowerCase() !== name.toLowerCase() || clientRecordToSave.key !== key) {
-            const valNum = parseInt(validityValue.value) || 1;
-            const valUnit = validityUnit.value;
+            const daysNum = parseInt(validityDays.value) || 365;
             const purchasedDateObj = new Date();
             let expirationDateObj = new Date(purchasedDateObj);
-            
-            if (valUnit === 'hours') expirationDateObj.setHours(expirationDateObj.getHours() + valNum);
-            else if (valUnit === 'days') expirationDateObj.setDate(expirationDateObj.getDate() + valNum);
-            else if (valUnit === 'months') expirationDateObj.setMonth(expirationDateObj.getMonth() + valNum);
-            else if (valUnit === 'years') expirationDateObj.setFullYear(expirationDateObj.getFullYear() + valNum);
+            expirationDateObj.setDate(expirationDateObj.getDate() + daysNum);
 
             clientRecordToSave = {
                 name: name,
                 tier: tierSelect.value,
                 key: key,
-                duration: `${valNum} ${valUnit}`,
+                duration: `${daysNum} Araw (Days)`,
                 purchasedDate: purchasedDateObj.toLocaleString(),
                 expirationDate: expirationDateObj.toLocaleString(),
                 expirationTimestamp: expirationDateObj.getTime()
