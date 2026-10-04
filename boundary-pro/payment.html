@@ -386,6 +386,9 @@
             document.getElementById('paymentModal').style.display = 'none';
         }
 
+        // Web App URL mula sa Google Apps Script deployment
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
+
         function verifyPromptKey() {
             const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
             if(!key) {
@@ -413,27 +416,40 @@
 
             let hardwareId = getDeviceFingerprint();
 
-            let assignedHardware = localStorage.getItem('boundary_key_hardware_' + key);
-            if (assignedHardware && assignedHardware !== hardwareId) {
-                alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang computer/gadget!");
-                return;
-            }
+            // I-send ang request patungo sa Google Sheets backend
+            fetch(WEB_APP_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    action: "verifyKey",
+                    key: key,
+                    hardwareId: hardwareId
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === "error") {
+                    alert(result.message);
+                    return;
+                }
 
-            localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
+                let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+                if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+                else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
+                
+                localStorage.setItem('boundary_active_key', key);
+                localStorage.setItem('boundary_activation_time', Date.now());
+                localStorage.setItem('boundary_license_device', hardwareId);
+                localStorage.setItem('boundary_active_tier', assignedTierName);
 
-            let assignedTierName = '';
-            if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
-            else if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
-            else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
-            
-            localStorage.setItem('boundary_active_key', key);
-            localStorage.setItem('boundary_activation_time', Date.now());
-            localStorage.setItem('boundary_license_device', hardwareId);
-            localStorage.setItem('boundary_active_tier', assignedTierName);
-
-            closePaymentModal();
-            document.getElementById('successModal').style.display = 'flex';
-        }
+                closePaymentModal();
+                document.getElementById('successModal').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Nagka-problema sa pagkonekta sa database. Subukan muli.");
+            });
+        } // <--- Ito ang nawawalang closing bracket para sa verifyPromptKey()
 
         function closeSuccessModal() {
             document.getElementById('successModal').style.display = 'none';
