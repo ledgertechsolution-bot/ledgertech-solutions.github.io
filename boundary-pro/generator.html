@@ -496,25 +496,20 @@
 
 <script>
     // --- ADMIN PASSWORD PROTECTION ---
-    // Pwede mong palitan ang 'dapa123' ng gusto mong password
     const ADMIN_PASSWORD = "Daneyale11@g"; 
 
     function verifyAdminPassword() {
         const inputVal = document.getElementById('adminPasswordInput').value;
         if (inputVal === ADMIN_PASSWORD) {
             document.getElementById('loginOverlay').style.display = 'none';
-            sessionStorage.setItem('bmpro_admin_logged', 'true');
         } else {
             alert("Mali ang password!");
             document.getElementById('adminPasswordInput').value = '';
         }
     }
 
-    // Awtomatikong itago ang login screen kung nakapag-login na ngayong session
+    // Laging hihingi ng password sa bawat bukas ng pahina
     window.addEventListener('DOMContentLoaded', () => {
-        if (sessionStorage.getItem('bmpro_admin_logged') === 'true') {
-            document.getElementById('loginOverlay').style.display = 'none';
-        }
         document.getElementById('adminPasswordInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') verifyAdminPassword();
         });
@@ -809,7 +804,7 @@
         }
         
         const dataStr = JSON.stringify(backupData, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' }, {[cite: 4]: true });
+        const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         
         const downloadAnchor = document.createElement('a');
