@@ -386,7 +386,6 @@
             document.getElementById('paymentModal').style.display = 'none';
         }
 
-        // Web App URL mula sa Google Apps Script deployment
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
 
         function verifyPromptKey() {
@@ -416,7 +415,7 @@
 
             let hardwareId = getDeviceFingerprint();
 
-            // I-send ang request patungo sa Google Sheets backend
+            // Tinanggal ang mode: "no-cors" para mabasa natin ang tugon ng Google Sheet database
             fetch(WEB_APP_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -428,11 +427,13 @@
             })
             .then(response => response.json())
             .then(result => {
+                // Kung sinabi ng database na error (ibig sabihin used na o iba ang hardware)
                 if (result.status === "error") {
-                    alert(result.message);
+                    alert(result.message); // Halimbawa: Key is already bound to another device!
                     return;
                 }
 
+                // Kung tagumpay at valid sa hardware na ito
                 let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
                 if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
                 else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
@@ -441,15 +442,16 @@
                 localStorage.setItem('boundary_activation_time', Date.now());
                 localStorage.setItem('boundary_license_device', hardwareId);
                 localStorage.setItem('boundary_active_tier', assignedTierName);
+                localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
 
                 closePaymentModal();
                 document.getElementById('successModal').style.display = 'flex';
             })
             .catch(error => {
                 console.error("Error:", error);
-                alert("Nagka-problema sa pagkonekta sa database. Subukan muli.");
+                alert("Nagka-problema sa pagkonekta sa database o na-block ng CORS. Siguraduhing naka-deploy as 'Anyone' ang Google Apps Script.");
             });
-        } // <--- Ito ang nawawalang closing bracket para sa verifyPromptKey()
+        }
 
         function closeSuccessModal() {
             document.getElementById('successModal').style.display = 'none';
