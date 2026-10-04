@@ -1026,6 +1026,30 @@
 </div>
 
 <script>
+    // Detector para sa mga in-app browsers (tulad ng Facebook, Messenger, o Instagram)
+    const ua = navigator.userAgent || navigator.vendor || window.opera;
+    const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
+
+    if (isFacebookApp) {
+        document.addEventListener("DOMContentLoaded", function() {
+            const warningBanner = document.createElement('div');
+            warningBanner.style.position = 'fixed';
+            warningBanner.style.top = '0';
+            warningBanner.style.left = '0';
+            warningBanner.style.width = '100%';
+            warningBanner.style.backgroundColor = '#c62828';
+            warningBanner.style.color = 'white';
+            warningBanner.style.padding = '14px 10px';
+            warningBanner.style.textAlign = 'center';
+            warningBanner.style.zIndex = '99999';
+            warningBanner.style.fontSize = '0.85rem';
+            warningBanner.style.fontWeight = 'bold';
+            warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+            warningBanner.innerHTML = '⚠️ Babala: Buksan sa <b>Google Chrome</b> o External Browser. Pindutin ang <b>(⋮)</b> sa taas at piliin ang <i>"Open in Chrome"</i> para sa buong seguridad ng app.';
+            document.body.prepend(warningBanner);
+        });
+    }
+</script>
     let selectedTierCode = 'T1';
 
     function getDeviceFingerprint() {
