@@ -622,6 +622,159 @@
             cursor: pointer;
         }
         .tier-select-btn:hover { opacity: 0.9; }
+
+        /* Payment Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            padding: 15px;
+        }
+        .modal-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 360px;
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .modal-close-x {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            color: var(--text-main);
+            opacity: 0.7;
+        }
+        .modal-close-x:hover { opacity: 1; color: var(--danger); }
+        .payment-box {
+            margin: 10px 0;
+            padding: 12px;
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .payment-box h4 {
+            font-size: 0.8rem;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+        .payment-name {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+        .highlight-number {
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: var(--danger);
+        }
+        .btn-messenger {
+            display: inline-block;
+            background: #0084ff;
+            color: white;
+            padding: 7px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin: 6px 0;
+        }
+        .activation-form {
+            text-align: left;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+            margin-top: 8px;
+        }
+        .activation-form label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .activation-form input[type="text"] {
+            width: 100%;
+            padding: 7px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        button.btn-activate {
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+        .success-content {
+            background: var(--card-bg);
+            width: 100%;
+            max-width: 300px;
+            padding: 20px 16px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        .success-icon {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        .btn-success-ok {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        /* Istilo para sa Tier Status Display sa loob ng Upgrade Modal */
+        .current-tier-display-box {
+            background: var(--primary-light);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+        .current-tier-display-box span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--primary);
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+        .current-tier-display-box strong {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -656,7 +809,7 @@
             <input type="file" id="importFile" accept=".json" style="display: none;">
             
             <a href="javascript:void(0);" id="tierBadgeBtn" class="tier-status-badge" onclick="openUpgradeModal()" title="Mag-click para mag-upgrade ng Tier">
-                👑 <span id="tierBadgeText">Entrepreneur (Max 3 Drivers)</span>
+                👑 <span id="tierBadgeText">Free Trial</span>
             </a>
         </div>
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 6px 0;">
@@ -790,7 +943,91 @@
     </div>
 </div>
 
+<!-- Mag-upgrade ng Tier Modal (May kasamang Tier Status Display sa itaas) -->
+<div class="upgrade-modal-overlay" id="upgradeModal">
+    <div class="upgrade-modal-box">
+        <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
+        <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
+        <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
+
+        <!-- Tier Status Display sa Taas ng Modal -->
+        <div class="current-tier-display-box">
+            <span>Kasalukuyang Katayuan (Tier Status):</span>
+            <strong id="modalTierStatusDisplay">Free Trial</strong>
+        </div>
+
+        <div class="tier-option-card">
+            <div class="tier-info">
+                <h4>Entrepreneur</h4>
+                <p>Max 3 Drivers • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱1,500</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Entrepreneur', '1,500', 'T1')">Select</button>
+            </div>
+        </div>
+
+        <div class="tier-option-card">
+            <div class="tier-info">
+                <h4>Established</h4>
+                <p>Max 5 Drivers • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱2,000</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Established', '2,000', 'T2')">Select</button>
+            </div>
+        </div>
+
+        <div class="tier-option-card" style="margin-bottom: 0;">
+            <div class="tier-info">
+                <h4>Prime</h4>
+                <p>6 Drivers Up • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱3,000</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Prime', '3,000', 'T3')">Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- GCash Payment & Key Activation Modal -->
+<div class="modal-overlay" id="paymentModal">
+    <div class="modal-content">
+        <button class="modal-close-x" onclick="closePaymentModal()">&times;</button>
+        <h3 id="modalTierTitle" style="color: var(--primary); margin-bottom: 2px; font-size: 0.95rem;">Magbayad sa GCash</h3>
+        <p style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 6px;">Halaga na dapat bayaran: <strong id="modalTierPrice" style="color: var(--danger);">₱1,500</strong></p>
+        
+        <div class="payment-box">
+            <h4>GCASH ACCOUNT DETAILS</h4>
+            <div class="payment-name">Daniel Pabilona</div>
+            <div class="highlight-number">0977-755-7170</div>
+        </div>
+
+        <p style="font-size: 0.68rem; opacity: 0.9; margin-bottom: 4px;">Pagkatapos magbayad, i-send ang screenshot ng resibo sa Messenger para makuha ang key:</p>
+        <a href="https://m.me/61594282516194" target="_blank" class="btn-messenger">I-send ang Resibo sa Messenger</a>
+
+        <div class="activation-form">
+            <label>Ilagay ang Activation Key:</label>
+            <input type="text" id="promptKeyInput" placeholder="ILAGAY ANG KEY DITO">
+            <button type="button" class="btn-activate" onclick="verifyPromptKey()">I-activate ang App</button>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal-overlay" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">✔</div>
+        <h3>Tagumpay ang Activation!</h3>
+        <p>Maraming salamat! Ang iyong app ay lisensyado na at magagamit na nang buo</p>
+        <button type="button" class="btn-success-ok" onclick="closeSuccessModal()">OK / Gamitin ang App</button>
+    </div>
+</div>
+
 <script>
+    let selectedTierCode = 'T1';
+
     function getDeviceFingerprint() {
         let fp = localStorage.getItem('bmpro_master_hardware_id');
         if (!fp) {
@@ -800,11 +1037,87 @@
         return fp;
     }
 
+    function openUpgradeModal() {
+        updateTierBadgeDisplay(); // I-update ang status bago buksan ang modal
+        document.getElementById('upgradeModal').style.display = 'flex';
+    }
+
+    function closeUpgradeModal() {
+        document.getElementById('upgradeModal').style.display = 'none';
+    }
+
+    function selectTierAndPay(tierName, price, tierCode) {
+        selectedTierCode = tierCode;
+        closeUpgradeModal();
+        document.getElementById('modalTierTitle').innerText = `Magbayad para sa ${tierName}`;
+        document.getElementById('modalTierPrice').innerText = `₱${price}`;
+        document.getElementById('promptKeyInput').value = '';
+        document.getElementById('paymentModal').style.display = 'flex';
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').style.display = 'none';
+    }
+
+    function verifyPromptKey() {
+        const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
+        if(!key) {
+            alert("Mangyaring ilagay ang activation key");
+            return;
+        }
+        
+        if (!key.startsWith('BMPRO-')) {
+            alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
+            return;
+        }
+
+        if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
+            alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
+            return;
+        }
+        if (selectedTierCode === 'T2' && !key.endsWith('-T2')) {
+            alert("Mali ang key na ito! Ito ay hindi para sa Established package.");
+            return;
+        }
+        if (selectedTierCode === 'T3' && !key.endsWith('-T3')) {
+            alert("Mali ang key na ito! Ito ay hindi para sa Prime package.");
+            return;
+        }
+
+        let hardwareId = getDeviceFingerprint();
+
+        let assignedHardware = localStorage.getItem('boundary_key_hardware_' + key);
+        if (assignedHardware && assignedHardware !== hardwareId) {
+            alert("Ang Activation Key na ito ay nagamit na o nakatali na sa ibang computer/gadget!");
+            return;
+        }
+
+        localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
+
+        let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+        if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+        else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
+        
+        localStorage.setItem('boundary_active_key', key);
+        localStorage.setItem('boundary_activation_time', Date.now());
+        localStorage.setItem('boundary_license_device', hardwareId);
+        localStorage.setItem('boundary_active_tier', assignedTierName);
+
+        closePaymentModal();
+        document.getElementById('successModal').style.display = 'flex';
+    }
+
+    function closeSuccessModal() {
+        document.getElementById('successModal').style.display = 'none';
+        updateTierBadgeDisplay();
+        location.reload();
+    }
+
     function checkTrialAndLicenseStatus() {
         const activeKey = localStorage.getItem('boundary_active_key');
         if (activeKey) return;
 
-        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 1;
+        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 120;
         let activationTime = localStorage.getItem('boundary_activation_time');
         
         if (!activationTime) {
@@ -1336,7 +1649,7 @@
             return;
         }
 
-        showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwan ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
+        showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
         localStorage.removeItem(getDriverRecordsKey());
         localStorage.removeItem(getDriverMonthConfigKey());
         previousBalanceInput.value = 0;
@@ -1520,61 +1833,37 @@
     }
 
     function updateTierBadgeDisplay() {
-        const activeTier = (localStorage.getItem('boundary_active_tier') || 'Entrepreneur').toLowerCase();
+        const activeKey = localStorage.getItem('boundary_active_key');
+        const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
         const badgeText = document.getElementById('tierBadgeText');
+        const modalTierStatusDisplay = document.getElementById('modalTierStatusDisplay');
         
-        if (badgeText) {
-            if (activeTier.includes('established')) {
-                badgeText.textContent = 'Established (Max 5 Drivers)';
-            } else if (activeTier.includes('prime')) {
-                badgeText.textContent = 'Prime (6+ Drivers Up)';
+        let displayLabel = 'Free Trial';
+        
+        if (activeKey) {
+            if (activeTier.toLowerCase().includes('established')) {
+                displayLabel = 'Established (Max 5 Drivers) - Licensed';
+            } else if (activeTier.toLowerCase().includes('prime')) {
+                displayLabel = 'Prime (6+ Drivers Up) - Licensed';
             } else {
-                badgeText.textContent = 'Entrepreneur (Max 3 Drivers)';
+                displayLabel = 'Entrepreneur (Max 3 Drivers) - Licensed';
             }
+        } else {
+            displayLabel = 'Free Trial';
+        }
+
+        // I-update ang badge sa main screen
+        if (badgeText) {
+            badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
+        }
+
+        // I-update ang tier status display sa itaas ng Mag-upgrade ng Tier modal
+        if (modalTierStatusDisplay) {
+            modalTierStatusDisplay.textContent = displayLabel;
         }
     }
     
     updateTierBadgeDisplay();
-
-    // Upgrade Modal Functions
-    // Upgrade Modal Functions na may License Validity check
-// Upgrade Modal Functions na may License Validity check
-// Upgrade Modal Functions na may Free Trial at License Validity check
-function openUpgradeModal() {
-    const activeKey = localStorage.getItem('boundary_active_key');
-    const activationTime = localStorage.getItem('boundary_activation_time');
-    const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur (Max 3 Drivers)';
-    const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 4320; // 3 days default trial
-    const validityBox = document.getElementById('modalLicenseValidityBox');
-    const validityText = document.getElementById('modalLicenseValidityText');
-
-    let expDate = new Date();
-
-    if (activeKey && activationTime) {
-        // Kapag may binili o valid key na (1 Year validity mula activation)
-        let actDate = new Date(parseInt(activationTime));
-        expDate = new Date(actDate);
-        expDate.setFullYear(expDate.getFullYear() + 1); 
-
-        validityText.innerHTML = `Status: <span style="color: var(--primary);">Lisensyado (${activeTier})</span><br>Valid Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
-        validityBox.style.display = 'block';
-    } else if (activationTime) {
-        // Kapag wala pang valid key, ipapakita kung kailan matatapos ang Free Trial
-        let actDate = new Date(parseInt(activationTime));
-        expDate = new Date(actDate.getTime() + (trialMinutes * 60 * 1000));
-
-        validityText.innerHTML = `Status: <span style="color: var(--warning, #f0ad4e);">Free Trial Period</span><br>Trial Hanggang: <span style="color: var(--danger);">${expDate.toLocaleDateString()} ${expDate.toLocaleTimeString()}</span>`;
-        validityBox.style.display = 'block';
-    } else {
-        validityBox.style.display = 'none';
-    }
-
-    document.getElementById('upgradeModal').style.display = 'flex';
-}
-
-function closeUpgradeModal() {
-    document.getElementById('upgradeModal').style.display = 'none';
-}
 </script>
 
 <!-- General Alert/Prompt Modal -->
@@ -1589,56 +1878,6 @@ function closeUpgradeModal() {
 
         <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
             <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
-        </div>
-    </div>
-</div>
-
-<!-- Dedicated Upgrade Modal (Wala nang label na 'Na-expire') -->
-<!-- Dedicated Upgrade Modal na may License Validity -->
-<!-- Dedicated Upgrade Modal na may License Validity -->
-<div class="upgrade-modal-overlay" id="upgradeModal">
-    <div class="upgrade-modal-box">
-        <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
-        <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
-        <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
-
-        <!-- License Validity Display Box -->
-        <div id="modalLicenseValidityBox" style="background: var(--primary-light); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 12px; margin-bottom: 12px; text-align: center; display: none;">
-            <div style="font-size: 0.7rem; color: var(--primary); font-weight: bold; text-transform: uppercase;">Kasalukuyang Lisensya / Validity</div>
-            <div id="modalLicenseValidityText" style="font-size: 0.8rem; font-weight: bold; color: var(--text-main); margin-top: 2px;">--</div>
-        </div>
-
-        <div class="tier-option-card">
-            <div class="tier-info">
-                <h4>Entrepreneur</h4>
-                <p>Max 3 Drivers • 1 Taon</p>
-            </div>
-            <div class="tier-action">
-                <span class="tier-price">₱1,500</span>
-                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Entrepreneur')">Select</button>
-            </div>
-        </div>
-
-        <div class="tier-option-card">
-            <div class="tier-info">
-                <h4>Established</h4>
-                <p>Max 5 Drivers • 1 Taon</p>
-            </div>
-            <div class="tier-action">
-                <span class="tier-price">₱2,000</span>
-                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Established')">Select</button>
-            </div>
-        </div>
-
-        <div class="tier-option-card" style="margin-bottom: 0;">
-            <div class="tier-info">
-                <h4>Prime</h4>
-                <p>6 Drivers Up • 1 Taon</p>
-            </div>
-            <div class="tier-action">
-                <span class="tier-price">₱3,000</span>
-                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Prime')">Select</button>
-            </div>
         </div>
     </div>
 </div>
