@@ -754,7 +754,6 @@
             width: 100%;
         }
         
-        /* Istilo para sa Tier Status Display sa loob ng Upgrade Modal */
         .current-tier-display-box {
             background: var(--primary-light);
             border: 1px solid var(--border-color);
@@ -943,14 +942,13 @@
     </div>
 </div>
 
-<!-- Mag-upgrade ng Tier Modal (May kasamang Tier Status Display sa itaas) -->
+<!-- Mag-upgrade ng Tier Modal -->
 <div class="upgrade-modal-overlay" id="upgradeModal">
     <div class="upgrade-modal-box">
         <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
         <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
         <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
 
-        <!-- Tier Status Display sa Taas ng Modal -->
         <div class="current-tier-display-box">
             <span>Kasalukuyang Katayuan (Tier Status):</span>
             <strong id="modalTierStatusDisplay">Free Trial</strong>
@@ -1049,7 +1047,7 @@
             document.body.prepend(warningBanner);
         });
     }
-</script>
+
     let selectedTierCode = 'T1';
 
     function getDeviceFingerprint() {
@@ -1062,7 +1060,7 @@
     }
 
     function openUpgradeModal() {
-        updateTierBadgeDisplay(); // I-update ang status bago buksan ang modal
+        updateTierBadgeDisplay();
         document.getElementById('upgradeModal').style.display = 'flex';
     }
 
@@ -1876,12 +1874,10 @@
             displayLabel = 'Free Trial';
         }
 
-        // I-update ang badge sa main screen
         if (badgeText) {
             badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
         }
 
-        // I-update ang tier status display sa itaas ng Mag-upgrade ng Tier modal
         if (modalTierStatusDisplay) {
             modalTierStatusDisplay.textContent = displayLabel;
         }
