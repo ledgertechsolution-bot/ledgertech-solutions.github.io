@@ -134,6 +134,20 @@
             font-size: 0.7rem;
             font-weight: bold;
         }
+        .top-action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .top-action-btn:hover { opacity: 0.9; }
 
         .page-arrow-btn {
             background: none;
@@ -252,6 +266,17 @@
             font-size: 0.85rem;
             background: var(--card-bg);
             color: var(--text-main);
+        }
+
+        .table-expected-input, .table-given-input {
+            width: 75px;
+            padding: 3px 5px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: var(--card-bg);
+            color: var(--text-main);
+            text-align: center;
         }
 
         .button-group {
@@ -467,6 +492,103 @@
             cursor: pointer; 
         }
 
+        /* Lock Screen Overlay Styles */
+        .app-lock-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color);
+            z-index: 999999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .lock-title-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            opacity: 0.7;
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+        }
+        .lock-padlock-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 2.8rem;
+            padding: 10px;
+            border-radius: 50%;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+        .lock-padlock-btn:hover {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+
+        /* Menu Slide Dropdown Styles */
+        .menu-container {
+            position: relative;
+            display: inline-block;
+        }
+        .menu-toggle-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .menu-toggle-btn:hover { opacity: 0.9; }
+        .slide-dropdown-content {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 100%;
+            margin-top: 4px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 99;
+            min-width: 160px;
+            padding: 6px;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .slide-dropdown-content.show {
+            display: flex;
+        }
+        .slide-dropdown-content button, 
+        .slide-dropdown-content a {
+            width: 100%;
+            text-align: left;
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 6px 8px;
+            font-size: 0.7rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .slide-dropdown-content button:hover, 
+        .slide-dropdown-content a:hover {
+            opacity: 0.85;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
         @media print {
             body {
                 background-color: #ffffff;
@@ -505,6 +627,14 @@
                 -webkit-print-color-adjust: exact;
                 position: static !important;
             }
+            .table-expected-input, .table-given-input {
+                border: none !important;
+                background: transparent !important;
+                font-size: 0.75rem !important;
+                text-align: center !important;
+                padding: 0 !important;
+                color: #000 !important;
+            }
             .print-signature {
                 display: block !important;
                 margin-top: 96px; 
@@ -533,7 +663,6 @@
             opacity: 0.85;
         }
 
-        /* Upgrade Modal Styles */
         .upgrade-modal-overlay {
             display: none;
             position: fixed;
@@ -623,7 +752,6 @@
         }
         .tier-select-btn:hover { opacity: 0.9; }
 
-        /* Payment Modal Styles */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -754,7 +882,6 @@
             width: 100%;
         }
         
-        /* Istilo para sa Tier Status Display sa loob ng Upgrade Modal */
         .current-tier-display-box {
             background: var(--primary-light);
             border: 1px solid var(--border-color);
@@ -779,6 +906,12 @@
 </head>
 <body data-theme="light">
 
+<!-- Locked Screen View -->
+<div class="app-lock-screen" id="appLockScreen">
+    <div class="lock-title-text">Boundary Monitoring Pro</div>
+    <button type="button" class="lock-padlock-btn" id="unlockAppBtn" title="I-tap para i-unlock">🔒</button>
+</div>
+
 <div class="container">
     <header>
         <h1>Boundary Monitoring Pro</h1>
@@ -802,21 +935,26 @@
             </div>
         </div>
         
-        <div class="button-group" style="margin-bottom: 6px; justify-content: flex-start; gap: 4px; align-items: center; flex-wrap: wrap;">
-            <button type="button" id="btnAddDriver" style="background-color: #2851a3; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;">+ Bagong Driver</button>
-            <button type="button" id="exportJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-download ang lahat ng data bilang backup">💾 Backup</button>
-            <button type="button" id="importJsonBtn" style="background-color: #374151; font-size: 0.7rem; padding: 5px 8px; min-width: auto; flex: unset;" title="I-restore ang data mula sa backup file">📂 Restore</button>
-            <input type="file" id="importFile" accept=".json" style="display: none;">
+        <!-- Malinis na Button Area na may Menu Slide -->
+        <div class="button-group" style="margin-bottom: 6px; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <button type="button" id="btnAddDriver" class="top-action-btn" style="background-color: #2851a3;">+ Add Driver</button>
             
-            <a href="javascript:void(0);" id="tierBadgeBtn" class="tier-status-badge" onclick="openUpgradeModal()" title="Mag-click para mag-upgrade ng Tier">
-                👑 <span id="tierBadgeText">Free Trial</span>
-            </a>
+            <div class="menu-container" id="menuContainer">
+                <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
+                <div class="slide-dropdown-content" id="slideDropdownContent">
+                    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
+                    <button type="button" id="importJsonBtn">📂 Restore Data</button>
+                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+                    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
+                </div>
+            </div>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 6px 0;">
         
         <div class="form-row" style="margin-bottom: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Buwan:</label>
+                <label>Month:</label>
                 <select id="selectMonth">
                     <option value="January">January</option>
                     <option value="February">February</option>
@@ -833,7 +971,7 @@
                 </select>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Taon:</label>
+                <label>Year:</label>
                 <input type="number" id="selectYear" value="2026">
             </div>
         </div>
@@ -844,15 +982,15 @@
                 <input type="text" id="driverName" placeholder="Pangalan ng Driver">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Plate Number (Coding: <span id="codingDisplay" style="color: var(--primary); font-weight: bold;">Wala</span>):</label>
+                <label>Plate / Coding: <span id="codingDisplay" style="color: var(--primary); font-weight: bold;">Wala</span>:</label>
                 <input type="text" id="plateNumber" placeholder="ABC-1234" style="text-transform: uppercase;">
             </div>
         </div>
         
         <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Standard Expected Boundary:</label>
-                <input type="number" id="standardExpected" value="1200">
+                <label>Boundary Set:</label>
+                <input type="number" id="standardExpected" value="1000">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Previous Balance:</label>
@@ -882,7 +1020,7 @@
         <form id="entryForm">
             <div class="form-row">
                 <div class="form-group">
-                    <label>Date:</label>
+                    <label>Date of payment:</label>
                     <input type="number" id="dayDate" placeholder="Ex. 1, 5..." required min="1" max="31">
                 </div>
                 <div class="form-group">
@@ -893,11 +1031,11 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>Date Covered:</label>
-                    <input type="text" id="dateCovered" placeholder="6/1-6/7">
+                    <input type="text" id="dateCovered" placeholder="10/1 - 10/7">
                 </div>
                 <div class="form-group">
-                    <label>Ref No.:</label>
-                    <input type="text" id="refNo" placeholder="GCash Ref #">
+                    <label>MOP:</label>
+                    <input type="text" id="refNo" placeholder="Ref # / Cash ">
                 </div>
             </div>
 
@@ -911,7 +1049,7 @@
 
     <div class="card">
         <div class="table-header-container">
-            <span class="table-title-left">Tala Hanggang sa Huling Hulog</span>
+            <span class="table-title-left">Record Up to the Last Payment / Balance</span>
             <div class="table-actions-right">
                 <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
                 <div class="page-nav-right">
@@ -943,14 +1081,13 @@
     </div>
 </div>
 
-<!-- Mag-upgrade ng Tier Modal (May kasamang Tier Status Display sa itaas) -->
+<!-- Mag-upgrade ng Tier Modal -->
 <div class="upgrade-modal-overlay" id="upgradeModal">
     <div class="upgrade-modal-box">
         <button type="button" class="upgrade-modal-close" onclick="closeUpgradeModal()">✕</button>
         <div class="upgrade-modal-title">Mag-upgrade ng Tier</div>
         <div class="upgrade-modal-subtitle">Piliin ang naaangkop na estado ng iyong negosyo para sa 1-Year License.</div>
 
-        <!-- Tier Status Display sa Taas ng Modal -->
         <div class="current-tier-display-box">
             <span>Kasalukuyang Katayuan (Tier Status):</span>
             <strong id="modalTierStatusDisplay">Free Trial</strong>
@@ -1026,7 +1163,6 @@
 </div>
 
 <script>
-    // Detector para sa mga in-app browsers (tulad ng Facebook, Messenger, o Instagram)
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
@@ -1045,13 +1181,48 @@
             warningBanner.style.fontSize = '0.85rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'To save Boundary Monitoring app, i-tap ang <b>(⋮)</b> sa taas <i>"Open in external browser"</i> select any browser (Chrome Browser-recommended) tap <b>(⋮)</b> sa top right then Add to hone screen .';
+            warningBanner.innerHTML = 'To save Boundary Monitoring app, i-tap ang <b>(⋮)</b> sa taas <i>"Open in external browser"</i> select any browser (Chrome Browser-recommended) tap <b>(⋮)</b> sa top right then Add to home screen .';
             document.body.prepend(warningBanner);
         });
     }
     
     let selectedTierCode = 'T1';
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
+
+    // Menu Slide Toggle Logic
+    const menuToggleBtn = document.getElementById('menuToggleBtn');
+    const slideDropdownContent = document.getElementById('slideDropdownContent');
+
+    if (menuToggleBtn && slideDropdownContent) {
+        menuToggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            slideDropdownContent.classList.toggle('show');
+        });
+
+        window.addEventListener('click', function(e) {
+            if (!document.getElementById('menuContainer').contains(e.target)) {
+                slideDropdownContent.classList.remove('show');
+            }
+        });
+    }
+
+    // Lock Screen Functionality Logic
+    const appLockScreen = document.getElementById('appLockScreen');
+    const lockAppBtn = document.getElementById('lockAppBtn');
+    const unlockAppBtn = document.getElementById('unlockAppBtn');
+
+    if (lockAppBtn) {
+        lockAppBtn.addEventListener('click', function() {
+            slideDropdownContent.classList.remove('show');
+            appLockScreen.style.display = 'flex';
+        });
+    }
+
+    if (unlockAppBtn) {
+        unlockAppBtn.addEventListener('click', function() {
+            appLockScreen.style.display = 'none';
+        });
+    }
 
     function getDeviceFingerprint() {
         let fp = localStorage.getItem('bmpro_master_hardware_id');
@@ -1063,6 +1234,7 @@
     }
 
     function openUpgradeModal() {
+        slideDropdownContent.classList.remove('show');
         updateTierBadgeDisplay();
         document.getElementById('upgradeModal').style.display = 'flex';
     }
@@ -1111,7 +1283,6 @@
 
         let hardwareId = getDeviceFingerprint();
 
-        // Database verification para ma-block ang used key sa iba't ibang browser/device
         fetch(WEB_APP_URL, {
             method: "POST",
             headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -1275,6 +1446,7 @@
     const btnAddDriver = document.getElementById('btnAddDriver');
     
     document.getElementById('exportJsonBtn').addEventListener('click', function() {
+        slideDropdownContent.classList.remove('show');
         const backupData = {};
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
@@ -1297,6 +1469,7 @@
     });
 
     document.getElementById('importJsonBtn').addEventListener('click', function() {
+        slideDropdownContent.classList.remove('show');
         document.getElementById('importFile').click();
     });
 
@@ -1400,7 +1573,7 @@
         let activeDriverName = '';
 
         if (driversList.length === 0) {
-            selectedDriverText.textContent = 'Walang Driver (Magdagdag ng Driver)';
+            selectedDriverText.textContent = 'Drivers List / Search Bar';
             displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
             return;
         }
@@ -1718,12 +1891,44 @@
         const refNo = document.getElementById('refNo').value;
         const expected = parseFloat(standardExpectedInput.value) || 1200;
 
-        records[date] = { expected, given, dateCovered, refNo };
+        if (!records[date]) {
+            records[date] = { expected, given: 0, dateCovered: '', refNo: '' };
+        }
+        records[date].given = given;
+        if(dateCovered) records[date].dateCovered = dateCovered;
+        if(refNo) records[date].refNo = refNo;
+
         localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
         renderTable();
         form.reset();
         updateNextDaySuggestion(records);
     });
+
+    window.updateDailyExpected = function(dayNum, newExpectedVal) {
+        if (!currentDriverId) return;
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        
+        if (!records[dayNum]) {
+            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+        }
+        records[dayNum].expected = parseFloat(newExpectedVal) || 0;
+        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+        renderTable();
+    };
+
+    window.updateDailyGiven = function(dayNum, newGivenVal) {
+        if (!currentDriverId) return;
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        
+        if (!records[dayNum]) {
+            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+        }
+        records[dayNum].given = parseFloat(newGivenVal) || 0;
+        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+        renderTable();
+    };
 
     exportPdfBtn.addEventListener('click', function() {
         if (!currentDriverId) {
@@ -1760,19 +1965,20 @@
         for (let i = 1; i <= limitDay; i++) {
             let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
             let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
-            let expVal = dayData.expected || currentExpected;
+            let expVal = dayData.expected !== undefined ? dayData.expected : currentExpected;
+            let givenVal = dayData.given !== undefined ? dayData.given : 0;
             let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
             
             totalExpected += expVal;
-            totalGiven += dayData.given;
-            let shortOver = dayData.given - expVal;
-            runningBalance += (expVal - dayData.given);
+            totalGiven += givenVal;
+            let shortOver = givenVal - expVal;
+            runningBalance += (expVal - givenVal);
 
             let row = [
                 dayOfWeek,
                 i < 10 ? '0' + i : i,
                 expVal,
-                dayData.given,
+                givenVal,
                 `"${dayData.dateCovered || '-'}"`,
                 `"${dayData.refNo || '-'}"`,
                 shortOver,
@@ -1824,15 +2030,16 @@
         }
 
         for (let i = 1; i <= limitDay; i++) {
-            let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
-            let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
+            let currentDefaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+            let dayData = records[i] || { expected: currentDefaultExpected, given: 0, dateCovered: '', refNo: '' };
             
-            let expVal = dayData.expected || currentExpected;
+            let expVal = dayData.expected !== undefined ? dayData.expected : currentDefaultExpected;
+            let givenVal = dayData.given !== undefined ? dayData.given : 0;
 
             totalExpected += expVal;
-            totalGiven += dayData.given;
-            let shortOver = dayData.given - expVal;
-            runningBalance += (expVal - dayData.given);
+            totalGiven += givenVal;
+            let shortOver = givenVal - expVal;
+            runningBalance += (expVal - givenVal);
 
             let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
 
@@ -1849,8 +2056,8 @@
             row.innerHTML = `
                 <td>${dayDisplayHtml}</td>
                 <td>${i < 10 ? '0' + i : i}</td>
-                <td>${fmt(expVal)}</td>
-                <td>${fmt(dayData.given)}</td>
+                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+                <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
                 <td>${dayData.dateCovered || '-'}</td>
                 <td>${dayData.refNo || '-'}</td>
                 <td class="${shortClass}">${fmt(shortOver)}</td>
