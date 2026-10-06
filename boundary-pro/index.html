@@ -942,11 +942,13 @@
             <div class="menu-container" id="menuContainer">
                 <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
                 <div class="slide-dropdown-content" id="slideDropdownContent">
-                    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
-                    <button type="button" id="importJsonBtn">📂 Restore Data</button>
-                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-                    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
-                </div>
+    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
+    <button type="button" id="importJsonBtn">📂 Restore Data</button>
+    <!-- ILAGAY ANG GUIDE BUTTON DITO -->
+    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
+    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
+</div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
@@ -1161,8 +1163,87 @@
         <button type="button" class="btn-success-ok" onclick="closeSuccessModal()">OK / Gamitin ang App</button>
     </div>
 </div>
+<!-- Guide / Paano Gamitin Modal -->
+<div class="upgrade-modal-overlay" id="guideModal">
+    <div class="upgrade-modal-box" style="max-width: 480px; text-align: left;">
+        <button type="button" class="upgrade-modal-close" onclick="closeGuideModal()">✕</button>
+        <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 6px;">📘 Gabay sa Paggamit ng App</div>
+        <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 14px;">Boundary Monitoring Pro Guide</div>
+
+        <div style="max-height: 65vh; overflow-y: auto; padding-right: 6px; font-size: 0.78rem; line-height: 1.5; color: var(--text-main);">
+            
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 2px;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito</p>
+            
+            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">Android</p>
+            <p style="margin-bottom: 6px; opacity: 0.9;">Pwedeng gumamit ng kahit na anong browser, mas maganda kung yung browser na gagamitin ay hindi laging ginagamit para magsilbing tagabukas lang ng application na ito. (1 browser policy) Browsers Example: Chrome, Edge, Firefox, Brave, etc. (pwedeng mag-download sa Google Play Store).</p>
+            <ol style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;">Sa Facebook, i-click ang link, pagka-open i-tap muna ang tatlong tuldok <code style="background:var(--primary-light); padding:1px 4px; border-radius:3px;">(⋮)</code> sa taas at piliin ang <i>"Open in external browser"</i>. Kung copy link ang pipiliin, i-paste ito sa browser na gusto mong gamiting tagabukas ng application.</li>
+                <li style="margin-bottom: 4px;">Pagka-open ng Browser, pindutin ang tatlong tuldok <code style="background:var(--primary-light); padding:1px 4px; border-radius:3px;">(⋮)</code> sa kanang taas ng browser.</li>
+                <li>Piliin ang <b>"Add to Home screen"</b> para magkaroon ka na ng shortcut icon ng Boundary Pro sa home screen ng cellphone mo na parang normal app!</li>
+            </ol>
+
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 2px;">iPhone / iOS (Safari Browser)</p>
+            <ol style="margin-left: 18px; margin-bottom: 14px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;"><b>Buksan ang Link:</b> I-open ang app gamit ang Safari browser.</li>
+                <li style="margin-bottom: 4px;"><b>I-tap ang Share Button:</b> Pindutin ang Share icon sa ibaba ng screen (yung box na may pataas na arrow).</li>
+                <li style="margin-bottom: 4px;"><b>Hanapin ang Option:</b> I-scroll pababa at piliin ang <b>"Add to Home Screen"</b>.</li>
+                <li><b>I-save:</b> I-tap ang Add sa kanang taas para lumitaw ito sa home screen.</li>
+            </ol>
+
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 2px;">PART II: Paano Gamitin ang Boundary Monitoring Pro</p>
+
+            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">1. Pagdaragdag at Pagpili ng Driver</p>
+            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;">Pindutin ang <b>+ Add Driver</b> na button para maglagay ng bagong driver at i-type ang mga kinakailangang detalye.</li>
+                <li style="margin-bottom: 4px;">Awtomatikong madedetect ng sistema ang coding day nito base sa plate number.</li>
+                <li>Para lumipat ng driver, i-tap lamang ang dropdown box sa taas kung saan nakalagay ang pangalan ng kasalukuyang driver o gamitin ang built-in search bar nito[cite: 1].</li>
+            </ul>
+
+            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">2. Pag-set ng Buwan, Taon, at Boundary Setup</p>
+            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;">Piliin ang tamang Month at ilagay ang Year[cite: 1].</li>
+                <li style="margin-bottom: 4px;">Ilagay ang kasunduang halaga sa Boundary Set (halimbawa: ₱1,000 o ₱1,200)[cite: 1].</li>
+                <li>Kung mayroon silang naiwang balanse o utang mula sa nakaraang buwan, ilagay ito sa Previous Balance para awtomatikong maisama sa komputasyon[cite: 1].</li>
+            </ul>
+
+            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">3. Pag-save ng Araw-araw na Hulog (Payment Entry)</p>
+            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;">Ilagay ang araw sa Date of payment (halimbawa: 1, 5, atbp.)[cite: 1].</li>
+                <li style="margin-bottom: 4px;">Ilagay ang ibinigay na pera sa Amount Given[cite: 1].</li>
+                <li style="margin-bottom: 4px;">Pwedeng ilagay ang sakop na petsa (Date Covered) at ang Mode of Payment o Reference Number (MOP/Ref #) o cash[cite: 1].</li>
+                <li>I-tap ang <b>I-save</b> button. Agad na kakalkulahin ng app ang Short/Over at ang Running Balance[cite: 1].</li>
+            </ul>
+
+            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">4. Pag-backup, Pag-export ng CSV, at Pagsara (Lock App)</p>
+            <ul style="margin-left: 18px; margin-bottom: 4px; opacity: 0.9;">
+                <li style="margin-bottom: 4px;"><b>Menu Button (⚙️ Menu ▾):</b> Pindutin ito para makita ang mga opsyon tulad ng Backup Data (JSON), Restore Data, Tier Status/Upgrade, at Lock App kung gusto mong pansamantalang i-lock ang screen para hindi makalikot ng iba[cite: 1].</li>
+                <li><b>Export CSV / PDF:</b> Gamitin ang mga ito para makapag-generate ng kopya ng ulat para sa accounting o kaya ay mai-print/save as PDF at image at mai-send sa driver[cite: 1].</li>
+            </ul>
+
+        </div>
+        
+        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 14px; padding: 10px;" onclick="closeGuideModal()">Naintindihan / Isara</button>
+    </div>
+</div>
 
 <script>
+// Guide Modal Functions
+function openGuideModal() {
+    if (typeof slideDropdownContent !== 'undefined' && slideDropdownContent) {
+        slideDropdownContent.classList.remove('show');
+    }
+    const guideModal = document.getElementById('guideModal');
+    if (guideModal) {
+        guideModal.style.display = 'flex';
+    }
+}
+
+function closeGuideModal() {
+    const guideModal = document.getElementById('guideModal');
+    if (guideModal) {
+        guideModal.style.display = 'none';
+    }
+}
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
@@ -1173,15 +1254,15 @@
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#c62828';
-            warningBanner.style.color = 'white';
+            warningBanner.style.backgroundColor = '#000000'; // Kulay itim na background
+            warningBanner.style.color = '#ffffff'; // Kulay puting text
             warningBanner.style.padding = '14px 10px';
             warningBanner.style.textAlign = 'center';
             warningBanner.style.zIndex = '99999';
             warningBanner.style.fontSize = '0.85rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'To save Boundary Monitoring app, i-tap ang <b>(⋮)</b> sa taas <i>"Open in external browser"</i> select any browser (Chrome Browser-recommended) tap <b>(⋮)</b> sa top right then Add to home screen .';
+            warningBanner.innerHTML = 'I-tap ang <b>(⋮)</b> sa taas <i>"Open in external browser"</i> or (copy link and paste it in your Browser) tap <b>(⋮)</b> sa top right then select Add to home screen .';
             document.body.prepend(warningBanner);
         });
     }
