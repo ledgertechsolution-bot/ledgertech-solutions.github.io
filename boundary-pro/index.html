@@ -645,7 +645,7 @@
                 page-break-inside: avoid;
             }
         }
-.gcash-qr-img {
+        .gcash-qr-img {
             width: 160px;
             height: 160px;
             object-fit: contain;
@@ -1173,7 +1173,6 @@
         <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 8px; font-size: 1.15rem;">📘 Gabay sa Paggamit ng App</div>
         <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 16px; font-size: 0.85rem;">Boundary Monitoring Pro Guide</div>
 
-        <!-- Dito natin pinalaki ang font size (0.9rem) at inayos ang scroll -->
         <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">
             
             <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito.</p>
@@ -1259,15 +1258,15 @@ function closeGuideModal() {
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#000000'; // Kulay red na background
-            warningBanner.style.color = '#ffffff'; // Kulay puting text
-            warningBanner.style.padding = '14px 10px';
+            warningBanner.style.backgroundColor = '#000000'; 
+            warningBanner.style.color = '#ffffff'; 
+            warningBanner.style.padding = '12px 10px';
             warningBanner.style.textAlign = 'center';
-            warningBanner.style.zIndex = '99999';
-            warningBanner.style.fontSize = '0.85rem';
+            warningBanner.style.zIndex = '999999';
+            warningBanner.style.fontSize = '0.8rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'I-CLICK ang <i>"MENU BUTTON"</i> sa baba, select Guide at sundan kung paano ilagay sa HOME SCREEN ng cellphone mo .';
+            warningBanner.innerHTML = 'I-click ang menu button sa baba, select guide at sundan kung paano ilagay ito diyan sa Home Screen ng cellphone mo.';
             document.body.prepend(warningBanner);
         });
     }
