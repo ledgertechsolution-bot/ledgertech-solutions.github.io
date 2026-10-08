@@ -181,15 +181,27 @@
             letter-spacing: 0.5px;
         }
 
+        .gcash-qr-img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            margin: 8px auto;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            display: block;
+        }
+
         .payment-name {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: var(--text-main);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
         }
 
         .highlight-number {
-            font-size: 1.05rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: var(--danger);
             letter-spacing: 0.5px;
@@ -337,9 +349,10 @@
             <p style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 6px;">Halaga na dapat bayaran: <strong id="modalTierPrice" style="color: var(--danger);">₱0</strong></p>
             
             <div class="payment-box">
-                <h4>GCASH ACCOUNT DETAILS</h4>
-                <div class="payment-name">Daniel Pabilona</div>
-                <div class="highlight-number">0977-755-7170</div>
+                <h4>GCASH QR CODE</h4>
+                <img src="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/gcash-qr.png" alt="GCash QR Code" class="gcash-qr-img">
+                <div class="payment-name">DA•••L P.</div>
+                <div class="highlight-number">+63 977-755-7170</div>
             </div>
 
             <p style="font-size: 0.68rem; opacity: 0.9; margin-bottom: 4px;">Pagkatapos magbayad, i-send ang screenshot ng resibo sa Messenger para makuha ang key:</p>
@@ -415,7 +428,6 @@
 
             let hardwareId = getDeviceFingerprint();
 
-            // Tinanggal ang mode: "no-cors" para mabasa natin ang tugon ng Google Sheet database
             fetch(WEB_APP_URL, {
                 method: "POST",
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -427,13 +439,11 @@
             })
             .then(response => response.json())
             .then(result => {
-                // Kung sinabi ng database na error (ibig sabihin used na o iba ang hardware)
                 if (result.status === "error") {
-                    alert(result.message); // Halimbawa: Key is already bound to another device!
+                    alert(result.message);
                     return;
                 }
 
-                // Kung tagumpay at valid sa hardware na ito
                 let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
                 if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
                 else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
