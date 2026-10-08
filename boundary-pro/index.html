@@ -645,6 +645,16 @@
                 page-break-inside: avoid;
             }
         }
+.gcash-qr-img {
+            width: 160px;
+            height: 160px;
+            object-fit: contain;
+            margin: 8px auto;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #ffffff;
+            display: block;
+        }
         .tier-status-badge {
             display: inline-flex;
             align-items: center;
@@ -1138,9 +1148,10 @@
         <p style="font-size: 0.7rem; opacity: 0.8; margin-bottom: 6px;">Halaga na dapat bayaran: <strong id="modalTierPrice" style="color: var(--danger);">₱1,500</strong></p>
         
         <div class="payment-box">
-            <h4>GCASH ACCOUNT DETAILS</h4>
-            <div class="payment-name">Daniel Pabilona</div>
-            <div class="highlight-number">0977-755-7170</div>
+            <h4>GCASH QR CODE</h4>
+            <img src="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/gcash-qr.png" alt="GCash QR Code" class="gcash-qr-img">
+            <div class="payment-name">DA•••L P.</div>
+            <div class="highlight-number">+63 977-755-7170</div>
         </div>
 
         <p style="font-size: 0.68rem; opacity: 0.9; margin-bottom: 4px;">Pagkatapos magbayad, i-send ang screenshot ng resibo sa Messenger para makuha ang key:</p>
@@ -1155,74 +1166,68 @@
 </div>
 
 <!-- Success Modal -->
-<div class="modal-overlay" id="successModal">
-    <div class="success-content">
-        <div class="success-icon">✔</div>
-        <h3>Tagumpay ang Activation!</h3>
-        <p>Maraming salamat! Ang iyong app ay lisensyado na at magagamit na nang buo</p>
-        <button type="button" class="btn-success-ok" onclick="closeSuccessModal()">OK / Gamitin ang App</button>
-    </div>
-</div>
 <!-- Guide / Paano Gamitin Modal -->
 <div class="upgrade-modal-overlay" id="guideModal">
-    <div class="upgrade-modal-box" style="max-width: 480px; text-align: left;">
+    <div class="upgrade-modal-box" style="max-width: 500px; text-align: left;">
         <button type="button" class="upgrade-modal-close" onclick="closeGuideModal()">✕</button>
-        <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 6px;">📘 Gabay sa Paggamit ng App</div>
-        <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 14px;">Boundary Monitoring Pro Guide</div>
+        <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 8px; font-size: 1.15rem;">📘 Gabay sa Paggamit ng App</div>
+        <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 16px; font-size: 0.85rem;">Boundary Monitoring Pro Guide</div>
 
-        <div style="max-height: 65vh; overflow-y: auto; padding-right: 6px; font-size: 0.78rem; line-height: 1.5; color: var(--text-main);">
+        <!-- Dito natin pinalaki ang font size (0.9rem) at inayos ang scroll -->
+        <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">
             
-            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 2px;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito</p>
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito.</p>
             
-            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">Android</p>
-            <p style="margin-bottom: 6px; opacity: 0.9;">Pwedeng gumamit ng kahit na anong browser, mas maganda kung yung browser na gagamitin ay hindi laging ginagamit para magsilbing tagabukas lang ng application na ito. (1 browser policy) Browsers Example: Chrome, Edge, Firefox, Brave, etc. (pwedeng mag-download sa Google Play Store).</p>
-            <ol style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;">Sa Facebook, i-click ang link, pagka-open i-tap muna ang tatlong tuldok <code style="background:var(--primary-light); padding:1px 4px; border-radius:3px;">(⋮)</code> sa taas at piliin ang <i>"Open in external browser"</i>. Kung copy link ang pipiliin, i-paste ito sa browser na gusto mong gamiting tagabukas ng application.</li>
-                <li style="margin-bottom: 4px;">Pagka-open ng Browser, pindutin ang tatlong tuldok <code style="background:var(--primary-light); padding:1px 4px; border-radius:3px;">(⋮)</code> sa kanang taas ng browser.</li>
-                <li>Piliin ang <b>"Add to Home screen"</b> para magkaroon ka na ng shortcut icon ng Boundary Pro sa home screen ng cellphone mo na parang normal app!</li>
+            <ol style="margin-left: 20px; margin-bottom: 16px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Matapos i-click ang facebook post link, makikita mo ang Boundary Monitoring Pro (BMPro)</li>
+                <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan.</li>
+                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">copy link</span>.</li>
+                <li style="margin-bottom: 6px;">Punta ka sa browser na gusto mong gamitin (Ex: Chrome, Edge, Firefox, Brave, etc.) at i-paste ang link.</li>
+                <li style="margin-bottom: 6px;">I-click ng tatlong tuldok (⋮) sa taas at piliin ang ADD TO HOME SCREEN</li>
             </ol>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 2px;">iPhone / iOS (Safari Browser)</p>
-            <ol style="margin-left: 18px; margin-bottom: 14px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;"><b>Buksan ang Link:</b> I-open ang app gamit ang Safari browser.</li>
-                <li style="margin-bottom: 4px;"><b>I-tap ang Share Button:</b> Pindutin ang Share icon sa ibaba ng screen (yung box na may pataas na arrow).</li>
-                <li style="margin-bottom: 4px;"><b>Hanapin ang Option:</b> I-scroll pababa at piliin ang <b>"Add to Home Screen"</b>.</li>
-                <li><b>I-save:</b> I-tap ang Add sa kanang taas para lumitaw ito sa home screen.</li>
-            </ol>
+            <div style="background: var(--primary-light); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem;">
+                <strong style="display: block; margin-bottom: 6px;">Guide Recommended:</strong>
+                <ol style="margin-left: 18px; opacity: 0.95; display: flex; flex-direction: column; gap: 4px;">
+                    <li>Mas Magandang pumili ng browser na hindi mo laging ginagamit.</li>
+                    <li>Ito na ang magiging default na tagabukas ng Application na ito.</li>
+                    <li>Iwasan ang mag Browser Clear Data para hindi mabura ang files.</li>
+                </ol>
+            </div>
 
-            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 2px;">PART II: Paano Gamitin ang Boundary Monitoring Pro</p>
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART II: Paano Gamitin ang Boundary Monitoring Pro</p>
 
-            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">1. Pagdaragdag at Pagpili ng Driver</p>
-            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;">Pindutin ang <b>+ Add Driver</b> na button para maglagay ng bagong driver at i-type ang mga kinakailangang detalye.</li>
-                <li style="margin-bottom: 4px;">Awtomatikong madedetect ng sistema ang coding day nito base sa plate number.</li>
-                <li>Para lumipat ng driver, i-tap lamang ang dropdown box sa taas kung saan nakalagay ang pangalan ng kasalukuyang driver o gamitin ang built-in search bar nito[cite: 1].</li>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">1. Add Driver</p>
+            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Pindutin ang + Add Driver na button para maglagay ng bagong driver at i-type ang mga kinakailangang detalye.</li>
+                <li style="margin-bottom: 6px;">Awtomatikong madedetect ng sistema ang coding day nito base sa plate number.</li>
+                <li style="margin-bottom: 6px;">Para lumipat ng driver, i-tap lamang ang dropdown box sa taas kung saan nakalagay ang pangalan ng kasalukuyang driver o gamitin ang built-in search bar nito</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">2. Pag-set ng Buwan, Taon, at Boundary Setup</p>
-            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;">Piliin ang tamang Month at ilagay ang Year[cite: 1].</li>
-                <li style="margin-bottom: 4px;">Ilagay ang kasunduang halaga sa Boundary Set (halimbawa: ₱1,000 o ₱1,200)[cite: 1].</li>
-                <li>Kung mayroon silang naiwang balanse o utang mula sa nakaraang buwan, ilagay ito sa Previous Balance para awtomatikong maisama sa komputasyon[cite: 1].</li>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">2. Pag-set ng Buwan, Taon, at Boundary Setup</p>
+            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Piliin ang tamang Month at ilagay ang Year</li>
+                <li style="margin-bottom: 6px;">Ilagay ang kasunduang halaga sa Boundary Set (halimbawa: ₱1,000 o ₱1,200)</li>
+                <li style="margin-bottom: 6px;">Kung mayroon silang naiwang balanse o utang mula sa nakaraang buwan, ilagay ito sa Previous Balance para awtomatikong maisama sa komputasyon</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">3. Pag-save ng Araw-araw na Hulog (Payment Entry)</p>
-            <ul style="margin-left: 18px; margin-bottom: 10px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;">Ilagay ang araw sa Date of payment (halimbawa: 1, 5, atbp.)[cite: 1].</li>
-                <li style="margin-bottom: 4px;">Ilagay ang ibinigay na pera sa Amount Given[cite: 1].</li>
-                <li style="margin-bottom: 4px;">Pwedeng ilagay ang sakop na petsa (Date Covered) at ang Mode of Payment o Reference Number (MOP/Ref #) o cash[cite: 1].</li>
-                <li>I-tap ang <b>I-save</b> button. Agad na kakalkulahin ng app ang Short/Over at ang Running Balance[cite: 1].</li>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">3. Pag-save ng Araw-araw na Hulog (Payment Entry)</p>
+            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Ilagay ang araw sa Date of payment (halimbawa: 1, 5, atbp)</li>
+                <li style="margin-bottom: 6px;">Ilagay ang ibinigay na pera sa Amount Given</li>
+                <li style="margin-bottom: 6px;">Pwedeng ilagay ang sakop na petsa (Date Covered) at ang Mode of Payment o Reference Number (MOP/Ref #) o cash</li>
+                <li style="margin-bottom: 6px;">I-tap ang I-save button. Agad na kakalkulahin ng app ang Short/Over at ang Running Balance</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 6px; margin-bottom: 2px;">4. Pag-backup, Pag-export ng CSV, at Pagsara (Lock App)</p>
-            <ul style="margin-left: 18px; margin-bottom: 4px; opacity: 0.9;">
-                <li style="margin-bottom: 4px;"><b>Menu Button (⚙️ Menu ▾):</b> Pindutin ito para makita ang mga opsyon tulad ng Backup Data (JSON), Restore Data, Tier Status/Upgrade, at Lock App kung gusto mong pansamantalang i-lock ang screen para hindi makalikot ng iba[cite: 1].</li>
-                <li><b>Export CSV / PDF:</b> Gamitin ang mga ito para makapag-generate ng kopya ng ulat para sa accounting o kaya ay mai-print/save as PDF at image at mai-send sa driver[cite: 1].</li>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">4. Pag-backup, Pag-export ng CSV, at Pagsara (Lock App)</p>
+            <ul style="margin-left: 20px; margin-bottom: 8px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para makita ang mga opsyon tulad ng Backup Data (JSON), Restore Data, Tier Status/Upgrade, at Lock App kung gusto mong pansamantalang i-lock ang screen para hindi makalikot ng iba</li>
+                <li style="margin-bottom: 6px;">Export CSV / PDF: Gamitin ang mga ito para makapag-generate ng kopya ng ulat para sa accounting o kaya ay mai-print/save as PDF at image at mai-send sa driver</li>
             </ul>
 
         </div>
         
-        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 14px; padding: 10px;" onclick="closeGuideModal()">Naintindihan / Isara</button>
+        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 0.9rem;" onclick="closeGuideModal()">Naintindihan / Isara</button>
     </div>
 </div>
 
@@ -1254,7 +1259,7 @@ function closeGuideModal() {
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#000000'; // Kulay itim na background
+            warningBanner.style.backgroundColor = '#000000'; // Kulay red na background
             warningBanner.style.color = '#ffffff'; // Kulay puting text
             warningBanner.style.padding = '14px 10px';
             warningBanner.style.textAlign = 'center';
@@ -1262,7 +1267,7 @@ function closeGuideModal() {
             warningBanner.style.fontSize = '0.85rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'I-tap ang <b>(⋮)</b> sa taas <i>"Open in external browser"</i> or (copy link and paste it in your Browser) tap <b>(⋮)</b> sa top right then select Add to home screen .';
+            warningBanner.innerHTML = 'I-CLICK ang <i>"MENU BUTTON"</i> sa Boundary Monitoring pro, sundan ang Guide kung paano ilagay ito sa HOME SCREEN ng cellphone mo .';
             document.body.prepend(warningBanner);
         });
     }
@@ -1409,7 +1414,7 @@ function closeGuideModal() {
         const activeKey = localStorage.getItem('boundary_active_key');
         if (activeKey) return;
 
-        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 120;
+        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 10080;
         let activationTime = localStorage.getItem('boundary_activation_time');
         
         if (!activationTime) {
