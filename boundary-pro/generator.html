@@ -75,7 +75,7 @@
             gap: 6px;
         }
 
-        .theme-btn, .lock-btn {
+        .theme-btn {
             background: var(--primary-light);
             border: 1px solid var(--border-color);
             color: var(--primary);
@@ -84,17 +84,6 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: bold;
-        }
-
-        .lock-btn {
-            background-color: #ffebee;
-            color: var(--danger);
-            border-color: #ffcdd2;
-        }
-        [data-theme="dark"] .lock-btn {
-            background-color: #331a1a;
-            color: #ef5350;
-            border-color: #552222;
         }
 
         .date-display-box {
@@ -324,13 +313,12 @@
 </head>
 <body data-theme="light">
 
-<div class="container" id="mainAppContainer" style="display: none;">
+<div class="container" id="mainAppContainer">
     <header>
         <h1>BMPro Key Generator & Admin</h1>
         <div class="header-right">
             <div class="date-display-box" id="currentCalendarDate">Petsa: --/--/----</div>
             <button class="theme-btn" onclick="toggleTheme()">Dark/Light</button>
-            <button class="lock-btn" id="lockAppBtn" onclick="lockAdminSession()">🔒 Lock Admin</button>
         </div>
     </header>
 
@@ -338,7 +326,7 @@
         <div class="form-row" style="margin-bottom: 0; align-items: center;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label style="font-weight: bold; color: var(--primary);">Trial Duration (Minutes):</label>
-                <input type="number" id="trialMinutesInput" value="7200" min="1" max="10080" placeholder="Hal. 1 minute">
+                <input type="number" id="trialMinutesInput" value="1" min="1" max="10080" placeholder="Hal. 1 minute">
             </div>
             <div class="form-group" style="margin-bottom: 0; display: flex; align-items: flex-end; height: 100%;">
                 <button type="button" id="btnSaveTrialMinutes" style="width: 100%; padding: 7px; background: var(--primary); color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 0.75rem; cursor: pointer;">I-save ang Trial Time</button>
@@ -408,7 +396,7 @@
         <div class="list-header-row">
             <span class="list-title">Client Records List</span>
             <div class="list-actions">
-                <button class="action-btn" id="exportAdminJsonBtn" style="background-color: #374151; color: white;" title="I-download ang lahat ng client records bilang backup">💾 Backup</button>
+                <button class="action-btn" id="exportAdminJsonBtn" style="background-color: #374151; color: white;" title="I-download ang lahat ng client records bilang backup">📁 Backup</button>
                 <button class="action-btn" id="importAdminJsonBtn" style="background-color: #374151; color: white;" title="I-restore ang client records mula sa backup file">📂 Restore</button>
                 <input type="file" id="importAdminFile" accept=".json" style="display: none;">
                 <button class="action-btn btn-toggle-list" id="toggleListBtn">Hide List</button>
@@ -438,58 +426,8 @@
 </div>
 
 <script>
-    // ================= ADMIN PASSWORD CONFIG =================
-    const ADMIN_PASSWORD = "Daneyale11@g"; // Pwede mong palitan ang password na ito manual
-    // =========================================================
-
-    function checkAdminAuth() {
-        const isAuth = sessionStorage.getItem('bmpro_admin_logged');
-        if (isAuth === 'true') {
-            document.getElementById('mainAppContainer').style.display = 'block';
-            initAdminApp();
-        } else {
-            showLoginModal();
-        }
-    }
-
-    function showLoginModal() {
-        document.getElementById('shopeeModalTitle').innerText = "Admin Login";
-        document.getElementById('shopeeModalText').innerText = "Ilagay ang iyong password para ma-access ang Key Generator.";
-        
-        const inputContainer = document.getElementById('shopeeModalInputContainer');
-        inputContainer.style.display = 'block';
-        const inputField = document.getElementById('shopeeModalInputVal');
-        inputField.type = "password";
-        inputField.value = "";
-        inputField.placeholder = "Enter Admin Password...";
-        inputField.focus();
-
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" onclick="verifyAdminPassword()">Mag-log in</button>
-        `;
-        document.getElementById('shopeeModal').style.display = 'flex';
-    }
-
-    function verifyAdminPassword() {
-        const passVal = document.getElementById('shopeeModalInputVal').value;
-        if (passVal === ADMIN_PASSWORD) {
-            sessionStorage.setItem('bmpro_admin_logged', 'true');
-            document.getElementById('shopeeModal').style.display = 'none';
-            document.getElementById('mainAppContainer').style.display = 'block';
-            initAdminApp();
-        } else {
-            showCustomAlert("Mali", "Mali ang password na iyong inilagay!");
-            setTimeout(showLoginModal, 1200);
-        }
-    }
-
-    function lockAdminSession() {
-        sessionStorage.removeItem('bmpro_admin_logged');
-        location.reload();
-    }
-
     window.addEventListener('DOMContentLoaded', () => {
-        checkAdminAuth();
+        initAdminApp();
     });
 
     function initAdminApp() {
@@ -521,8 +459,8 @@
         if (currentSavedTrial !== null) {
             trialMinutesInput.value = currentSavedTrial;
         } else {
-            trialMinutesInput.value = '7200';
-            localStorage.setItem('boundary_trial_minutes', '7200');
+            trialMinutesInput.value = '10080';
+            localStorage.setItem('boundary_trial_minutes', '10080');
         }
 
         const btnSaveTrialMinutes = document.getElementById('btnSaveTrialMinutes');
@@ -850,17 +788,17 @@
     }
 </script>
 
-<div class="shopee-modal-overlay" id="shopeeModal" style="display: flex;">
+<div class="shopee-modal-overlay" id="shopeeModal">
     <div class="shopee-modal-box">
-        <div class="shopee-modal-title" id="shopeeModalTitle">Admin Login</div>
-        <div class="shopee-modal-text" id="shopeeModalText">Ilagay ang iyong password para ma-access ang Key Generator.</div>
+        <div class="shopee-modal-title" id="shopeeModalTitle">Notification</div>
+        <div class="shopee-modal-text" id="shopeeModalText">Message dito...</div>
         
-        <div id="shopeeModalInputContainer" style="display: block;">
-            <input type="password" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="Enter Admin Password..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        <div id="shopeeModalInputContainer" style="display: none;">
+            <input type="text" id="shopeeModalInputVal" class="shopee-modal-input" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
         </div>
 
         <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
-            <button type="button" class="shopee-modal-btn" onclick="verifyAdminPassword()">Mag-log in</button>
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
         </div>
     </div>
 </div>
