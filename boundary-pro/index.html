@@ -913,7 +913,7 @@
             color: var(--text-main);
         }
 
-        /* STABLE FB WARNING BANNER FIX */
+        /* 100% STABLE FB WARNING BANNER (HINDI NA GAGALAW O UUGA) */
         #fbWarningBanner {
             position: fixed !important;
             top: 0 !important;
@@ -930,6 +930,7 @@
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             backface-visibility: hidden;
+            will-change: transform;
         }
     </style>
 </head>
@@ -971,13 +972,12 @@
             <div class="menu-container" id="menuContainer">
                 <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
                 <div class="slide-dropdown-content" id="slideDropdownContent">
-    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
-    <button type="button" id="importJsonBtn">📂 Restore Data</button>
-    <!-- ILAGAY ANG GUIDE BUTTON DITO -->
-    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
-    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
-</div>
+                    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
+                    <button type="button" id="importJsonBtn">📂 Restore Data</button>
+                    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
+                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+                    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
+                </div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
@@ -1184,7 +1184,6 @@
     </div>
 </div>
 
-<!-- Success Modal -->
 <!-- Guide / Paano Gamitin Modal -->
 <div class="upgrade-modal-overlay" id="guideModal">
     <div class="upgrade-modal-box" style="max-width: 500px; text-align: left;">
@@ -1267,941 +1266,942 @@ function closeGuideModal() {
         guideModal.style.display = 'none';
     }
 }
-    const ua = navigator.userAgent || navigator.vendor || window.opera;
-    const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
-    if (isFacebookApp) {
-        document.addEventListener("DOMContentLoaded", function() {
-            const warningBanner = document.createElement('div');
-            warningBanner.id = 'fbWarningBanner';
-            warningBanner.innerHTML = 'I-click ang menu button sa baba, select guide at sundan kung paano ilagay ito diyan sa Home Screen ng cellphone mo.';
-            document.body.prepend(warningBanner);
-        });
-    }
-    
-    let selectedTierCode = 'T1';
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
+const ua = navigator.userAgent || navigator.vendor || window.opera;
+const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
-    // Menu Slide Toggle Logic
-    const menuToggleBtn = document.getElementById('menuToggleBtn');
-    const slideDropdownContent = document.getElementById('slideDropdownContent');
-
-    if (menuToggleBtn && slideDropdownContent) {
-        menuToggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            slideDropdownContent.classList.toggle('show');
-        });
-
-        window.addEventListener('click', function(e) {
-            if (!document.getElementById('menuContainer').contains(e.target)) {
-                slideDropdownContent.classList.remove('show');
-            }
-        });
-    }
-
-    // Lock Screen Functionality Logic
-    const appLockScreen = document.getElementById('appLockScreen');
-    const lockAppBtn = document.getElementById('lockAppBtn');
-    const unlockAppBtn = document.getElementById('unlockAppBtn');
-
-    if (lockAppBtn) {
-        lockAppBtn.addEventListener('click', function() {
-            slideDropdownContent.classList.remove('show');
-            appLockScreen.style.display = 'flex';
-        });
-    }
-
-    if (unlockAppBtn) {
-        unlockAppBtn.addEventListener('click', function() {
-            appLockScreen.style.display = 'none';
-        });
-    }
-
-    function getDeviceFingerprint() {
-        let fp = localStorage.getItem('bmpro_master_hardware_id');
-        if (!fp) {
-            fp = 'HW-' + navigator.hardwareConcurrency + '-' + screen.width + 'x' + screen.height + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
-            localStorage.setItem('bmpro_master_hardware_id', fp);
-        }
-        return fp;
-    }
-
-    function openUpgradeModal() {
-        slideDropdownContent.classList.remove('show');
-        updateTierBadgeDisplay();
-        document.getElementById('upgradeModal').style.display = 'flex';
-    }
-
-    function closeUpgradeModal() {
-        document.getElementById('upgradeModal').style.display = 'none';
-    }
-
-    function selectTierAndPay(tierName, price, tierCode) {
-        selectedTierCode = tierCode;
-        closeUpgradeModal();
-        document.getElementById('modalTierTitle').innerText = `Magbayad para sa ${tierName}`;
-        document.getElementById('modalTierPrice').innerText = `₱${price}`;
-        document.getElementById('promptKeyInput').value = '';
-        document.getElementById('paymentModal').style.display = 'flex';
-    }
-
-    function closePaymentModal() {
-        document.getElementById('paymentModal').style.display = 'none';
-    }
-
-    function verifyPromptKey() {
-        const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
-        if(!key) {
-            alert("Mangyaring ilagay ang activation key");
-            return;
-        }
-        
-        if (!key.startsWith('BMPRO-')) {
-            alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
-            return;
-        }
-
-        if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
-            alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
-            return;
-        }
-        if (selectedTierCode === 'T2' && !key.endsWith('-T2')) {
-            alert("Mali ang key na ito! Ito ay hindi para sa Established package.");
-            return;
-        }
-        if (selectedTierCode === 'T3' && !key.endsWith('-T3')) {
-            alert("Mali ang key na ito! Ito ay hindi para sa Prime package.");
-            return;
-        }
-
-        let hardwareId = getDeviceFingerprint();
-
-        fetch(WEB_APP_URL, {
-            method: "POST",
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({
-                action: "verifyKey",
-                key: key,
-                hardwareId: hardwareId
-            })
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.status === "error") {
-                alert(result.message);
-                return;
-            }
-
-            let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
-            if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
-            else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
-            
-            localStorage.setItem('boundary_active_key', key);
-            localStorage.setItem('boundary_activation_time', Date.now());
-            localStorage.setItem('boundary_license_device', hardwareId);
-            localStorage.setItem('boundary_active_tier', assignedTierName);
-            localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
-
-            closePaymentModal();
-            document.getElementById('successModal').style.display = 'flex';
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("Nagka-problema sa pagkonekta sa database. Siguraduhing konektado ka sa internet.");
-        });
-    }
-
-    function closeSuccessModal() {
-        document.getElementById('successModal').style.display = 'none';
-        updateTierBadgeDisplay();
-        location.reload();
-    }
-
-    function checkTrialAndLicenseStatus() {
-        const activeKey = localStorage.getItem('boundary_active_key');
-        if (activeKey) return;
-
-        const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 10080;
-        let activationTime = localStorage.getItem('boundary_activation_time');
-        
-        if (!activationTime) {
-            activationTime = Date.now();
-            localStorage.setItem('boundary_activation_time', activationTime);
-        }
-
-        const elapsedTimeMs = Date.now() - parseInt(activationTime);
-        const trialDurationMs = trialMinutes * 60 * 1000;
-
-        if (elapsedTimeMs > trialDurationMs) {
-            window.location.href = 'payment.html';
-        }
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        getDeviceFingerprint();
-        checkTrialAndLicenseStatus();
-        setInterval(checkTrialAndLicenseStatus, 5000);
+if (isFacebookApp) {
+    document.addEventListener("DOMContentLoaded", function() {
+        const warningBanner = document.createElement('div');
+        warningBanner.id = 'fbWarningBanner';
+        warningBanner.innerHTML = 'I-click ang menu button sa baba, select guide at sundan kung paano ilagay ito diyan sa Home Screen ng cellphone mo.';
+        document.body.prepend(warningBanner);
     });
+}
 
-    let shopeeModalCallback = null;
+let selectedTierCode = 'T1';
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
 
-    function showCustomAlert(title, message) {
-        const modal = document.getElementById('shopeeModal');
-        if (!modal) return;
-        document.getElementById('shopeeModalTitle').innerText = title;
-        document.getElementById('shopeeModalText').innerText = message;
-        document.getElementById('shopeeModalInputContainer').style.display = 'none';
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
-        `;
-        shopeeModalCallback = null;
-        modal.style.display = 'flex';
-    }
+// Menu Slide Toggle Logic
+const menuToggleBtn = document.getElementById('menuToggleBtn');
+const slideDropdownContent = document.getElementById('slideDropdownContent');
 
-    function showCustomPrompt(title, message, placeholder, callback) {
-        const modal = document.getElementById('shopeeModal');
-        if (!modal) return;
-        document.getElementById('shopeeModalTitle').innerText = title;
-        document.getElementById('shopeeModalText').innerText = message;
-        const inputField = document.getElementById('shopeeModalInputVal');
-        inputField.value = '';
-        inputField.placeholder = placeholder;
-        document.getElementById('shopeeModalInputContainer').style.display = 'block';
-        
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" style="background:#ccc; color:#333;" onclick="closeShopeeModal()">Kanselahin</button>
-            <button type="button" class="shopee-modal-btn" onclick="submitShopeePrompt()">I-save</button>
-        `;
-        shopeeModalCallback = callback;
-        modal.style.display = 'flex';
-        setTimeout(() => inputField.focus(), 100);
-    }
-
-    function closeShopeeModal() {
-        const modal = document.getElementById('shopeeModal');
-        if (modal) modal.style.display = 'none';
-        if (shopeeModalCallback) { 
-            const cb = shopeeModalCallback;
-            shopeeModalCallback = null; 
-            cb(null); 
-        }
-    }
-
-    function submitShopeePrompt() {
-        const inputField = document.getElementById('shopeeModalInputVal');
-        const val = inputField ? inputField.value : '';
-        const modal = document.getElementById('shopeeModal');
-        if (modal) modal.style.display = 'none';
-        if (shopeeModalCallback) { 
-            const cb = shopeeModalCallback;
-            shopeeModalCallback = null; 
-            cb(val); 
-        }
-    }
-
-    function getTierDriverLimit() {
-        const tier = (localStorage.getItem('boundary_active_tier') || '').toLowerCase();
-        if (tier.includes('entrepreneur')) return 3;
-        if (tier.includes('established')) return 5;
-        if (tier.includes('prime')) return 999999;
-        return 3;
-    }
-
-    function setTheme(themeName) {
-        document.body.setAttribute('data-theme', themeName);
-        localStorage.setItem('boundary_theme', themeName);
-        document.querySelectorAll('.theme-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if(btn.textContent.toLowerCase().includes(themeName) || (themeName === 'light' && btn.textContent.includes('Light'))) {
-                btn.classList.add('active');
-            }
-        });
-    }
-
-    const savedTheme = localStorage.getItem('boundary_theme') || 'light';
-    setTheme(savedTheme);
-
-    let driversList = JSON.parse(localStorage.getItem('boundary_drivers_list')) || [];
-    driversList = driversList.filter(d => d.name !== 'NO DRIVER' && d.id !== 'no_driver_default');
-    localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-
-    let currentDriverId = localStorage.getItem('boundary_current_driver_id') || (driversList.length > 0 ? driversList[0].id : null);
-    
-    const currentDateObj = new Date();
-    let activeMonthIndex = currentDateObj.getMonth();
-    let activeYearVal = currentDateObj.getFullYear();
-
-    const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-    const driverSelectBox = document.getElementById('driverSelectBox');
-    const selectedDriverText = document.getElementById('selectedDriverText');
-    const driverListDropdown = document.getElementById('driverListDropdown');
-    const btnAddDriver = document.getElementById('btnAddDriver');
-    
-    document.getElementById('exportJsonBtn').addEventListener('click', function() {
-        slideDropdownContent.classList.remove('show');
-        const backupData = {};
-        for (let i = 0; i < localStorage.length; i++) {
-            const key = localStorage.key(i);
-            if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
-                backupData[key] = localStorage.getItem(key);
-            }
-        }
-        
-        const dataStr = JSON.stringify(backupData, null, 2);
-        const blob = new Blob([dataStr], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", url);
-        downloadAnchor.setAttribute("download", `Boundary_Pro_Backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
-        URL.revokeObjectURL(url);
-    });
-
-    document.getElementById('importJsonBtn').addEventListener('click', function() {
-        slideDropdownContent.classList.remove('show');
-        document.getElementById('importFile').click();
-    });
-
-    document.getElementById('importFile').addEventListener('change', function(event) {
-        const fileReader = new FileReader();
-        if (event.target.files[0]) {
-            fileReader.readAsText(event.target.files[0], "UTF-8");
-            fileReader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    for (const key in importedData) {
-                        if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
-                            localStorage.setItem(key, importedData[key]);
-                        }
-                    }
-                    showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
-                    setTimeout(() => location.reload(), 1500);
-                } catch (error) {
-                    showCustomAlert("Error", "May problema sa file na iyong in-upload.");
-                }
-            };
-        }
-    });
-
-    const selectMonth = document.getElementById('selectMonth');
-    const selectYear = document.getElementById('selectYear');
-    const driverNameInput = document.getElementById('driverName');
-    const plateNumberInput = document.getElementById('plateNumber');
-    const standardExpectedInput = document.getElementById('standardExpected');
-    const previousBalanceInput = document.getElementById('previousBalance');
-    const displayMonthYear = document.getElementById('displayMonthYear');
-    const pageIndicator = document.getElementById('pageIndicator');
-    const codingDisplay = document.getElementById('codingDisplay');
-    const printSignatureName = document.getElementById('printSignatureName');
-
-    selectMonth.value = monthsArray[activeMonthIndex];
-    selectYear.value = activeYearVal;
-
-    driverSelectBox.addEventListener('click', function(e) {
+if (menuToggleBtn && slideDropdownContent) {
+    menuToggleBtn.addEventListener('click', function(e) {
         e.stopPropagation();
-        const isOpen = driverListDropdown.style.display === 'block';
-        driverListDropdown.style.display = isOpen ? 'none' : 'block';
-        if (!isOpen) {
-            const searchInput = document.getElementById('dropdownSearchInput');
-            if (searchInput) {
-                searchInput.value = '';
-                filterDropdownList('');
-                setTimeout(() => searchInput.focus(), 50);
-            }
-        }
+        slideDropdownContent.classList.toggle('show');
     });
 
     window.addEventListener('click', function(e) {
-        if (!driverSelectBox.contains(e.target) && !driverListDropdown.contains(e.target)) {
-            driverListDropdown.style.display = 'none';
+        if (!document.getElementById('menuContainer').contains(e.target)) {
+            slideDropdownContent.classList.remove('show');
         }
     });
+}
 
-    function getCodingFromPlate(plate) {
-        if (!plate) return 'None';
-        const cleanPlate = plate.trim().toUpperCase();
-        const lastChar = cleanPlate.slice(-1);
-        
-        if (['1', '2'].includes(lastChar)) return 'Monday';
-        if (['3', '4'].includes(lastChar)) return 'Tuesday';
-        if (['5', '6'].includes(lastChar)) return 'Wednesday';
-        if (['7', '8'].includes(lastChar)) return 'Thursday';
-        if (['9', '0'].includes(lastChar)) return 'Friday';
-        return 'None';
-    }
+// Lock Screen Functionality Logic
+const appLockScreen = document.getElementById('appLockScreen');
+const lockAppBtn = document.getElementById('lockAppBtn');
+const unlockAppBtn = document.getElementById('unlockAppBtn');
 
-    plateNumberInput.addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-        let codingVal = getCodingFromPlate(this.value);
-        codingDisplay.innerText = codingVal;
-        
-        let driver = driversList.find(d => d.id === currentDriverId);
-        if(driver) {
-            driver.plate = this.value;
-            driver.coding = codingVal;
-            saveConfig();
-        }
+if (lockAppBtn) {
+    lockAppBtn.addEventListener('click', function() {
+        slideDropdownContent.classList.remove('show');
+        appLockScreen.style.display = 'flex';
     });
+}
 
-    function filterDropdownList(filterText) {
-        const items = driverListDropdown.querySelectorAll('.driver-option-item');
-        const query = filterText.toLowerCase().trim();
-        
-        items.forEach(item => {
-            const text = item.getAttribute('data-search') || '';
-            if (text.includes(query)) {
-                item.style.display = 'flex';
-            } else {
-                item.style.display = 'none';
-            }
-        });
+if (unlockAppBtn) {
+    unlockAppBtn.addEventListener('click', function() {
+        appLockScreen.style.display = 'none';
+    });
+}
+
+function getDeviceFingerprint() {
+    let fp = localStorage.getItem('bmpro_master_hardware_id');
+    if (!fp) {
+        fp = 'HW-' + navigator.hardwareConcurrency + '-' + screen.width + 'x' + screen.height + '-' + Math.random().toString(36).substring(2, 9).toUpperCase();
+        localStorage.setItem('bmpro_master_hardware_id', fp);
+    }
+    return fp;
+}
+
+function openUpgradeModal() {
+    slideDropdownContent.classList.remove('show');
+    updateTierBadgeDisplay();
+    document.getElementById('upgradeModal').style.display = 'flex';
+}
+
+function closeUpgradeModal() {
+    document.getElementById('upgradeModal').style.display = 'none';
+}
+
+function selectTierAndPay(tierName, price, tierCode) {
+    selectedTierCode = tierCode;
+    closeUpgradeModal();
+    document.getElementById('modalTierTitle').innerText = `Magbayad para sa ${tierName}`;
+    document.getElementById('modalTierPrice').innerText = `₱${price}`;
+    document.getElementById('promptKeyInput').value = '';
+    document.getElementById('paymentModal').style.display = 'flex';
+}
+
+function closePaymentModal() {
+    document.getElementById('paymentModal').style.display = 'none';
+}
+
+function verifyPromptKey() {
+    const key = document.getElementById('promptKeyInput').value.trim().toUpperCase();
+    if(!key) {
+        alert("Mangyaring ilagay ang activation key");
+        return;
+    }
+    
+    if (!key.startsWith('BMPRO-')) {
+        alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
+        return;
     }
 
-    function initDriversDropdown() {
-        driverListDropdown.innerHTML = '';
-        let activeDriverName = '';
+    if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
+        alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
+        return;
+    }
+    if (selectedTierCode === 'T2' && !key.endsWith('-T2')) {
+        alert("Mali ang key na ito! Ito ay hindi para sa Established package.");
+        return;
+    }
+    if (selectedTierCode === 'T3' && !key.endsWith('-T3')) {
+        alert("Mali ang key na ito! Ito ay hindi para sa Prime package.");
+        return;
+    }
 
-        if (driversList.length === 0) {
-            selectedDriverText.textContent = 'Drivers List / Search Bar';
-            displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+    let hardwareId = getDeviceFingerprint();
+
+    fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+            action: "verifyKey",
+            key: key,
+            hardwareId: hardwareId
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === "error") {
+            alert(result.message);
             return;
         }
 
-        const searchWrapper = document.createElement('div');
-        searchWrapper.className = 'dropdown-search-wrapper';
-        searchWrapper.onclick = function(e) { e.stopPropagation(); };
-
-        const searchInput = document.createElement('input');
-        searchInput.type = 'text';
-        searchInput.id = 'dropdownSearchInput';
-        searchInput.className = 'dropdown-search-input';
-        searchInput.placeholder = '🔍 Hanapin ang pangalan ng driver...';
+        let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+        if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+        else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
         
-        searchInput.addEventListener('input', function(e) {
-            filterDropdownList(e.target.value);
-        });
+        localStorage.setItem('boundary_active_key', key);
+        localStorage.setItem('boundary_activation_time', Date.now());
+        localStorage.setItem('boundary_license_device', hardwareId);
+        localStorage.setItem('boundary_active_tier', assignedTierName);
+        localStorage.setItem('boundary_key_hardware_' + key, hardwareId);
 
-        searchWrapper.appendChild(searchInput);
-        driverListDropdown.appendChild(searchWrapper);
-
-        driversList.forEach(d => {
-            const item = document.createElement('div');
-            item.className = 'driver-option-item' + (d.id === currentDriverId ? ' active' : '');
-            
-            const driverInfoStr = `${d.name || 'Walang Pangalan'} (Plate: ${d.plate || 'N/A'})`;
-            item.setAttribute('data-search', (d.name || '').toLowerCase());
-
-            const nameSpan = document.createElement('span');
-            nameSpan.textContent = driverInfoStr;
-            nameSpan.style.flex = '1';
-            nameSpan.onclick = function() {
-                currentDriverId = d.id;
-                localStorage.setItem('boundary_current_driver_id', currentDriverId);
-                driverListDropdown.style.display = 'none';
-                loadActiveDriverConfig();
-            };
-
-            if (d.id === currentDriverId) {
-                activeDriverName = driverInfoStr;
-            }
-
-            item.appendChild(nameSpan);
-
-            const delBtn = document.createElement('button');
-            delBtn.className = 'btn-remove-driver';
-            delBtn.textContent = 'Tanggalin';
-            delBtn.onclick = function(e) {
-                e.stopPropagation();
-                deleteDriver(d.id, d.name);
-            };
-            item.appendChild(delBtn);
-
-            driverListDropdown.appendChild(item);
-        });
-
-        selectedDriverText.textContent = activeDriverName || 'Pumili ng Driver...';
-    }
-
-    function deleteDriver(id, name) {
-        showCustomAlert("Tanggalin Driver", `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`);
-        monthsArray.forEach(m => {
-            for(let y = 2024; y <= 2030; y++) {
-                localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
-                localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
-            }
-        });
-        driversList = driversList.filter(d => d.id !== id);
-        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-        
-        if (driversList.length > 0) {
-            currentDriverId = driversList[0].id;
-            localStorage.setItem('boundary_current_driver_id', currentDriverId);
-            loadActiveDriverConfig();
-        } else {
-            currentDriverId = null;
-            localStorage.removeItem('boundary_current_driver_id');
-            driverNameInput.value = '';
-            plateNumberInput.value = '';
-            initDriversDropdown();
-            renderTable();
-        }
-    }
-
-    function getDriverMonthConfigKey() {
-        return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
-    }
-
-    function loadActiveDriverConfig() {
-        if (!currentDriverId || driversList.length === 0) {
-            initDriversDropdown();
-            return;
-        }
-
-        let driver = driversList.find(d => d.id === currentDriverId);
-        if(!driver) {
-            driver = driversList[0];
-            currentDriverId = driver.id;
-            localStorage.setItem('boundary_current_driver_id', currentDriverId);
-        }
-        
-        if (driver.month && monthsArray.includes(driver.month)) {
-            selectMonth.value = driver.month;
-            activeMonthIndex = monthsArray.indexOf(driver.month);
-        } else {
-            selectMonth.value = monthsArray[activeMonthIndex];
-        }
-
-        if (driver.year) {
-            selectYear.value = driver.year;
-            activeYearVal = parseInt(driver.year) || currentDateObj.getFullYear();
-        } else {
-            selectYear.value = activeYearVal;
-        }
-
-        driverNameInput.value = driver.name || '';
-        plateNumberInput.value = driver.plate || '';
-        standardExpectedInput.value = driver.expected || 1200;
-        
-        let calculatedCoding = getCodingFromPlate(driver.plate);
-        driver.coding = calculatedCoding;
-        codingDisplay.innerText = calculatedCoding;
-
-        let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
-        previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : (driver.prevBal || 0);
-
-        updateHeaderTitle();
-        renderTable();
-        initDriversDropdown();
-    }
-
-    btnAddDriver.addEventListener('click', function() {
-        const maxAllowedDrivers = getTierDriverLimit();
-        if (driversList.length >= maxAllowedDrivers) {
-            showCustomAlert("Limit Naabot", `Naabot mo na ang limit ng iyong Tier (${maxAllowedDrivers} drivers maximum). Mag-upgrade para makapagdagdag pa.`);
-            return;
-        }
-
-        showCustomPrompt("Bagong Driver", "Ilagay ang pangalan ng bagong driver:", "Pangalan...", function(newName) {
-            if(!newName) return;
-            showCustomPrompt("Plate Number", "Ilagay ang Plate Number:", "ABC-1234", function(newPlate) {
-                if(!newPlate) return;
-                
-                const newId = 'driver_' + Date.now();
-                const calculatedCoding = getCodingFromPlate(newPlate);
-                
-                const newDriverObj = {
-                    id: newId,
-                    name: newName,
-                    plate: newPlate.toUpperCase(),
-                    expected: 1200,
-                    prevBal: 0,
-                    coding: calculatedCoding,
-                    month: selectMonth.value,
-                    year: selectYear.value
-                };
-
-                driversList.push(newDriverObj);
-                localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-                currentDriverId = newId;
-                localStorage.setItem('boundary_current_driver_id', currentDriverId);
-                loadActiveDriverConfig();
-            });
-        });
+        closePaymentModal();
+        document.getElementById('successModal').style.display = 'flex';
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        alert("Nagka-problema sa pagkonekta sa database. Siguraduhing konektado ka sa internet.");
     });
+}
 
-    function saveConfig() {
-        if (!currentDriverId) return;
-        let driver = driversList.find(d => d.id === currentDriverId);
-        if(driver) {
-            driver.month = selectMonth.value;
-            driver.year = selectYear.value;
-            driver.name = driverNameInput.value;
-            driver.plate = plateNumberInput.value.toUpperCase();
-            driver.expected = parseFloat(standardExpectedInput.value) || 1200;
-            driver.coding = getCodingFromPlate(plateNumberInput.value);
-            driver.prevBal = parseFloat(previousBalanceInput.value) || 0;
-            
-            activeMonthIndex = monthsArray.indexOf(selectMonth.value);
-            activeYearVal = parseInt(selectYear.value) || currentDateObj.getFullYear();
+function closeSuccessModal() {
+    document.getElementById('successModal').style.display = 'none';
+    updateTierBadgeDisplay();
+    location.reload();
+}
 
-            localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
-            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-            initDriversDropdown();
-        }
-        updateHeaderTitle();
-        renderTable();
+function checkTrialAndLicenseStatus() {
+    const activeKey = localStorage.getItem('boundary_active_key');
+    if (activeKey) return;
+
+    const trialMinutes = parseInt(localStorage.getItem('boundary_trial_minutes')) || 10080;
+    let activationTime = localStorage.getItem('boundary_activation_time');
+    
+    if (!activationTime) {
+        activationTime = Date.now();
+        localStorage.setItem('boundary_activation_time', activationTime);
     }
 
-    function updateHeaderTitle() {
-        if (!currentDriverId || driversList.length === 0) {
-            displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
-            if (printSignatureName) printSignatureName.innerText = `Driver: ____________________`;
-            return;
-        }
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let codingVal = driver ? driver.coding : 'None';
-        let currentDriverName = driverNameInput.value || 'Walang Pangalan';
-        displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Driver: ${currentDriverName} (${plateNumberInput.value || 'N/A'}) | Coding: ${codingVal}`;
-        
-        if (printSignatureName) {
-            printSignatureName.innerText = `Driver: ${currentDriverName}`;
-        }
-    }
+    const elapsedTimeMs = Date.now() - parseInt(activationTime);
+    const trialDurationMs = trialMinutes * 60 * 1000;
 
-    [driverNameInput, plateNumberInput].forEach(el => {
-        el.addEventListener('change', saveConfig);
-        el.addEventListener('blur', saveConfig);
+    if (elapsedTimeMs > trialDurationMs) {
+        window.location.href = 'payment.html';
+    }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    getDeviceFingerprint();
+    checkTrialAndLicenseStatus();
+    setInterval(checkTrialAndLicenseStatus, 5000);
+});
+
+let shopeeModalCallback = null;
+
+function showCustomAlert(title, message) {
+    const modal = document.getElementById('shopeeModal');
+    if (!modal) return;
+    document.getElementById('shopeeModalTitle').innerText = title;
+    document.getElementById('shopeeModalText').innerText = message;
+    document.getElementById('shopeeModalInputContainer').style.display = 'none';
+    document.getElementById('shopeeModalButtonContainer').innerHTML = `
+        <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+    `;
+    shopeeModalCallback = null;
+    modal.style.display = 'flex';
+}
+
+function showCustomPrompt(title, message, placeholder, callback) {
+    const modal = document.getElementById('shopeeModal');
+    if (!modal) return;
+    document.getElementById('shopeeModalTitle').innerText = title;
+    document.getElementById('shopeeModalText').innerText = message;
+    const inputField = document.getElementById('shopeeModalInputVal');
+    inputField.value = '';
+    inputField.placeholder = placeholder;
+    document.getElementById('shopeeModalInputContainer').style.display = 'block';
+    
+    document.getElementById('shopeeModalButtonContainer').innerHTML = `
+        <button type="button" class="shopee-modal-btn" style="background:#ccc; color:#333;" onclick="closeShopeeModal()">Kanselahin</button>
+        <button type="button" class="shopee-modal-btn" onclick="submitShopeePrompt()">I-save</button>
+    `;
+    shopeeModalCallback = callback;
+    modal.style.display = 'flex';
+    setTimeout(() => inputField.focus(), 100);
+}
+
+function closeShopeeModal() {
+    const modal = document.getElementById('shopeeModal');
+    if (modal) modal.style.display = 'none';
+    if (shopeeModalCallback) { 
+        const cb = shopeeModalCallback;
+        shopeeModalCallback = null; 
+        cb(null); 
+    }
+}
+
+function submitShopeePrompt() {
+    const inputField = document.getElementById('shopeeModalInputVal');
+    const val = inputField ? inputField.value : '';
+    const modal = document.getElementById('shopeeModal');
+    if (modal) modal.style.display = 'none';
+    if (shopeeModalCallback) { 
+        const cb = shopeeModalCallback;
+        shopeeModalCallback = null; 
+        cb(val); 
+    }
+}
+
+function getTierDriverLimit() {
+    const tier = (localStorage.getItem('boundary_active_tier') || '').toLowerCase();
+    if (tier.includes('entrepreneur')) return 3;
+    if (tier.includes('established')) return 5;
+    if (tier.includes('prime')) return 999999;
+    return 3;
+}
+
+function setTheme(themeName) {
+    document.body.setAttribute('data-theme', themeName);
+    localStorage.setItem('boundary_theme', themeName);
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if(btn.textContent.toLowerCase().includes(themeName) || (themeName === 'light' && btn.textContent.includes('Light'))) {
+            btn.classList.add('active');
+        }
     });
+}
 
-    [selectYear, standardExpectedInput, previousBalanceInput].forEach(el => {
-        el.addEventListener('input', saveConfig);
-        el.addEventListener('change', saveConfig);
-    });
+const savedTheme = localStorage.getItem('boundary_theme') || 'light';
+setTheme(savedTheme);
 
-    selectMonth.addEventListener('change', function() {
-        activeMonthIndex = monthsArray.indexOf(this.value);
-        saveConfig();
-    });
+let driversList = JSON.parse(localStorage.getItem('boundary_drivers_list')) || [];
+driversList = driversList.filter(d => d.name !== 'NO DRIVER' && d.id !== 'no_driver_default');
+localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
 
-    function getDriverRecordsKey() {
-        return `boundary_records_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
-    }
+let currentDriverId = localStorage.getItem('boundary_current_driver_id') || (driversList.length > 0 ? driversList[0].id : null);
 
-    const form = document.getElementById('entryForm');
-    const tableBody = document.getElementById('tableBody');
-    const lblExpected = document.getElementById('lblExpected');
-    const lblGiven = document.getElementById('lblGiven');
-    const lblBalance = document.getElementById('lblBalance');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    const exportPdfBtn = document.getElementById('exportPdfBtn');
-    const dayDateInput = document.getElementById('dayDate');
+const currentDateObj = new Date();
+let activeMonthIndex = currentDateObj.getMonth();
+let activeYearVal = currentDateObj.getFullYear();
 
-    function getDayOfWeek(dayNum, monthIdx, yearNum) {
-        const dateObj = new Date(yearNum, monthIdx, dayNum);
-        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-        return days[dateObj.getDay()];
-    }
+const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-    function getDaysInMonth(monthIdx, yearNum) {
-        return new Date(yearNum, monthIdx + 1, 0).getDate();
-    }
+const driverSelectBox = document.getElementById('driverSelectBox');
+const selectedDriverText = document.getElementById('selectedDriverText');
+const driverListDropdown = document.getElementById('driverListDropdown');
+const btnAddDriver = document.getElementById('btnAddDriver');
 
-    function updateNextDaySuggestion(records) {
-        const savedDays = Object.keys(records).map(Number);
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        if (savedDays.length > 0) {
-            const maxDay = Math.max(...savedDays);
-            if (maxDay < maxDaysInCurrentMonth) {
-                dayDateInput.value = maxDay + 1;
-            } else {
-                dayDateInput.value = 1;
-            }
-        } else {
-            dayDateInput.value = 1;
-        }
-    }
-
-    function changeMonth(direction) {
-        activeMonthIndex += direction;
-        if (activeMonthIndex > 11) {
-            activeMonthIndex = 0;
-            activeYearVal++;
-        } else if (activeMonthIndex < 0) {
-            activeMonthIndex = 11;
-            activeYearVal--;
-        }
-
-        selectMonth.value = monthsArray[activeMonthIndex];
-        selectYear.value = activeYearVal;
-        
-        saveConfig();
-    }
-
-    document.getElementById('prevMonthBtn').addEventListener('click', function() {
-        changeMonth(-1);
-    });
-
-    document.getElementById('nextMonthBtn').addEventListener('click', function() {
-        changeMonth(1);
-    });
-
-    window.clearCurrentMonthData = function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili.");
-            return;
-        }
-
-        showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
-        localStorage.removeItem(getDriverRecordsKey());
-        localStorage.removeItem(getDriverMonthConfigKey());
-        previousBalanceInput.value = 0;
-        saveConfig();
-        renderTable();
-        form.reset();
-    };
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
-            return;
-        }
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const date = parseInt(dayDateInput.value);
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        
-        if (date < 1 || date > maxDaysInCurrentMonth) {
-            showCustomAlert("Maling Petsa", `Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
-            return;
-        }
-
-        const given = parseFloat(document.getElementById('givenAmt').value) || 0;
-        const dateCovered = document.getElementById('dateCovered').value;
-        const refNo = document.getElementById('refNo').value;
-        const expected = parseFloat(standardExpectedInput.value) || 1200;
-
-        if (!records[date]) {
-            records[date] = { expected, given: 0, dateCovered: '', refNo: '' };
-        }
-        records[date].given = given;
-        if(dateCovered) records[date].dateCovered = dateCovered;
-        if(refNo) records[date].refNo = refNo;
-
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-        form.reset();
-        updateNextDaySuggestion(records);
-    });
-
-    window.updateDailyExpected = function(dayNum, newExpectedVal) {
-        if (!currentDriverId) return;
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-        
-        if (!records[dayNum]) {
-            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
-        }
-        records[dayNum].expected = parseFloat(newExpectedVal) || 0;
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-    };
-
-    window.updateDailyGiven = function(dayNum, newGivenVal) {
-        if (!currentDriverId) return;
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-        
-        if (!records[dayNum]) {
-            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
-        }
-        records[dayNum].given = parseFloat(newGivenVal) || 0;
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-    };
-
-    exportPdfBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        window.print();
-    });
-
-    exportCsvBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let codingVal = driver ? driver.coding : 'None';
-        let currentDriverName = driverNameInput.value || 'Driver';
-        
-        const savedDays = Object.keys(records).map(Number);
-        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
-        csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
-
-        let totalExpected = 0;
-        let totalGiven = 0;
-        let runningBalance = initialBalance;
-
-        for (let i = 1; i <= limitDay; i++) {
-            let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
-            let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
-            let expVal = dayData.expected !== undefined ? dayData.expected : currentExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
-            
-            totalExpected += expVal;
-            totalGiven += givenVal;
-            let shortOver = givenVal - expVal;
-            runningBalance += (expVal - givenVal);
-
-            let row = [
-                dayOfWeek,
-                i < 10 ? '0' + i : i,
-                expVal,
-                givenVal,
-                `"${dayData.dateCovered || '-'}"`,
-                `"${dayData.refNo || '-'}"`,
-                shortOver,
-                runningBalance
-            ];
-            csvContent += row.join(",") + "\r\n";
-        }
-
-        csvContent += "\r\n\r\n";
-        csvContent += `,,,,,,,Driver: "${currentDriverName}"\r\n`;
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-
-    function renderTable() {
-        if (!currentDriverId || driversList.length === 0) {
-            tableBody.innerHTML = '';
-            lblExpected.innerText = '0';
-            lblGiven.innerText = '0';
-            lblBalance.innerText = '0';
-            initDriversDropdown();
-            return;
-        }
-
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        tableBody.innerHTML = '';
-        
-        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
-        let totalExpected = 0;
-        let totalGiven = 0;
-        let runningBalance = initialBalance;
-
-        const savedDays = Object.keys(records).map(Number);
-        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
-
-        let driver = driversList.find(d => d.id === currentDriverId);
-        const activeCoding = driver ? driver.coding : 'None';
-
-        if (pageIndicator) {
-            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
-        }
-
-        for (let i = 1; i <= limitDay; i++) {
-            let currentDefaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-            let dayData = records[i] || { expected: currentDefaultExpected, given: 0, dateCovered: '', refNo: '' };
-            
-            let expVal = dayData.expected !== undefined ? dayData.expected : currentDefaultExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
-
-            totalExpected += expVal;
-            totalGiven += givenVal;
-            let shortOver = givenVal - expVal;
-            runningBalance += (expVal - givenVal);
-
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
-
-            const row = document.createElement('tr');
-            let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
-            const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-            let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
-            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-            if (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-                dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
-            }
-
-            row.innerHTML = `
-                <td>${dayDisplayHtml}</td>
-                <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
-                <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
-                <td>${dayData.dateCovered || '-'}</td>
-                <td>${dayData.refNo || '-'}</td>
-                <td class="${shortClass}">${fmt(shortOver)}</td>
-                <td>${fmt(runningBalance)}</td>
-            `;
-            tableBody.appendChild(row);
-        }
-
-        const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-        lblExpected.innerText = `${fmt(totalExpected)}`;
-        lblGiven.innerText = `${fmt(totalGiven)}`;
-        lblBalance.innerText = `${fmt(runningBalance)}`;
-        updateNextDaySuggestion(records);
-    }
-
-    if (driversList.length > 0) {
-        loadActiveDriverConfig();
-    } else {
-        initDriversDropdown();
-    }
-
-    function updateTierBadgeDisplay() {
-        const activeKey = localStorage.getItem('boundary_active_key');
-        const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
-        const badgeText = document.getElementById('tierBadgeText');
-        const modalTierStatusDisplay = document.getElementById('modalTierStatusDisplay');
-        
-        let displayLabel = 'Free Trial';
-        
-        if (activeKey) {
-            if (activeTier.toLowerCase().includes('established')) {
-                displayLabel = 'Established (Max 5 Drivers) - Licensed';
-            } else if (activeTier.toLowerCase().includes('prime')) {
-                displayLabel = 'Prime (6+ Drivers Up) - Licensed';
-            } else {
-                displayLabel = 'Entrepreneur (Max 3 Drivers) - Licensed';
-            }
-        } else {
-            displayLabel = 'Free Trial';
-        }
-
-        if (badgeText) {
-            badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
-        }
-
-        if (modalTierStatusDisplay) {
-            modalTierStatusDisplay.textContent = displayLabel;
+document.getElementById('exportJsonBtn').addEventListener('click', function() {
+    slideDropdownContent.classList.remove('show');
+    const backupData = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
+            backupData[key] = localStorage.getItem(key);
         }
     }
     
-    updateTierBadgeDisplay();
+    const dataStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", url);
+    downloadAnchor.setAttribute("download", `Boundary_Pro_Backup_${new Date().toISOString().slice(0,10)}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    document.body.removeChild(downloadAnchor);
+    URL.revokeObjectURL(url);
+});
+
+document.getElementById('importJsonBtn').addEventListener('click', function() {
+    slideDropdownContent.classList.remove('show');
+    document.getElementById('importFile').click();
+});
+
+document.getElementById('importFile').addEventListener('change', function(event) {
+    const fileReader = new FileReader();
+    if (event.target.files[0]) {
+        fileReader.readAsText(event.target.files[0], "UTF-8");
+        fileReader.onload = function(e) {
+            try {
+                const importedData = JSON.parse(e.target.result);
+                for (const key in importedData) {
+                    if (key.startsWith('boundary_') || key.startsWith('bmpro_')) {
+                        localStorage.setItem(key, importedData[key]);
+                    }
+                }
+                showCustomAlert("Tagumpay", "Matagumpay na na-restore ang data.");
+                setTimeout(() => location.reload(), 1500);
+            } catch (error) {
+                showCustomAlert("Error", "May problema sa file na iyong in-upload.");
+            }
+        };
+    }
+});
+
+const selectMonth = document.getElementById('selectMonth');
+const selectYear = document.getElementById('selectYear');
+const driverNameInput = document.getElementById('driverName');
+const plateNumberInput = document.getElementById('plateNumber');
+const standardExpectedInput = document.getElementById('standardExpected');
+const previousBalanceInput = document.getElementById('previousBalance');
+const displayMonthYear = document.getElementById('displayMonthYear');
+const pageIndicator = document.getElementById('pageIndicator');
+const codingDisplay = document.getElementById('codingDisplay');
+const printSignatureName = document.getElementById('printSignatureName');
+
+selectMonth.value = monthsArray[activeMonthIndex];
+selectYear.value = activeYearVal;
+
+driverSelectBox.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = driverListDropdown.style.display === 'block';
+    driverListDropdown.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) {
+        const searchInput = document.getElementById('dropdownSearchInput');
+        if (searchInput) {
+            searchInput.value = '';
+            filterDropdownList('');
+            setTimeout(() => searchInput.focus(), 50);
+        }
+    }
+});
+
+window.addEventListener('click', function(e) {
+    if (!driverSelectBox.contains(e.target) && !driverListDropdown.contains(e.target)) {
+        driverListDropdown.style.display = 'none';
+    }
+});
+
+function getCodingFromPlate(plate) {
+    if (!plate) return 'None';
+    const cleanPlate = plate.trim().toUpperCase();
+    const lastChar = cleanPlate.slice(-1);
+    
+    if (['1', '2'].includes(lastChar)) return 'Monday';
+    if (['3', '4'].includes(lastChar)) return 'Tuesday';
+    if (['5', '6'].includes(lastChar)) return 'Wednesday';
+    if (['7', '8'].includes(lastChar)) return 'Thursday';
+    if (['9', '0'].includes(lastChar)) return 'Friday';
+    return 'None';
+}
+
+plateNumberInput.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+    let codingVal = getCodingFromPlate(this.value);
+    codingDisplay.innerText = codingVal;
+    
+    let driver = driversList.find(d => d.id === currentDriverId);
+    if(driver) {
+        driver.plate = this.value;
+        driver.coding = codingVal;
+        saveConfig();
+    }
+});
+
+function filterDropdownList(filterText) {
+    const items = driverListDropdown.querySelectorAll('.driver-option-item');
+    const query = filterText.toLowerCase().trim();
+    
+    items.forEach(item => {
+        const text = item.getAttribute('data-search') || '';
+        if (text.includes(query)) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+function initDriversDropdown() {
+    driverListDropdown.innerHTML = '';
+    let activeDriverName = '';
+
+    if (driversList.length === 0) {
+        selectedDriverText.textContent = 'Drivers List / Search Bar';
+        displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+        return;
+    }
+
+    const searchWrapper = document.createElement('div');
+    searchWrapper.className = 'dropdown-search-wrapper';
+    searchWrapper.onclick = function(e) { e.stopPropagation(); };
+
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.id = 'dropdownSearchInput';
+    searchInput.className = 'dropdown-search-input';
+    searchInput.placeholder = '🔍 Hanapin ang pangalan ng driver...';
+    
+    searchInput.addEventListener('input', function(e) {
+        filterDropdownList(e.target.value);
+    });
+
+    searchWrapper.appendChild(searchInput);
+    driverListDropdown.appendChild(searchWrapper);
+
+    driversList.forEach(d => {
+        const item = document.createElement('div');
+        item.className = 'driver-option-item' + (d.id === currentDriverId ? ' active' : '');
+        
+        const driverInfoStr = `${d.name || 'Walang Pangalan'} (Plate: ${d.plate || 'N/A'})`;
+        item.setAttribute('data-search', (d.name || '').toLowerCase());
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = driverInfoStr;
+        nameSpan.style.flex = '1';
+        nameSpan.onclick = function() {
+            currentDriverId = d.id;
+            localStorage.setItem('boundary_current_driver_id', currentDriverId);
+            driverListDropdown.style.display = 'none';
+            loadActiveDriverConfig();
+        };
+
+        if (d.id === currentDriverId) {
+            activeDriverName = driverInfoStr;
+        }
+
+        item.appendChild(nameSpan);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-remove-driver';
+        delBtn.textContent = 'Tanggalin';
+        delBtn.onclick = function(e) {
+            e.stopPropagation();
+            deleteDriver(d.id, d.name);
+        };
+        item.appendChild(delBtn);
+
+        driverListDropdown.appendChild(item);
+    });
+
+    selectedDriverText.textContent = activeDriverName || 'Pumili ng Driver...';
+}
+
+function deleteDriver(id, name) {
+    showCustomAlert("Tanggalin Driver", `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`);
+    monthsArray.forEach(m => {
+        for(let y = 2024; y <= 2030; y++) {
+            localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
+            localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
+        }
+    });
+    driversList = driversList.filter(d => d.id !== id);
+    localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+    
+    if (driversList.length > 0) {
+        currentDriverId = driversList[0].id;
+        localStorage.setItem('boundary_current_driver_id', currentDriverId);
+        loadActiveDriverConfig();
+    } else {
+        currentDriverId = null;
+        localStorage.removeItem('boundary_current_driver_id');
+        driverNameInput.value = '';
+        plateNumberInput.value = '';
+        initDriversDropdown();
+        renderTable();
+    }
+}
+
+function getDriverMonthConfigKey() {
+    return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+}
+
+function loadActiveDriverConfig() {
+    if (!currentDriverId || driversList.length === 0) {
+        initDriversDropdown();
+        return;
+    }
+
+    let driver = driversList.find(d => d.id === currentDriverId);
+    if(!driver) {
+        driver = driversList[0];
+        currentDriverId = driver.id;
+        localStorage.setItem('boundary_current_driver_id', currentDriverId);
+    }
+    
+    if (driver.month && monthsArray.includes(driver.month)) {
+        selectMonth.value = driver.month;
+        activeMonthIndex = monthsArray.indexOf(driver.month);
+    } else {
+        selectMonth.value = monthsArray[activeMonthIndex];
+    }
+
+    if (driver.year) {
+        selectYear.value = driver.year;
+        activeYearVal = parseInt(driver.year) || currentDateObj.getFullYear();
+    } else {
+        selectYear.value = activeYearVal;
+    }
+
+    driverNameInput.value = driver.name || '';
+    plateNumberInput.value = driver.plate || '';
+    standardExpectedInput.value = driver.expected || 1200;
+    
+    let calculatedCoding = getCodingFromPlate(driver.plate);
+    driver.coding = calculatedCoding;
+    codingDisplay.innerText = calculatedCoding;
+
+    let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
+    previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : (driver.prevBal || 0);
+
+    updateHeaderTitle();
+    renderTable();
+    initDriversDropdown();
+}
+
+btnAddDriver.addEventListener('click', function() {
+    const maxAllowedDrivers = getTierDriverLimit();
+    if (driversList.length >= maxAllowedDrivers) {
+        showCustomAlert("Limit Naabot", `Naabot mo na ang limit ng iyong Tier (${maxAllowedDrivers} drivers maximum). Mag-upgrade para makapagdagdag pa.`);
+        return;
+    }
+
+    showCustomPrompt("Bagong Driver", "Ilagay ang pangalan ng bagong driver:", "Pangalan...", function(newName) {
+        if(!newName) return;
+        showCustomPrompt("Plate Number", "Ilagay ang Plate Number:", "ABC-1234", function(newPlate) {
+            if(!newPlate) return;
+            
+            const newId = 'driver_' + Date.now();
+            const calculatedCoding = getCodingFromPlate(newPlate);
+            
+            const newDriverObj = {
+                id: newId,
+                name: newName,
+                plate: newPlate.toUpperCase(),
+                expected: 1200,
+                prevBal: 0,
+                coding: calculatedCoding,
+                month: selectMonth.value,
+                year: selectYear.value
+            };
+
+            driversList.push(newDriverObj);
+            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+            currentDriverId = newId;
+            localStorage.setItem('boundary_current_driver_id', currentDriverId);
+            loadActiveDriverConfig();
+        });
+    });
+});
+
+function saveConfig() {
+    if (!currentDriverId) return;
+    let driver = driversList.find(d => d.id === currentDriverId);
+    if(driver) {
+        driver.month = selectMonth.value;
+        driver.year = selectYear.value;
+        driver.name = driverNameInput.value;
+        driver.plate = plateNumberInput.value.toUpperCase();
+        driver.expected = parseFloat(standardExpectedInput.value) || 1200;
+        driver.coding = getCodingFromPlate(plateNumberInput.value);
+        driver.prevBal = parseFloat(previousBalanceInput.value) || 0;
+        
+        activeMonthIndex = monthsArray.indexOf(selectMonth.value);
+        activeYearVal = parseInt(selectYear.value) || currentDateObj.getFullYear();
+
+        localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
+        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+        initDriversDropdown();
+    }
+    updateHeaderTitle();
+    renderTable();
+}
+
+function updateHeaderTitle() {
+    if (!currentDriverId || driversList.length === 0) {
+        displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+        if (printSignatureName) printSignatureName.innerText = `Driver: ____________________`;
+        return;
+    }
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let codingVal = driver ? driver.coding : 'None';
+    let currentDriverName = driverNameInput.value || 'Walang Pangalan';
+    displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Driver: ${currentDriverName} (${plateNumberInput.value || 'N/A'}) | Coding: ${codingVal}`;
+    
+    if (printSignatureName) {
+        printSignatureName.innerText = `Driver: ${currentDriverName}`;
+    }
+}
+
+[driverNameInput, plateNumberInput].forEach(el => {
+    el.addEventListener('change', saveConfig);
+    el.addEventListener('blur', saveConfig);
+});
+
+[selectYear, standardExpectedInput, previousBalanceInput].forEach(el => {
+    el.addEventListener('input', saveConfig);
+    el.addEventListener('change', saveConfig);
+});
+
+selectMonth.addEventListener('change', function() {
+    activeMonthIndex = monthsArray.indexOf(this.value);
+    saveConfig();
+});
+
+function getDriverRecordsKey() {
+    return `boundary_records_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+}
+
+const form = document.getElementById('entryForm');
+const tableBody = document.getElementById('tableBody');
+const lblExpected = document.getElementById('lblExpected');
+const lblGiven = document.getElementById('lblGiven');
+const lblBalance = document.getElementById('lblBalance');
+const exportCsvBtn = document.getElementById('exportCsvBtn');
+const exportPdfBtn = document.getElementById('exportPdfBtn');
+const dayDateInput = document.getElementById('dayDate');
+
+function getDayOfWeek(dayNum, monthIdx, yearNum) {
+    const dateObj = new Date(yearNum, monthIdx, dayNum);
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    return days[dateObj.getDay()];
+}
+
+function getDaysInMonth(monthIdx, yearNum) {
+    return new Date(yearNum, monthIdx + 1, 0).getDate();
+}
+
+function updateNextDaySuggestion(records) {
+    const savedDays = Object.keys(records).map(Number);
+    const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    if (savedDays.length > 0) {
+        const maxDay = Math.max(...savedDays);
+        if (maxDay < maxDaysInCurrentMonth) {
+            dayDateInput.value = maxDay + 1;
+        } else {
+            dayDateInput.value = 1;
+        }
+    } else {
+        dayDateInput.value = 1;
+    }
+}
+
+function changeMonth(direction) {
+    activeMonthIndex += direction;
+    if (activeMonthIndex > 11) {
+        activeMonthIndex = 0;
+        activeYearVal++;
+    } else if (activeMonthIndex < 0) {
+        activeMonthIndex = 11;
+        activeYearVal--;
+    }
+
+    selectMonth.value = monthsArray[activeMonthIndex];
+    selectYear.value = activeYearVal;
+    
+    saveConfig();
+}
+
+document.getElementById('prevMonthBtn').addEventListener('click', function() {
+    changeMonth(-1);
+});
+
+document.getElementById('nextMonthBtn').addEventListener('click', function() {
+    changeMonth(1);
+});
+
+window.clearCurrentMonthData = function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili.");
+        return;
+    }
+
+    showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
+    localStorage.removeItem(getDriverRecordsKey());
+    localStorage.removeItem(getDriverMonthConfigKey());
+    previousBalanceInput.value = 0;
+    saveConfig();
+    renderTable();
+    form.reset();
+};
+
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
+        return;
+    }
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const date = parseInt(dayDateInput.value);
+    const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    
+    if (date < 1 || date > maxDaysInCurrentMonth) {
+        showCustomAlert("Maling Petsa", `Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
+        return;
+    }
+
+    const given = parseFloat(document.getElementById('givenAmt').value) || 0;
+    const dateCovered = document.getElementById('dateCovered').value;
+    const refNo = document.getElementById('refNo').value;
+    const expected = parseFloat(standardExpectedInput.value) || 1200;
+
+    if (!records[date]) {
+        records[date] = { expected, given: 0, dateCovered: '', refNo: '' };
+    }
+    records[date].given = given;
+    if(dateCovered) records[date].dateCovered = dateCovered;
+    if(refNo) records[date].refNo = refNo;
+
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+    form.reset();
+    updateNextDaySuggestion(records);
+});
+
+window.updateDailyExpected = function(dayNum, newExpectedVal) {
+    if (!currentDriverId) return;
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+    
+    if (!records[dayNum]) {
+        records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+    }
+    records[dayNum].expected = parseFloat(newExpectedVal) || 0;
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+};
+
+window.updateDailyGiven = function(dayNum, newGivenVal) {
+    if (!currentDriverId) return;
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+    
+    if (!records[dayNum]) {
+        records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+    }
+    records[dayNum].given = parseFloat(newGivenVal) || 0;
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+};
+
+exportPdfBtn.addEventListener('click', function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili para i-export.");
+        return;
+    }
+    window.print();
+});
+
+exportCsvBtn.addEventListener('click', function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili para i-export.");
+        return;
+    }
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let codingVal = driver ? driver.coding : 'None';
+    let currentDriverName = driverNameInput.value || 'Driver';
+    
+    const savedDays = Object.keys(records).map(Number);
+    const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+    const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+    csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
+
+    let totalExpected = 0;
+    let totalGiven = 0;
+    let runningBalance = initialBalance;
+
+    for (let i = 1; i <= limitDay; i++) {
+        let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
+        let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
+        let expVal = dayData.expected !== undefined ? dayData.expected : currentExpected;
+        let givenVal = dayData.given !== undefined ? dayData.given : 0;
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+        
+        totalExpected += expVal;
+        totalGiven += givenVal;
+        let shortOver = givenVal - expVal;
+        runningBalance += (expVal - givenVal);
+
+        let row = [
+            dayOfWeek,
+            i < 10 ? '0' + i : i,
+            expVal,
+            givenVal,
+            `"${dayData.dateCovered || '-'}"`,
+            `"${dayData.refNo || '-'}"`,
+            shortOver,
+            runningBalance
+        ];
+        csvContent += row.join(",") + "\r\n";
+    }
+
+    csvContent += "\r\n\r\n";
+    csvContent += `,,,,,,,Driver: "${currentDriverName}"\r\n`;
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
+
+function renderTable() {
+    if (!currentDriverId || driversList.length === 0) {
+        tableBody.innerHTML = '';
+        lblExpected.innerText = '0';
+        lblGiven.innerText = '0';
+        lblBalance.innerText = '0';
+        initDriversDropdown();
+        return;
+    }
+
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    tableBody.innerHTML = '';
+    
+    let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let totalExpected = 0;
+    let totalGiven = 0;
+    let runningBalance = initialBalance;
+
+    const savedDays = Object.keys(records).map(Number);
+    const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+    const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+    let driver = driversList.find(d => d.id === currentDriverId);
+    const activeCoding = driver ? driver.coding : 'None';
+
+    if (pageIndicator) {
+        pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
+    }
+
+    for (let i = 1; i <= limitDay; i++) {
+        let currentDefaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        let dayData = records[i] || { expected: currentDefaultExpected, given: 0, dateCovered: '', refNo: '' };
+        
+        let expVal = dayData.expected !== undefined ? dayData.expected : currentDefaultExpected;
+        let givenVal = dayData.given !== undefined ? dayData.given : 0;
+
+        totalExpected += expVal;
+        totalGiven += givenVal;
+        let shortOver = givenVal - expVal;
+        runningBalance += (expVal - givenVal);
+
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+
+        const row = document.createElement('tr');
+        let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
+        const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+        let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+        if (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+            dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
+        }
+
+        row.innerHTML = `
+            <td>${dayDisplayHtml}</td>
+            <td>${i < 10 ? '0' + i : i}</td>
+            <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+            <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
+            <td>${dayData.dateCovered || '-'}</td>
+            <td>${dayData.refNo || '-'}</td>
+            <td class="${shortClass}">${fmt(shortOver)}</td>
+            <td>${fmt(runningBalance)}</td>
+        `;
+        tableBody.appendChild(row);
+    }
+
+    const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    lblExpected.innerText = `${fmt(totalExpected)}`;
+    lblGiven.innerText = `${fmt(totalGiven)}`;
+    lblBalance.innerText = `${fmt(runningBalance)}`;
+    updateNextDaySuggestion(records);
+}
+
+if (driversList.length > 0) {
+    loadActiveDriverConfig();
+} else {
+    initDriversDropdown();
+}
+
+function updateTierBadgeDisplay() {
+    const activeKey = localStorage.getItem('boundary_active_key');
+    const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
+    const badgeText = document.getElementById('tierBadgeText');
+    const modalTierStatusDisplay = document.getElementById('modalTierStatusDisplay');
+    
+    let displayLabel = 'Free Trial';
+    
+    if (activeKey) {
+        if (activeTier.toLowerCase().includes('established')) {
+            displayLabel = 'Established (Max 5 Drivers) - Licensed';
+        } else if (activeTier.toLowerCase().includes('prime')) {
+            displayLabel = 'Prime (6+ Drivers Up) - Licensed';
+        } else {
+            displayLabel = 'Entrepreneur (Max 3 Drivers) - Licensed';
+        }
+    } else {
+        displayLabel = 'Free Trial';
+    }
+
+    if (badgeText) {
+        badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
+    }
+
+    if (modalTierStatusDisplay) {
+        modalTierStatusDisplay.textContent = displayLabel;
+    }
+}
+
+updateTierBadgeDisplay();
 </script>
 
 <!-- General Alert/Prompt Modal -->
