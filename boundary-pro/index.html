@@ -912,6 +912,25 @@
             font-size: 0.95rem;
             color: var(--text-main);
         }
+
+        /* STABLE FB WARNING BANNER FIX */
+        #fbWarningBanner {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            background-color: #000000 !important;
+            color: #ffffff !important;
+            padding: 12px 10px !important;
+            text-align: center !important;
+            z-index: 9999999 !important;
+            font-size: 0.8rem !important;
+            font-weight: bold !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            backface-visibility: hidden;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -1254,18 +1273,7 @@ function closeGuideModal() {
     if (isFacebookApp) {
         document.addEventListener("DOMContentLoaded", function() {
             const warningBanner = document.createElement('div');
-            warningBanner.style.position = 'fixed';
-            warningBanner.style.top = '0';
-            warningBanner.style.left = '0';
-            warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#000000'; 
-            warningBanner.style.color = '#ffffff'; 
-            warningBanner.style.padding = '12px 10px';
-            warningBanner.style.textAlign = 'center';
-            warningBanner.style.zIndex = '999999';
-            warningBanner.style.fontSize = '0.8rem';
-            warningBanner.style.fontWeight = 'bold';
-            warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
+            warningBanner.id = 'fbWarningBanner';
             warningBanner.innerHTML = 'I-click ang menu button sa baba, select guide at sundan kung paano ilagay ito diyan sa Home Screen ng cellphone mo.';
             document.body.prepend(warningBanner);
         });
