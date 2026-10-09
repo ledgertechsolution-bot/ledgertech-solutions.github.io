@@ -645,7 +645,7 @@
                 page-break-inside: avoid;
             }
         }
-.gcash-qr-img {
+        .gcash-qr-img {
             width: 160px;
             height: 160px;
             object-fit: contain;
@@ -952,39 +952,49 @@
             <div class="menu-container" id="menuContainer">
                 <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
                 <div class="slide-dropdown-content" id="slideDropdownContent">
-    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
-    <button type="button" id="importJsonBtn">📂 Restore Data</button>
-    <!-- ILAGAY ANG GUIDE BUTTON DITO -->
-    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
-    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
-</div>
+                    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
+                    <button type="button" id="importJsonBtn">📂 Restore Data</button>
+                    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
+                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+                    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
+                </div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
         <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 6px 0;">
         
+        <!-- First Row sa Taas: Month & Year kasama ang Coding Rendering (Include / Exclude) -->
         <div class="form-row" style="margin-bottom: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Month:</label>
-                <select id="selectMonth">
-                    <option value="January">January</option>
-                    <option value="February">February</option>
-                    <option value="March">March</option>
-                    <option value="April">April</option>
-                    <option value="May">May</option>
-                    <option value="June">June</option>
-                    <option value="July">July</option>
-                    <option value="August">August</option>
-                    <option value="September">September</option>
-                    <option value="October">October</option>
-                    <option value="November">November</option>
-                    <option value="December">December</option>
-                </select>
+                <label>Month & Year:</label>
+                <div style="display: flex; gap: 4px;">
+                    <select id="selectMonth" style="flex: 2;">
+                        <option value="January">January</option>
+                        <option value="February">February</option>
+                        <option value="March">March</option>
+                        <option value="April">April</option>
+                        <option value="May">May</option>
+                        <option value="June">June</option>
+                        <option value="July">July</option>
+                        <option value="August">August</option>
+                        <option value="September">September</option>
+                        <option value="October">October</option>
+                        <option value="November">November</option>
+                        <option value="December">December</option>
+                    </select>
+                    <input type="number" id="selectYear" value="2026" style="flex: 1;">
+                </div>
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Year:</label>
-                <input type="number" id="selectYear" value="2026">
+                <label>Coding Rendering:</label>
+                <div style="display: flex; align-items: center; gap: 14px; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); height: 38px;">
+                    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal;">
+                        <input type="radio" name="codingRendering" id="codingInclude" value="include" checked style="width: auto; margin: 0;"> Include
+                    </label>
+                    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal; color: var(--danger);">
+                        <input type="radio" name="codingRendering" id="codingExclude" value="exclude" style="width: auto; margin: 0;"> Exclude
+                    </label>
+                </div>
             </div>
         </div>
 
@@ -1165,7 +1175,6 @@
     </div>
 </div>
 
-<!-- Success Modal -->
 <!-- Guide / Paano Gamitin Modal -->
 <div class="upgrade-modal-overlay" id="guideModal">
     <div class="upgrade-modal-box" style="max-width: 500px; text-align: left;">
@@ -1173,7 +1182,6 @@
         <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 8px; font-size: 1.15rem;">📘 Gabay sa Paggamit ng App</div>
         <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 16px; font-size: 0.85rem;">Boundary Monitoring Pro Guide</div>
 
-        <!-- Dito natin pinalaki ang font size (0.9rem) at inayos ang scroll -->
         <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">
             
             <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito.</p>
@@ -1183,7 +1191,7 @@
                 <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan.</li>
                 <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">copy link</span>.</li>
                 <li style="margin-bottom: 6px;">Punta ka sa browser na gusto mong gamitin (Ex: Chrome, Edge, Firefox, Brave, etc.) at i-paste ang link.</li>
-                <li style="margin-bottom: 6px;">I-click ng tatlong tuldok (⋮) sa taas at piliin ang ADD TO HOME SCREEN</li>
+                <li style="margin-bottom: 6px;">I-click ng tatlong tuldok (⋮) sa taas at piliin ang CREATE SHORTCUT</li>
             </ol>
 
             <div style="background: var(--primary-light); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem;">
@@ -1204,9 +1212,10 @@
                 <li style="margin-bottom: 6px;">Para lumipat ng driver, i-tap lamang ang dropdown box sa taas kung saan nakalagay ang pangalan ng kasalukuyang driver o gamitin ang built-in search bar nito</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">2. Pag-set ng Buwan, Taon, at Boundary Setup</p>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">2. Pag-set ng Buwan, Taon, Coding Rendering, at Boundary Setup</p>
             <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Piliin ang tamang Month at ilagay ang Year</li>
+                <li style="margin-bottom: 6px;">Piliin ang tamang Month & Year (pwedeng gamitin ang month arrows sa ibaba para mabilis lumipat)</li>
+                <li style="margin-bottom: 6px;">Gamitin ang Coding Rendering (Include / Exclude) para itakda kung isasama o gagawing 0 ang expected amount tuwing coding day</li>
                 <li style="margin-bottom: 6px;">Ilagay ang kasunduang halaga sa Boundary Set (halimbawa: ₱1,000 o ₱1,200)</li>
                 <li style="margin-bottom: 6px;">Kung mayroon silang naiwang balanse o utang mula sa nakaraang buwan, ilagay ito sa Previous Balance para awtomatikong maisama sa komputasyon</li>
             </ul>
@@ -1259,15 +1268,15 @@ function closeGuideModal() {
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#FFD700'; // Kulay Gold na background
-            warningBanner.style.color = '#000000'; // Kulay black text
+            warningBanner.style.backgroundColor = '#FFD700'; 
+            warningBanner.style.color = '#000000'; 
             warningBanner.style.padding = '14px 10px';
             warningBanner.style.textAlign = 'center';
             warningBanner.style.zIndex = '99999';
             warningBanner.style.fontSize = '0.85rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'I-CLICK ang <i>"MENU BUTTON"</i> sa baba, select Guide at sundan kung paano ilagay ito sa HOME SCREEN ng cellphone mo .';
+            warningBanner.innerHTML = 'I-CLICK ang <i>"MENU BUTTON"</i> sa baba, select Guide at sundan kung paano ilagay sa HOME SCREEN ng cellphone mo .';
             document.body.prepend(warningBanner);
         });
     }
@@ -1590,6 +1599,10 @@ function closeGuideModal() {
     const pageIndicator = document.getElementById('pageIndicator');
     const codingDisplay = document.getElementById('codingDisplay');
     const printSignatureName = document.getElementById('printSignatureName');
+    
+    // Coding rendering radio buttons
+    const codingIncludeRadio = document.getElementById('codingInclude');
+    const codingExcludeRadio = document.getElementById('codingExclude');
 
     selectMonth.value = monthsArray[activeMonthIndex];
     selectYear.value = activeYearVal;
@@ -1661,6 +1674,7 @@ function closeGuideModal() {
         if (driversList.length === 0) {
             selectedDriverText.textContent = 'Drivers List / Search Bar';
             displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Walang Driver`;
+            pageIndicator.innerText = `${selectMonth.value} ${selectYear.value}`;
             return;
         }
 
@@ -1725,6 +1739,7 @@ function closeGuideModal() {
             for(let y = 2024; y <= 2030; y++) {
                 localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
                 localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
+                localStorage.removeItem(`boundary_codingrendering_${id}_${m}_${y}`);
             }
         });
         driversList = driversList.filter(d => d.id !== id);
@@ -1748,6 +1763,10 @@ function closeGuideModal() {
         return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
     }
 
+    function getDriverCodingRenderingKey() {
+        return `boundary_codingrendering_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    }
+
     function loadActiveDriverConfig() {
         if (!currentDriverId || driversList.length === 0) {
             initDriversDropdown();
@@ -1761,18 +1780,10 @@ function closeGuideModal() {
             localStorage.setItem('boundary_current_driver_id', currentDriverId);
         }
         
-        if (driver.month && monthsArray.includes(driver.month)) {
-            selectMonth.value = driver.month;
-            activeMonthIndex = monthsArray.indexOf(driver.month);
-        } else {
-            selectMonth.value = monthsArray[activeMonthIndex];
-        }
-
-        if (driver.year) {
-            selectYear.value = driver.year;
-            activeYearVal = parseInt(driver.year) || currentDateObj.getFullYear();
-        } else {
-            selectYear.value = activeYearVal;
+        selectMonth.value = monthsArray[activeMonthIndex];
+        selectYear.value = activeYearVal;
+        if (pageIndicator) {
+            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
         }
 
         driverNameInput.value = driver.name || '';
@@ -1784,7 +1795,14 @@ function closeGuideModal() {
         codingDisplay.innerText = calculatedCoding;
 
         let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
-        previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : (driver.prevBal || 0);
+        previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : 0;
+
+        let savedCodingRendering = localStorage.getItem(getDriverCodingRenderingKey());
+        if (savedCodingRendering === 'exclude') {
+            codingExcludeRadio.checked = true;
+        } else {
+            codingIncludeRadio.checked = true;
+        }
 
         updateHeaderTitle();
         renderTable();
@@ -1812,9 +1830,7 @@ function closeGuideModal() {
                     plate: newPlate.toUpperCase(),
                     expected: 1200,
                     prevBal: 0,
-                    coding: calculatedCoding,
-                    month: selectMonth.value,
-                    year: selectYear.value
+                    coding: calculatedCoding
                 };
 
                 driversList.push(newDriverObj);
@@ -1830,18 +1846,17 @@ function closeGuideModal() {
         if (!currentDriverId) return;
         let driver = driversList.find(d => d.id === currentDriverId);
         if(driver) {
-            driver.month = selectMonth.value;
-            driver.year = selectYear.value;
             driver.name = driverNameInput.value;
             driver.plate = plateNumberInput.value.toUpperCase();
             driver.expected = parseFloat(standardExpectedInput.value) || 1200;
             driver.coding = getCodingFromPlate(plateNumberInput.value);
             driver.prevBal = parseFloat(previousBalanceInput.value) || 0;
             
-            activeMonthIndex = monthsArray.indexOf(selectMonth.value);
-            activeYearVal = parseInt(selectYear.value) || currentDateObj.getFullYear();
-
             localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
+            
+            const renderingVal = codingExcludeRadio.checked ? 'exclude' : 'include';
+            localStorage.setItem(getDriverCodingRenderingKey(), renderingVal);
+
             localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
             initDriversDropdown();
         }
@@ -1859,6 +1874,9 @@ function closeGuideModal() {
         let codingVal = driver ? driver.coding : 'None';
         let currentDriverName = driverNameInput.value || 'Walang Pangalan';
         displayMonthYear.innerText = `${selectMonth.value} ${selectYear.value} | Driver: ${currentDriverName} (${plateNumberInput.value || 'N/A'}) | Coding: ${codingVal}`;
+        if (pageIndicator) {
+            pageIndicator.innerText = `${selectMonth.value} ${selectYear.value}`;
+        }
         
         if (printSignatureName) {
             printSignatureName.innerText = `Driver: ${currentDriverName}`;
@@ -1870,14 +1888,23 @@ function closeGuideModal() {
         el.addEventListener('blur', saveConfig);
     });
 
-    [selectYear, standardExpectedInput, previousBalanceInput].forEach(el => {
+    [standardExpectedInput, previousBalanceInput].forEach(el => {
         el.addEventListener('input', saveConfig);
         el.addEventListener('change', saveConfig);
     });
 
     selectMonth.addEventListener('change', function() {
         activeMonthIndex = monthsArray.indexOf(this.value);
-        saveConfig();
+        loadActiveDriverConfig();
+    });
+
+    selectYear.addEventListener('input', function() {
+        activeYearVal = parseInt(this.value) || currentDateObj.getFullYear();
+        loadActiveDriverConfig();
+    });
+
+    [codingIncludeRadio, codingExcludeRadio].forEach(el => {
+        el.addEventListener('change', saveConfig);
     });
 
     function getDriverRecordsKey() {
@@ -1930,8 +1957,11 @@ function closeGuideModal() {
 
         selectMonth.value = monthsArray[activeMonthIndex];
         selectYear.value = activeYearVal;
+        if (pageIndicator) {
+            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
+        }
         
-        saveConfig();
+        loadActiveDriverConfig();
     }
 
     document.getElementById('prevMonthBtn').addEventListener('click', function() {
@@ -1951,9 +1981,10 @@ function closeGuideModal() {
         showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
         localStorage.removeItem(getDriverRecordsKey());
         localStorage.removeItem(getDriverMonthConfigKey());
+        localStorage.removeItem(getDriverCodingRenderingKey());
         previousBalanceInput.value = 0;
-        saveConfig();
-        renderTable();
+        codingIncludeRadio.checked = true;
+        loadActiveDriverConfig();
         form.reset();
     };
 
@@ -1975,11 +2006,22 @@ function closeGuideModal() {
         const given = parseFloat(document.getElementById('givenAmt').value) || 0;
         const dateCovered = document.getElementById('dateCovered').value;
         const refNo = document.getElementById('refNo').value;
-        const expected = parseFloat(standardExpectedInput.value) || 1200;
+        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+
+        let dayOfWeek = getDayOfWeek(date, activeMonthIndex, activeYearVal);
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let activeCoding = driver ? driver.coding : 'None';
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+        
+        let calculatedExpected = defaultExpected;
+        if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+            calculatedExpected = 0;
+        }
 
         if (!records[date]) {
-            records[date] = { expected, given: 0, dateCovered: '', refNo: '' };
+            records[date] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
         }
+        records[date].expected = calculatedExpected;
         records[date].given = given;
         if(dateCovered) records[date].dateCovered = dateCovered;
         if(refNo) records[date].refNo = refNo;
@@ -2008,8 +2050,17 @@ function closeGuideModal() {
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
         const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
         
+        let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let activeCoding = driver ? driver.coding : 'None';
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+        let initialExp = defaultExpected;
+        if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+            initialExp = 0;
+        }
+
         if (!records[dayNum]) {
-            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+            records[dayNum] = { expected: initialExp, given: 0, dateCovered: '', refNo: '' };
         }
         records[dayNum].given = parseFloat(newGivenVal) || 0;
         localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
@@ -2048,12 +2099,20 @@ function closeGuideModal() {
         let totalGiven = 0;
         let runningBalance = initialBalance;
 
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+
         for (let i = 1; i <= limitDay; i++) {
-            let currentExpected = parseFloat(standardExpectedInput.value) || 1200;
-            let dayData = records[i] || { expected: currentExpected, given: 0, dateCovered: '', refNo: '' };
-            let expVal = dayData.expected !== undefined ? dayData.expected : currentExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
             let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+            
+            let calculatedDefaultExpected = defaultExpected;
+            if (codingExcludeRadio.checked && codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal) {
+                calculatedDefaultExpected = 0;
+            }
+
+            let dayData = records[i] || { expected: calculatedDefaultExpected, given: 0, dateCovered: '', refNo: '' };
+            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedDefaultExpected;
+            let givenVal = dayData.given !== undefined ? dayData.given : 0;
             
             totalExpected += expVal;
             totalGiven += givenVal;
@@ -2106,20 +2165,39 @@ function closeGuideModal() {
         const savedDays = Object.keys(records).map(Number);
         const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
         const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+        
+        if (savedDays.length === 0 && initialBalance === 0) {
+            lblExpected.innerText = '0';
+            lblGiven.innerText = '0';
+            lblBalance.innerText = '0';
+            updateNextDaySuggestion(records);
+            return;
+        }
 
+        const limitDay = Math.min(Math.max(maxRecordedDay, 1), maxDaysInCurrentMonth);
         let driver = driversList.find(d => d.id === currentDriverId);
         const activeCoding = driver ? driver.coding : 'None';
+        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        const isExcludeCoding = codingExcludeRadio.checked;
 
         if (pageIndicator) {
             pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
         }
 
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+
         for (let i = 1; i <= limitDay; i++) {
-            let currentDefaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-            let dayData = records[i] || { expected: currentDefaultExpected, given: 0, dateCovered: '', refNo: '' };
+            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            let isCodingDay = (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+
+            let calculatedExpected = defaultExpected;
+            if (isExcludeCoding && isCodingDay) {
+                calculatedExpected = 0;
+            }
+
+            let dayData = records[i] || { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
             
-            let expVal = dayData.expected !== undefined ? dayData.expected : currentDefaultExpected;
+            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedExpected;
             let givenVal = dayData.given !== undefined ? dayData.given : 0;
 
             totalExpected += expVal;
@@ -2127,15 +2205,23 @@ function closeGuideModal() {
             let shortOver = givenVal - expVal;
             runningBalance += (expVal - givenVal);
 
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            let isLastRow = (i === limitDay);
+            let runningBalClass = '';
+            
+            if (isLastRow) {
+                if (runningBalance > 0) {
+                    runningBalClass = 'text-danger'; 
+                } else if (runningBalance < 0) {
+                    runningBalClass = 'text-success'; 
+                }
+            }
 
             const row = document.createElement('tr');
             let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
             const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
             let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
-            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-            if (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+            if (isCodingDay) {
                 dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
             }
 
@@ -2147,7 +2233,7 @@ function closeGuideModal() {
                 <td>${dayData.dateCovered || '-'}</td>
                 <td>${dayData.refNo || '-'}</td>
                 <td class="${shortClass}">${fmt(shortOver)}</td>
-                <td>${fmt(runningBalance)}</td>
+                <td class="${runningBalClass}"><strong>${fmt(runningBalance)}</strong></td>
             `;
             tableBody.appendChild(row);
         }
