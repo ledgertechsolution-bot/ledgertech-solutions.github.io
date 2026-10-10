@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Boundary Pro - Activation & Pricing</title>
+
+<!-- Facebook Open Graph Meta Tags para sa Logo Preview -->
+    <meta property="og:title" content="Boundary Monitoring Pro (BMPro)">
+    <meta property="og:description" content="Ang pinakamagandang app para sa mga transport operator at driver para i-track ang daily boundary at hulog.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
+    <meta property="og:url" content="https://ledgertechsolutions.github.io/">
+    <meta property="og:type" content="website">
     <style>
         :root {
             --bg-color: #f4f9f4;
@@ -306,6 +313,17 @@
         <h1>Na-expire na ang Free Trial!</h1>
         <p class="subtitle" id="subtitleTrialText">Piliin ang estado ng iyong negosyo para sa 1-Year License.</p>
 
+	<div class="price-card">
+                <div class="price-info">
+                    <h3>Personal Use</h3>
+                    <p>1 Driver • 1 Taon</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="price-tag">₱1,000</div>
+                    <button class="btn-select-tier" onclick="openPaymentModal('Personal Use', '1,000', 'T0')">Select</button>
+                </div>
+            </div>
+
         <div class="pricing-grid">
             <div class="price-card">
                 <div class="price-info">
@@ -412,8 +430,11 @@
                 alert("Invalid Key! Ang key na ito ay HINDI galing sa opisyal na Key Generator");
                 return;
             }
-
-            if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
+	    if (selectedTierCode === 'T0' && !key.endsWith('-T0')) {
+                alert("Mali ang key na ito! Ito ay hindi para sa Personal Use package.");
+                return;
+            }
+	    if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
                 alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
                 return;
             }
@@ -444,9 +465,10 @@
                     return;
                 }
 
-                let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
-                if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
-                else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
+                let assignedTierName = 'Personal Use (1 Driver)';
+            	if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+            	else if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+            	else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
                 
                 localStorage.setItem('boundary_active_key', key);
                 localStorage.setItem('boundary_activation_time', Date.now());
