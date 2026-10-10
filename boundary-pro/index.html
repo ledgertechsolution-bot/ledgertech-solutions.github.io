@@ -11,13 +11,13 @@
     <meta name="apple-mobile-web-app-title" content="Boundary Pro">
 
     <!-- I-add at i-update ang mga ito para sa Icon Shortcut -->
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
+    <link rel="apple-touch-icon" href="./logo.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./logo.png">
 
 <!-- Facebook Open Graph Meta Tags para sa Logo Preview -->
     <meta property="og:title" content="Boundary Monitoring Pro (BMPro)">
     <meta property="og:description" content="Ang pinakamagandang app para sa mga transport operator at driver para i-track ang daily boundary at hulog.">
-    <meta property="og:image" content="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
+    <meta property="og:image" content="./logo.png">
     <meta property="og:url" content="https://ledgertechsolutions.github.io/">
     <meta property="og:type" content="website">
     
@@ -29,16 +29,16 @@
         "background_color": "#f4f9f4",
         "theme_color": "#2e7d32",
         "icons": [
-            {
-                "src": "https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png",
-                "sizes": "512x512",
-                "type": "image/png",
-                "purpose": "any maskable"
-            }
-        ]
+    {
+        "src": "./logo.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+    }
+]
     }'>
     
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
+    <link rel="icon" type="image/png" href="./logo.png">
 
     <style>
         :root {
@@ -1181,7 +1181,7 @@
         
         <div class="payment-box">
             <h4>GCASH QR CODE</h4>
-            <img src="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/gcash-qr.png" alt="GCash QR Code" class="gcash-qr-img">
+            <img src="./gcash-qr.png" alt="GCash QR Code" class="gcash-qr-img">
             <div class="payment-name">DA•••L P.</div>
             <div class="highlight-number">+63 977-755-7170</div>
         </div>
@@ -2317,18 +2317,6 @@ function closeGuideModal() {
     }
     
     updateTierBadgeDisplay();
-	// I-register ang Service Worker para maging installable ang app
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then((reg) => {
-        console.log('Service Worker registered! Scope:', reg.scope);
-      })
-      .catch((err) => {
-        console.log('Service Worker registration failed:', err);
-      });
-  });
-}
 </script>
 
 <!-- General Alert/Prompt Modal -->
