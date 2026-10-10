@@ -354,6 +354,7 @@
             <div class="form-group">
                 <label>Status / Package:</label>
                 <select id="tierSelect">
+                    <option value="Personal Use (1 Driver)">Personal Use (1 Driver)</option>
                     <option value="Entrepreneur (Max 3 Drivers)">Entrepreneur (Max 3 Drivers)</option>
                     <option value="Established (Max 5 Drivers)">Established (Max 5 Drivers)</option>
                     <option value="Prime (6 Drivers Up)">Prime (6 Drivers Up)</option>
@@ -538,9 +539,11 @@
                 const expirationStr = expirationDateObj.toLocaleString();
                 const durationStr = `${daysNum} Araw (Days)`;
 
-                let tierCode = 'T1';
+                let tierCode = 'T0';
                 const selectedTierVal = tierSelect.value;
-                if (selectedTierVal.includes('Established')) {
+                if (selectedTierVal.includes('Entrepreneur')) {
+                    tierCode = 'T1';
+                } else if (selectedTierVal.includes('Established')) {
                     tierCode = 'T2';
                 } else if (selectedTierVal.includes('Prime')) {
                     tierCode = 'T3';
