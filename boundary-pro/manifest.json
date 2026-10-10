@@ -1,6 +1,6 @@
 {
   "name": "Boundary Monitoring System Pro",
-  "short_name": "Boundary Pro",
+  "short_name": "BMPro",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
