@@ -9,6 +9,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Boundary Pro">
+
+<!-- Facebook Open Graph Meta Tags para sa Logo Preview -->
+    <meta property="og:title" content="Boundary Monitoring Pro (BMPro)">
+    <meta property="og:description" content="Ang pinakamagandang app para sa mga transport operator at driver para i-track ang daily boundary at hulog.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
+    <meta property="og:url" content="https://ledgertechsolutions.github.io/">
+    <meta property="og:type" content="website">
     
     <link rel="manifest" href='data:application/manifest+json,{
         "name": "Boundary Monitoring System Pro",
@@ -19,15 +26,15 @@
         "theme_color": "#2e7d32",
         "icons": [
             {
-                "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%232e7d32%22/><path d=%22M130 220h252l-30-80H160z%22 fill=%22%23fff%22/><circle cx=%22170%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><circle cx=%22342%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><path d=%22M110 220l-30 60h352l-30-60z%22 fill=%22%2381c784%22/></svg>",
+                "src": "https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png",
                 "sizes": "512x512",
-                "type": "image/svg+xml",
+                "type": "image/png",
                 "purpose": "any maskable"
             }
         ]
     }'>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 512 512%22><rect width=%22512%22 height=%22512%22 rx=%22100%22 fill=%22%232e7d32%22/><path d=%22M130 220h252l-30-80H160z%22 fill=%22%23fff%22/><circle cx=%22170%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/><circle cx=%22342%22 cy=%22340%22 r=%2245%22 fill=%22%23fff%22/></svg>">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ledgertechsolution-bot/ledgertech-solutions.github.io/main/image/logo.png">
 
     <style>
         :root {
@@ -1115,6 +1122,17 @@
             <strong id="modalTierStatusDisplay">Free Trial</strong>
         </div>
 
+	<div class="tier-option-card">
+            <div class="tier-info">
+                <h4>Personal Use</h4>
+                <p>1 Driver • 1 Taon</p>
+            </div>
+            <div class="tier-action">
+                <span class="tier-price">₱1,000</span>
+                <button type="button" class="tier-select-btn" onclick="selectTierAndPay('Personal Use', '1,000', 'T0')">Select</button>
+            </div>
+        </div>
+
         <div class="tier-option-card">
             <div class="tier-info">
                 <h4>Entrepreneur</h4>
@@ -1186,12 +1204,19 @@
             
             <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito.</p>
             
-            <ol style="margin-left: 20px; margin-bottom: 16px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Matapos i-click ang facebook post link, makikita mo ang Boundary Monitoring Pro (BMPro)</li>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">Unang Paraan: <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Open in External Browser</span></p>
+            <ol style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
                 <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan.</li>
-                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">copy link</span>.</li>
-                <li style="margin-bottom: 6px;">Punta ka sa browser na gusto mong gamitin (Ex: Chrome, Edge, Firefox, Brave, etc.) at i-paste ang link.</li>
-                <li style="margin-bottom: 6px;">I-click ang tatlong tuldok (⋮) sa taas at piliin ang CREATE SHORTCUT</li>
+                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Open in External Browser</span></li>
+                <li style="margin-bottom: 6px;">I-click ang tatlong tuldok (⋮) sa taas at hanapin ang Install and Create Shortcut</li>
+            </ol>
+
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">Pangalawang Paraan: <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Copy Link</span></p>
+            <ol style="margin-left: 20px; margin-bottom: 16px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan</li>
+                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">copy link</span></li>
+                <li style="margin-bottom: 6px;">Punta ka sa browser na gusto mong gamitin (Ex: Chrome, Edge, Firefox, Brave, etc.) at i-paste ang link</li>
+                <li style="margin-bottom: 6px;">I-click ang tatlong tuldok (⋮) sa taas at hanapin ang Install and Create Shortcut</li>
             </ol>
 
             <div style="background: var(--primary-light); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem;">
@@ -1275,7 +1300,7 @@ function closeGuideModal() {
             warningBanner.style.fontSize = '0.85rem';
             warningBanner.style.fontWeight = 'bold';
             warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'I-CLICK ang <i>"MENU BUTTON"</i> sa baba, select Guide at sundan kung paano ilagay sa HOME SCREEN ng cellphone mo .';
+            warningBanner.innerHTML = 'To Install I-click ang <i>"MENU BUTTON"</i> ng Apps, select Guide.';
             document.body.prepend(warningBanner);
         });
     }
@@ -1362,7 +1387,11 @@ function closeGuideModal() {
             return;
         }
 
-        if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
+	if (selectedTierCode === 'T0' && !key.endsWith('-T0')) {
+            alert("Mali ang key na ito! Ito ay hindi para sa Personal Use package.");
+            return;
+        }
+	if (selectedTierCode === 'T1' && !key.endsWith('-T1')) {
             alert("Mali ang key na ito! Ito ay hindi para sa Entrepreneur package.");
             return;
         }
@@ -1393,8 +1422,9 @@ function closeGuideModal() {
                 return;
             }
 
-            let assignedTierName = 'Entrepreneur (Max 3 Drivers)';
-            if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
+            let assignedTierName = 'Personal Use (1 Driver)';
+            if (selectedTierCode === 'T1') assignedTierName = 'Entrepreneur (Max 3 Drivers)';
+            else if (selectedTierCode === 'T2') assignedTierName = 'Established (Max 5 Drivers)';
             else if (selectedTierCode === 'T3') assignedTierName = 'Prime (6 Drivers Up)';
             
             localStorage.setItem('boundary_active_key', key);
@@ -1502,10 +1532,11 @@ function closeGuideModal() {
 
     function getTierDriverLimit() {
         const tier = (localStorage.getItem('boundary_active_tier') || '').toLowerCase();
+        if (tier.includes('personal')) return 1;
         if (tier.includes('entrepreneur')) return 3;
         if (tier.includes('established')) return 5;
         if (tier.includes('prime')) return 999999;
-        return 3;
+        return 1;
     }
 
     function setTheme(themeName) {
@@ -2259,7 +2290,9 @@ function closeGuideModal() {
         let displayLabel = 'Free Trial';
         
         if (activeKey) {
-            if (activeTier.toLowerCase().includes('established')) {
+            if (activeTier.toLowerCase().includes('personal')) {
+                displayLabel = 'Personal Use (1 Driver) - Licensed';
+            } else if (activeTier.toLowerCase().includes('established')) {
                 displayLabel = 'Established (Max 5 Drivers) - Licensed';
             } else if (activeTier.toLowerCase().includes('prime')) {
                 displayLabel = 'Prime (6+ Drivers Up) - Licensed';
@@ -2271,7 +2304,7 @@ function closeGuideModal() {
         }
 
         if (badgeText) {
-            badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
+            badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('personal') ? 'Personal Use (1 Driver)' : activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
         }
 
         if (modalTierStatusDisplay) {
