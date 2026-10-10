@@ -155,6 +155,10 @@
 
         .key-row button:hover { opacity: 0.9; }
 
+        .btn-copy {
+            background-color: var(--success) !important;
+        }
+
         .btn-save-client {
             background-color: var(--primary);
             color: white;
@@ -269,7 +273,7 @@
         }
 
         .shopee-modal-overlay {
-            display: none;
+            display: flex;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.4);
@@ -313,7 +317,19 @@
 </head>
 <body data-theme="light">
 
-<div class="container" id="mainAppContainer">
+<!-- ADMIN LOGIN OVERLAY -->
+<div class="shopee-modal-overlay" id="adminLoginModal">
+    <div class="shopee-modal-box">
+        <div class="shopee-modal-title">Admin Restricted Access</div>
+        <div class="shopee-modal-text">Ilagay ang Admin Password para buksan ang Key Generator[cite: 1].</div>
+        <div style="margin-bottom: 12px;">
+            <input type="password" id="adminPasswordInput" placeholder="Password dito..." style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        </div>
+        <button type="button" class="shopee-modal-btn" id="btnLoginSubmit">Mag-log in</button>
+    </div>
+</div>
+
+<div class="container" id="mainAppContainer" style="display: none;">
     <header>
         <h1>BMPro Key Generator & Admin</h1>
         <div class="header-right">
@@ -367,6 +383,7 @@
             <div class="key-row">
                 <button type="button" id="btnGenerateKey">Generate Key</button>
                 <input type="text" id="generatedKeyOutput" placeholder="Key magpapakita rito..." readonly style="font-weight: bold; color: var(--primary);">
+                <button type="button" id="btnCopyKey" class="btn-copy">📋 Copy</button>
             </div>
         </div>
 
@@ -427,8 +444,45 @@
 </div>
 
 <script>
+    (function() {
+        if (sessionStorage.getItem('bmpro_admin_logged_in') === 'true') {
+            document.addEventListener('DOMContentLoaded', () => {
+                document.getElementById('adminLoginModal').style.display = 'none';
+                document.getElementById('mainAppContainer').style.display = 'block';
+                initAdminApp();
+            });
+        }
+    })();
+
     window.addEventListener('DOMContentLoaded', () => {
-        initAdminApp();
+        const adminLoginModal = document.getElementById('adminLoginModal');
+        const mainAppContainer = document.getElementById('mainAppContainer');
+        const adminPasswordInput = document.getElementById('adminPasswordInput');
+        const btnLoginSubmit = document.getElementById('btnLoginSubmit');
+
+        if (sessionStorage.getItem('bmpro_admin_logged_in') !== 'true') {
+            adminPasswordInput.focus();
+        }
+
+        btnLoginSubmit.addEventListener('click', () => {
+            const pwd = adminPasswordInput.value.trim();
+            if (pwd === 'Daneyale11@g') {
+                sessionStorage.setItem('bmpro_admin_logged_in', 'true');
+                adminLoginModal.style.display = 'none';
+                mainAppContainer.style.display = 'block';
+                initAdminApp();
+            } else {
+                showCustomAlert("Mali", "Mali ang iyong Admin Password. Subukang muli.");
+                adminPasswordInput.value = '';
+                adminPasswordInput.focus();
+            }
+        });
+
+        adminPasswordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                btnLoginSubmit.click();
+            }
+        });
     });
 
     function initAdminApp() {
@@ -506,6 +560,7 @@
         const validityDays = document.getElementById('validityDays');
         const btnGenerateKey = document.getElementById('btnGenerateKey');
         const generatedKeyOutput = document.getElementById('generatedKeyOutput');
+        const btnCopyKey = document.getElementById('btnCopyKey');
         const btnSaveClient = document.getElementById('btnSaveClient');
         
         const boxDuration = document.getElementById('boxDuration');
@@ -567,6 +622,23 @@
                     expirationDate: expirationStr,
                     expirationTimestamp: expirationDateObj.getTime()
                 };
+            });
+        }
+
+        // Copy Key Button Feature
+        if(btnCopyKey && !btnCopyKey.hasAttribute('data-bound')) {
+            btnCopyKey.setAttribute('data-bound', 'true');
+            btnCopyKey.addEventListener('click', function() {
+                const keyValue = generatedKeyOutput.value.trim();
+                if (!keyValue) {
+                    showCustomAlert("Babala", "Walang key na para i-copy. Mag-generate muna.");
+                    return;
+                }
+                navigator.clipboard.writeText(keyValue).then(() => {
+                    showCustomAlert("Tagumpay", "Nakopya na ang Activation Key sa clipboard!");
+                }).catch(err => {
+                    showCustomAlert("Error", "Hindi makopya ang key.");
+                });
             });
         }
 
@@ -791,7 +863,7 @@
     }
 </script>
 
-<div class="shopee-modal-overlay" id="shopeeModal">
+<div class="shopee-modal-overlay" id="shopeeModal" style="display: none;">
     <div class="shopee-modal-box">
         <div class="shopee-modal-title" id="shopeeModalTitle">Notification</div>
         <div class="shopee-modal-text" id="shopeeModalText">Message dito...</div>
