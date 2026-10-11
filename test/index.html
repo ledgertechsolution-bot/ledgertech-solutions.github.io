@@ -25,6 +25,9 @@
     
     <link rel="icon" type="image/png" href="./logo.png">
 
+    <!-- HTML2Canvas para sa Image Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
             --bg-color: #f4f9f4;
@@ -510,19 +513,20 @@
         .menu-toggle-btn:hover { opacity: 0.9; }
         .slide-dropdown-content {
             display: none;
-            position: absolute;
-            left: 0;
-            top: 100%;
-            margin-top: 4px;
+            position: fixed; /* Ginawa nating fixed para laging nasa gitna ng screen ng phone tuwing bubuksan */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Eksaktong nasa gitna ng buong screen */
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 99;
-            min-width: 160px;
-            padding: 6px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            z-index: 99999;
+            width: 85vw; /* Sasakop sa halos karamihan ng lapad ng phone para madaling makita at pindutin */
+            max-width: 340px;
+            padding: 14px;
             flex-direction: column;
-            gap: 4px;
+            gap: 8px;
         }
         .slide-dropdown-content.show {
             display: flex;
@@ -534,15 +538,15 @@
             background: var(--bg-color);
             color: var(--text-main);
             border: 1px solid var(--border-color);
-            padding: 6px 8px;
-            font-size: 0.7rem;
-            border-radius: 4px;
+            padding: 14px 16px; /* Mas pinalaki ang pindutan para komportable sa daliri */
+            font-size: 0.9rem;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 10px;
         }
         .slide-dropdown-content button:hover, 
         .slide-dropdown-content a:hover {
@@ -550,7 +554,6 @@
             background: var(--primary-light);
             color: var(--primary);
         }
-
         @media print {
             body {
                 background-color: #ffffff;
@@ -908,11 +911,13 @@
             <div class="menu-container" id="menuContainer">
                 <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
                 <div class="slide-dropdown-content" id="slideDropdownContent">
-                    <button type="button" id="exportJsonBtn">💾 Backup Data</button>
-                    <button type="button" id="importJsonBtn">📂 Restore Data</button>
-                    <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
-                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-                </div>
+    		<button type="button" id="exportJsonBtn">💾 Backup Data</button>
+    		<button type="button" id="importJsonBtn">📂 Restore Data</button>
+    		<button type="button" id="menuExportCsvBtn">📊 Export CSV</button>
+    		<button type="button" id="menuExportPdfBtn">📑 Export PDF</button>
+    		<button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
+    		<a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+		</div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
@@ -1017,10 +1022,10 @@
             </div>
 
             <div class="button-group">
-                <button type="submit" class="btn-save" id="btnSave">I-save</button>
-                <button type="button" class="btn-export" id="exportCsvBtn">Export CSV</button>
-                <button type="button" class="btn-pdf" id="exportPdfBtn">Export PDF</button>
-            </div>
+    		<button type="submit" class="btn-save" id="btnSave">I-save</button>
+    		<button type="button" id="downloadImgBtn" style="background-color: #0288d1; color: white;">💾 Download Image</button>
+    		<button type="button" id="shareMessengerBtn" style="background-color: #0084ff; color: white;">📤 Share to Messenger</button>
+		</div>
         </form>
     </div>
 
@@ -1274,16 +1279,22 @@ function closeGuideModal() {
     if (menuToggleBtn && slideDropdownContent) {
         menuToggleBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            slideDropdownContent.classList.toggle('show');
+            // Kung bukas, isasara; kung sarado, bubuksan (Toggle behavior)
+            if (slideDropdownContent.classList.contains('show')) {
+                slideDropdownContent.classList.remove('show');
+            } else {
+                slideDropdownContent.classList.add('show');
+            }
         });
 
+        // Isara din kapag pinindot sa labas ng menu
         window.addEventListener('click', function(e) {
-            if (!document.getElementById('menuContainer').contains(e.target)) {
+            const menuContainer = document.getElementById('menuContainer');
+            if (menuContainer && !menuContainer.contains(e.target) && !slideDropdownContent.contains(e.target)) {
                 slideDropdownContent.classList.remove('show');
             }
         });
     }
-
     function getDeviceFingerprint() {
         let fp = localStorage.getItem('bmpro_master_hardware_id');
         if (!fp) {
@@ -2254,6 +2265,93 @@ function closeGuideModal() {
     }
     
     updateTierBadgeDisplay();
+	
+// Helper function para i-capture ang Report card bilang Image
+    async function captureReportAsImage() {
+        const reportCard = document.querySelector('.card:has(table)'); // Kinukuha ang buong table report card
+        if (!reportCard) return null;
+        
+        try {
+            const canvas = await html2canvas(reportCard, { scale: 2, useCORS: true });
+            return new Promise((resolve) => {
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, 'image/png');
+            });
+        } catch (error) {
+            console.error("Error capturing image:", error);
+            return null;
+        }
+    }
+
+    // Download Image Button Logic
+    document.getElementById('downloadImgBtn').addEventListener('click', async function() {
+        if (!currentDriverId) {
+            showCustomAlert("Babala", "Walang driver na napili para i-export.");
+            return;
+        }
+        showCustomAlert("Sandali...", "Ginagawa ang image ng report...");
+        
+        const reportCard = document.querySelector('.card:has(table)');
+        html2canvas(reportCard, { scale: 2 }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            closeShopeeModal();
+        });
+    });
+
+    // Share directly to Messenger Logic (Web Share API kung suportado ng phone, fallback sa download + Messenger link)
+    document.getElementById('shareMessengerBtn').addEventListener('click', async function() {
+        if (!currentDriverId) {
+            showCustomAlert("Babala", "Walang driver na napili para i-share.");
+            return;
+        }
+
+        showCustomAlert("Sandali...", "inihahanda ang image para sa Messenger...");
+        
+        const reportCard = document.querySelector('.card:has(table)');
+        html2canvas(reportCard, { scale: 2 }).then(async canvas => {
+            canvas.toBlob(async blob => {
+                closeShopeeModal();
+                const file = new File([blob], "Boundary_Report.png", { type: "image/png" });
+                
+                // Kung sinusuportahan ng mobile browser ang direct file sharing (tulad ng Chrome sa Android)
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Boundary Monitoring Report',
+                            text: `Narito ang hulog report para sa ${monthsArray[activeMonthIndex]} ${activeYearVal}.`
+                        });
+                        return;
+                    } catch (err) {
+                        console.log('Share canceled or failed', err);
+                    }
+                }
+                
+                // Fallback: I-download muna tapos i-open ang Messenger kung sakaling hindi direktang suportado ng lumang browser
+                const link = document.createElement('a');
+                link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
+                link.href = URL.createObjectURL(blob);
+                link.click();
+
+                showCustomAlert("Na-download na ang Image", "Na-save na sa gallery mo ang report image. Pwede mo na itong i-send nang diretso sa chat!");
+            }, 'image/png');
+        });
+    });
+
+    // I-update din ang event listeners para sa menu CSV/PDF buttons
+    document.getElementById('menuExportCsvBtn').addEventListener('click', function() {
+        slideDropdownContent.classList.remove('show');
+        exportCsvBtn.click(); // Trigger ang lumang CSV export logic
+    });
+
+    document.getElementById('menuExportPdfBtn').addEventListener('click', function() {
+        slideDropdownContent.classList.remove('show');
+        exportPdfBtn.click(); // Trigger ang lumang PDF/Print logic
+    });
 </script>
 
 <!-- General Alert/Prompt Modal (Shopee Modal Design) -->
