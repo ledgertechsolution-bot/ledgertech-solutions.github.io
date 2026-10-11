@@ -25,6 +25,8 @@
     
     <link rel="icon" type="image/png" href="./logo.png">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
     <style>
         :root {
             --bg-color: #f4f9f4;
@@ -265,15 +267,25 @@
         }
 
         .table-expected-input, .table-given-input {
-            width: 75px;
-            padding: 3px 5px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.75rem;
-            background: var(--card-bg);
-            color: var(--text-main);
-            text-align: center;
-        }
+    width: 75px;
+    padding: 3px 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: center;
+    text-align-last: center;
+}
+
+/* Para sa mga webkit browser tulad ng Chrome at Brave sa mobile/desktop */
+.table-expected-input::-webkit-inner-spin-button,
+.table-expected-input::-webkit-outer-spin-button,
+.table-given-input::-webkit-inner-spin-button,
+.table-given-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
 
         .button-group {
             display: flex;
@@ -543,47 +555,50 @@
         }
         .menu-toggle-btn:hover { opacity: 0.9; }
         .slide-dropdown-content {
-            display: none;
-            position: absolute;
-            left: 0;
-            top: 100%;
-            margin-top: 4px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 99;
-            min-width: 160px;
-            padding: 6px;
-            flex-direction: column;
-            gap: 4px;
-        }
-        .slide-dropdown-content.show {
-            display: flex;
-        }
-        .slide-dropdown-content button, 
-        .slide-dropdown-content a {
-            width: 100%;
-            text-align: left;
-            background: var(--bg-color);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 6px 8px;
-            font-size: 0.7rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .slide-dropdown-content button:hover, 
-        .slide-dropdown-content a:hover {
-            opacity: 0.85;
-            background: var(--primary-light);
-            color: var(--primary);
-        }
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    margin-top: 6px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    z-index: 99;
+    min-width: 220px; /* Mas pinalapad natin */
+    padding: 8px;
+    flex-direction: column;
+    gap: 8px; /* May magandang agwat bawat button */
+}
+
+.slide-dropdown-content.show {
+    display: flex;
+}
+
+.slide-dropdown-content button, 
+.slide-dropdown-content a {
+    width: 100%;
+    text-align: left;
+    background: var(--bg-color);
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+    padding: 14px 16px; /* Ginawang mataas at maluwag */
+    font-size: 0.9rem;   /* Mas malaki at litaw ang letra */
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.slide-dropdown-content button:hover, 
+.slide-dropdown-content a:hover {
+    opacity: 0.85;
+    background: var(--primary-light);
+    color: var(--primary);
+}
 
         @media print {
             body {
@@ -950,10 +965,12 @@
                 <div class="slide-dropdown-content" id="slideDropdownContent">
                     <button type="button" id="exportJsonBtn">💾 Backup Data</button>
                     <button type="button" id="importJsonBtn">📂 Restore Data</button>
+		    <button type="button" id="exportCsvBtn">📊 Export CSV</button>
+                    <button type="button" id="exportPdfBtn">📄 Export PDF</button>
                     <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
                     <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-                    <button type="button" id="lockAppBtn" style="color: var(--danger);">🔒 Lock App</button>
-                </div>
+		    <button type="button" id="exitMenuBtn" style="color: var(--danger); border-color: var(--danger); justify-content: center; font-weight: bold; margin-top: 6px;">❌ Exit Menu</button>
+	      </div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
         </div>
@@ -1058,15 +1075,15 @@
             </div>
 
             <div class="button-group">
-                <button type="submit" class="btn-save" id="btnSave">I-save</button>
-                <button type="button" class="btn-export" id="exportCsvBtn">Export CSV</button>
-                <button type="button" class="btn-pdf" id="exportPdfBtn">Export PDF</button>
-            </div>
+    		<button type="submit" class="btn-save" id="btnSave">I-save</button>
+    		<button type="button" class="btn-export" id="downloadImgBtn" style="background-color: #0288d1;">📥 Download Image</button>
+   		<button type="button" class="btn-pdf" id="shareBtn" style="background-color: #0084ff;">📤 Share</button>
+	    </div>
         </form>
     </div>
 
-    <div class="card">
-        <div class="table-header-container">
+    <div class="card" id="reportTableCard">
+    	<div class="table-header-container">
             <span class="table-title-left">Record Up to the Last Payment / Balance</span>
             <div class="table-actions-right">
                 <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
@@ -1182,6 +1199,16 @@
     </div>
 </div>
 
+<!-- Success Activation Modal -->
+<div class="modal-overlay" id="successModal">
+    <div class="success-content">
+        <div class="success-icon">🎉</div>
+        <h3 style="color: var(--primary); margin-bottom: 6px; font-size: 1rem;">Tagumpay ang Activation!</h3>
+        <p style="font-size: 0.75rem; opacity: 0.85; margin-bottom: 14px;">Aktibo na ang iyong Boundary Monitoring Pro license.</p>
+        <button type="button" class="btn-success-ok" onclick="closeSuccessModal()">OK</button>
+    </div>
+</div>
+
 <!-- Guide / Paano Gamitin Modal -->
 <div class="upgrade-modal-overlay" id="guideModal">
     <div class="upgrade-modal-box" style="max-width: 500px; text-align: left;">
@@ -1271,6 +1298,7 @@ function closeGuideModal() {
         guideModal.style.display = 'none';
     }
 }
+
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
@@ -1314,24 +1342,12 @@ function closeGuideModal() {
         });
     }
 
-    // Lock Screen Functionality Logic
-    const appLockScreen = document.getElementById('appLockScreen');
-    const lockAppBtn = document.getElementById('lockAppBtn');
-    const unlockAppBtn = document.getElementById('unlockAppBtn');
-
-    if (lockAppBtn) {
-        lockAppBtn.addEventListener('click', function() {
-            slideDropdownContent.classList.remove('show');
-            appLockScreen.style.display = 'flex';
-        });
+	document.getElementById('exitMenuBtn').addEventListener('click', function() {
+    const slideDropdownContent = document.getElementById('slideDropdownContent');
+    if (slideDropdownContent) {
+        slideDropdownContent.classList.remove('show');
     }
-
-    if (unlockAppBtn) {
-        unlockAppBtn.addEventListener('click', function() {
-            appLockScreen.style.display = 'none';
-        });
-    }
-
+});
     function getDeviceFingerprint() {
         let fp = localStorage.getItem('bmpro_master_hardware_id');
         if (!fp) {
@@ -1465,18 +1481,27 @@ function closeGuideModal() {
 
     let shopeeModalCallback = null;
 
-    function showCustomAlert(title, message) {
-        const modal = document.getElementById('shopeeModal');
-        if (!modal) return;
-        document.getElementById('shopeeModalTitle').innerText = title;
-        document.getElementById('shopeeModalText').innerText = message;
-        document.getElementById('shopeeModalInputContainer').style.display = 'none';
-        document.getElementById('shopeeModalButtonContainer').innerHTML = `
-            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
-        `;
-        shopeeModalCallback = null;
-        modal.style.display = 'flex';
-    }
+    function showConfirmModal(title, message, onConfirm) {
+    const modal = document.getElementById('shopeeModal');
+    if (!modal) return;
+    document.getElementById('shopeeModalTitle').innerText = title;
+    document.getElementById('shopeeModalText').innerText = message;
+    document.getElementById('shopeeModalInputContainer').style.display = 'none';
+    
+    // Lagyan ng Cancel at OK buttons
+    document.getElementById('shopeeModalButtonContainer').innerHTML = `
+        <button type="button" class="shopee-modal-btn" style="background: #ccc; color: #333; flex: 1;" onclick="closeShopeeModal()">Cancel</button>
+        <button type="button" class="shopee-modal-btn" id="confirmActionBtn" style="flex: 1;">OK</button>
+    `;
+    
+    modal.style.display = 'flex';
+    
+    // I-attach ang callback sa OK button
+    document.getElementById('confirmActionBtn').onclick = function() {
+        closeShopeeModal();
+        if (onConfirm) onConfirm();
+    };
+}
 
     function showCustomPrompt(title, message, placeholder, callback) {
         const modal = document.getElementById('shopeeModal');
@@ -1753,30 +1778,41 @@ function closeGuideModal() {
     }
 
     function deleteDriver(id, name) {
-        showCustomAlert("Tanggalin Driver", `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`);
-        monthsArray.forEach(m => {
-            for(let y = 2024; y <= 2030; y++) {
-                localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
-                localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
-                localStorage.removeItem(`boundary_codingrendering_${id}_${m}_${y}`);
+    // Gamitin natin ang showConfirmModal para sa ligtas na pagbura na may Cancel at OK
+    showConfirmModal(
+        "Tanggalin ang Driver", 
+        `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`, 
+        function() {
+            // Burahin ang mga nakaimbak na records at configs ng driver na ito sa localStorage
+            monthsArray.forEach(m => {
+                for(let y = 2024; y <= 2030; y++) {
+                    localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
+                    localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
+                    localStorage.removeItem(`boundary_codingrendering_${id}_${m}_${y}`);
+                }
+            });
+            
+            // Salain ang drivers list para maalis ang tinanggal na ID
+            driversList = driversList.filter(d => d.id !== id);
+            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+            
+            if (driversList.length > 0) {
+                currentDriverId = driversList[0].id;
+                localStorage.setItem('boundary_current_driver_id', currentDriverId);
+                loadActiveDriverConfig();
+            } else {
+                currentDriverId = null;
+                localStorage.removeItem('boundary_current_driver_id');
+                driverNameInput.value = '';
+                plateNumberInput.value = '';
+                initDriversDropdown();
+                renderTable();
             }
-        });
-        driversList = driversList.filter(d => d.id !== id);
-        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-        
-        if (driversList.length > 0) {
-            currentDriverId = driversList[0].id;
-            localStorage.setItem('boundary_current_driver_id', currentDriverId);
-            loadActiveDriverConfig();
-        } else {
-            currentDriverId = null;
-            localStorage.removeItem('boundary_current_driver_id');
-            driverNameInput.value = '';
-            plateNumberInput.value = '';
-            initDriversDropdown();
-            renderTable();
+            
+            showCustomAlert("Tagumpay", "Matagumpay na natanggal ang driver.");
         }
-    }
+    );
+}
 
     function getDriverMonthConfigKey() {
         return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
@@ -1992,20 +2028,28 @@ function closeGuideModal() {
     });
 
     window.clearCurrentMonthData = function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili.");
-            return;
-        }
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili.");
+        return;
+    }
 
-        showCustomAlert("I-clear Buwan", `Matagumpay na na-clear ang buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}.`);
-        localStorage.removeItem(getDriverRecordsKey());
-        localStorage.removeItem(getDriverMonthConfigKey());
-        localStorage.removeItem(getDriverCodingRenderingKey());
-        previousBalanceInput.value = 0;
-        codingIncludeRadio.checked = true;
-        loadActiveDriverConfig();
-        form.reset();
-    };
+    // Gagamitin na natin ang may Cancel at OK na prompt
+    showConfirmModal(
+        "I-clear Buwan", 
+        `Sigurado ka bang gusto mong i-clear ang mga tala para sa buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`, 
+        function() {
+            // Ito ang mangyayari kapag pinindot ang OK
+            localStorage.removeItem(getDriverRecordsKey());
+            localStorage.removeItem(getDriverMonthConfigKey());
+            localStorage.removeItem(getDriverCodingRenderingKey());
+            previousBalanceInput.value = 0;
+            codingIncludeRadio.checked = true;
+            loadActiveDriverConfig();
+            form.reset();
+            showCustomAlert("Tagumpay", "Matagumpay na na-clear ang buwang ito.");
+        }
+    );
+};
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -2245,15 +2289,15 @@ function closeGuideModal() {
             }
 
             row.innerHTML = `
-                <td>${dayDisplayHtml}</td>
-                <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
-                <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
-                <td>${dayData.dateCovered || '-'}</td>
-                <td>${dayData.refNo || '-'}</td>
-                <td class="${shortClass}">${fmt(shortOver)}</td>
-                <td class="${runningBalClass}"><strong>${fmt(runningBalance)}</strong></td>
-            `;
+    <td>${dayDisplayHtml}</td>
+    <td>${i < 10 ? '0' + i : i}</td>
+    <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+    <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
+    <td>${dayData.dateCovered || '-'}</td>
+    <td>${dayData.refNo || '-'}</td>
+    <td class="${shortClass}">${fmt(shortOver)}</td>
+    <td class="${runningBalClass}"><strong>${fmt(runningBalance)}</strong></td>
+`;
             tableBody.appendChild(row);
         }
 
@@ -2302,9 +2346,122 @@ function closeGuideModal() {
     }
     
     updateTierBadgeDisplay();
+
+// Function para sa Download Image (Kinakailangan ang html2canvas o maaari nating i-optimize)
+document.getElementById('downloadImgBtn').addEventListener('click', function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili.");
+        return;
+    }
+
+    // Tinanggal na natin ang prompt para diretsong mag-download
+    const targetElement = document.getElementById('reportTableCard');
+    const tableResponsive = targetElement.querySelector('.table-responsive');
+    const originalMaxHeight = tableResponsive.style.maxHeight;
+    tableResponsive.style.maxHeight = 'none';
+
+    // 1. Pansamantalang magdagdag ng Header Title & Driver Details sa taas ng table para sa imahe
+    const currentDriverName = driverNameInput.value || 'Driver';
+    const plateVal = plateNumberInput.value || 'N/A';
+    const driverObj = driversList.find(d => d.id === currentDriverId);
+    const codingVal = driverObj ? driverObj.coding : 'None';
+
+    const reportHeaderDiv = document.createElement('div');
+    reportHeaderDiv.id = 'tempReportHeader';
+    reportHeaderDiv.style.textAlign = 'center';
+    reportHeaderDiv.style.marginBottom = '12px';
+    reportHeaderDiv.style.padding = '8px';
+    reportHeaderDiv.style.borderBottom = '2px solid var(--primary)';
+    reportHeaderDiv.innerHTML = `
+        <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
+        <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main);">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
+        <p style="font-size: 0.75rem; opacity: 0.8; color: var(--text-main);">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+    `;
+    targetElement.prepend(reportHeaderDiv);
+
+    // 2. Palitan muna ng text ang mga input boxes para pantay at hindi maputol sa canvas
+    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
+    inputFields.forEach(input => {
+        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
+    });
+
+    html2canvas(targetElement, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
+    }).then(canvas => {
+        // Alisin ang pansamantalang header at i-restore ang table
+        const tempHeader = document.getElementById('tempReportHeader');
+        if (tempHeader) tempHeader.remove();
+        renderTable();
+        tableResponsive.style.maxHeight = originalMaxHeight;
+        
+        // Diretsong download ng PNG file nang walang sagabal
+        const imageURL = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        
+        downloadLink.href = imageURL;
+        downloadLink.download = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
+        
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }).catch(error => {
+        const tempHeader = document.getElementById('tempReportHeader');
+        if (tempHeader) tempHeader.remove();
+        renderTable();
+        tableResponsive.style.maxHeight = originalMaxHeight;
+        console.error("Error sa pag-capture ng image:", error);
+    });
+});
+document.getElementById('shareBtn').addEventListener('click', async function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili.");
+        return;
+    }
+    
+    const currentDriverName = driverNameInput.value || 'Driver';
+    const totalExpectedLbl = lblExpected.innerText;
+    const totalGivenLbl = lblGiven.innerText;
+    const totalBalanceLbl = lblBalance.innerText;
+    const monthYearStr = `${selectMonth.value} ${selectYear.value}`;
+
+    const textReport = 
+        `📊 BOUNDARY MONITORING REPORT 📊\n` +
+        `👤 Driver: ${currentDriverName}\n` +
+        `📅 Buwan: ${monthYearStr}\n` +
+        `--------------------------\n` +
+        `• Total Expected: ₱${totalExpectedLbl}\n` +
+        `• Total Given: ₱${totalGivenLbl}\n` +
+        `• Running Balance: ₱${totalBalanceLbl}\n` +
+        `--------------------------`;
+
+    // Gamitin ang katutubong share ng telepono para makapili kung saan ibabahagi
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Boundary Report',
+                text: textReport
+            });
+            return; 
+        } catch (error) {
+            if (error.name === 'AbortError') return;
+        }
+    }
+
+    // Fallback para sa PC o kung sakaling hindi suportado: Kopyahin sa clipboard
+    navigator.clipboard.writeText(textReport).then(() => {
+        showCustomAlert(
+            "Na-kopya na sa Clipboard! 📋", 
+            "Naka-save na ang ulat. Pwede mo na itong i-paste sa gustong app."
+        );
+    }).catch(err => {
+        showCustomAlert("Error", "Hindi ma-kopya ang ulat.");
+    });
+});
 </script>
 
-<!-- General Alert/Prompt Modal -->
+<!-- General Alert/Prompt Modal (Shopee Modal Design) -->
 <div class="shopee-modal-overlay" id="shopeeModal">
     <div class="shopee-modal-box">
         <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
