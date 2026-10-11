@@ -1077,7 +1077,7 @@
             <div class="button-group">
     		<button type="submit" class="btn-save" id="btnSave">I-save</button>
     		<button type="button" class="btn-export" id="downloadImgBtn" style="background-color: #0288d1;">📥 Download Image</button>
-   		<button type="button" class="btn-pdf" id="shareMessengerBtn" style="background-color: #0084ff;">💬 Share to Messenger</button>
+   		<button type="button" class="btn-pdf" id="shareBtn" style="background-color: #0084ff;">📤 Share</button>
 	    </div>
         </form>
     </div>
@@ -1778,30 +1778,41 @@ function closeGuideModal() {
     }
 
     function deleteDriver(id, name) {
-        showCustomAlert("Tanggalin Driver", `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`);
-        monthsArray.forEach(m => {
-            for(let y = 2024; y <= 2030; y++) {
-                localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
-                localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
-                localStorage.removeItem(`boundary_codingrendering_${id}_${m}_${y}`);
+    // Gamitin natin ang showConfirmModal para sa ligtas na pagbura na may Cancel at OK
+    showConfirmModal(
+        "Tanggalin ang Driver", 
+        `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`, 
+        function() {
+            // Burahin ang mga nakaimbak na records at configs ng driver na ito sa localStorage
+            monthsArray.forEach(m => {
+                for(let y = 2024; y <= 2030; y++) {
+                    localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
+                    localStorage.removeItem(`boundary_prevbal_${id}_${m}_${y}`);
+                    localStorage.removeItem(`boundary_codingrendering_${id}_${m}_${y}`);
+                }
+            });
+            
+            // Salain ang drivers list para maalis ang tinanggal na ID
+            driversList = driversList.filter(d => d.id !== id);
+            localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
+            
+            if (driversList.length > 0) {
+                currentDriverId = driversList[0].id;
+                localStorage.setItem('boundary_current_driver_id', currentDriverId);
+                loadActiveDriverConfig();
+            } else {
+                currentDriverId = null;
+                localStorage.removeItem('boundary_current_driver_id');
+                driverNameInput.value = '';
+                plateNumberInput.value = '';
+                initDriversDropdown();
+                renderTable();
             }
-        });
-        driversList = driversList.filter(d => d.id !== id);
-        localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
-        
-        if (driversList.length > 0) {
-            currentDriverId = driversList[0].id;
-            localStorage.setItem('boundary_current_driver_id', currentDriverId);
-            loadActiveDriverConfig();
-        } else {
-            currentDriverId = null;
-            localStorage.removeItem('boundary_current_driver_id');
-            driverNameInput.value = '';
-            plateNumberInput.value = '';
-            initDriversDropdown();
-            renderTable();
+            
+            showCustomAlert("Tagumpay", "Matagumpay na natanggal ang driver.");
         }
-    }
+    );
+}
 
     function getDriverMonthConfigKey() {
         return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
@@ -2403,25 +2414,47 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         console.error("Error sa pag-capture ng image:", error);
     });
 });
-// Function para sa Share to Messenger
-document.getElementById('shareMessengerBtn').addEventListener('click', function() {
+document.getElementById('shareMessengerBtn').addEventListener('click', async function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
         return;
     }
+    
     const currentDriverName = driverNameInput.value || 'Driver';
     const totalExpectedLbl = lblExpected.innerText;
     const totalGivenLbl = lblGiven.innerText;
     const totalBalanceLbl = lblBalance.innerText;
-    
-    const message = encodeURIComponent(
-        `Ulat para kay ${currentDriverName} (${selectMonth.value} ${selectYear.value})\n` +
-        `Expected: ₱${totalExpectedLbl}\n` +
-        `Given: ₱${totalGivenLbl}\n` +
-        `Running Balance: ₱${totalBalanceLbl}`
-    );
-    
-    window.open(`https://wa.me/?text=${message}`, '_blank'); // O kaya ay direct messenger link
+    const monthYearStr = `${selectMonth.value} ${selectYear.value}`;
+
+    const textReport = 
+        `📊 BOUNDARY MONITORING REPORT 📊\n` +
+        `👤 Driver: ${currentDriverName}\n` +
+        `📅 Buwan: ${monthYearStr}\n` +
+        `--------------------------\n` +
+        `• Total Expected: ₱${totalExpectedLbl}\n` +
+        `• Total Given: ₱${totalGivenLbl}\n` +
+        `• Running Balance: ₱${totalBalanceLbl}\n` +
+        `--------------------------`;
+
+    // Suriin kung suportado ng browser ang katutubong share ng phone
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'Boundary Report',
+                text: textReport,
+                url: window.location.href // O optional link ng app mo
+            });
+        } catch (error) {
+            if (error.name !== 'AbortError') {
+                console.error("Error sa pag-share:", error);
+            }
+        }
+    } else {
+        // Fallback kung sakaling sa desktop o hindi suportado ng browser
+        navigator.clipboard.writeText(textReport).then(() => {
+            showCustomAlert("Na-kopya na!", "Naka-save sa clipboard ang ulat.");
+        });
+    }
 });
 </script>
 
