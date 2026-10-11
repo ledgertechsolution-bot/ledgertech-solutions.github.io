@@ -2049,19 +2049,6 @@ function closeGuideModal() {
         renderTable();
     };
 
-    exportPdfBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        window.print();
-    });
-
-    exportCsvBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
         let initialBalance = parseFloat(previousBalanceInput.value) || 0;
         let driver = driversList.find(d => d.id === currentDriverId);
@@ -2288,7 +2275,7 @@ function closeGuideModal() {
         }
     }
 
-    // ==========================================
+   // ==========================================
     // IMAGE CAPTURE & DOWNLOAD LOGIC
     // ==========================================
     const downloadImgBtn = document.getElementById('downloadImgBtn');
@@ -2351,7 +2338,6 @@ function closeGuideModal() {
                         }
                     }
                     
-                    // Fallback para sa mga browser na hindi direktang nagpapahintulot ng share ng file
                     const link = document.createElement('a');
                     link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
                     link.href = URL.createObjectURL(blob);
