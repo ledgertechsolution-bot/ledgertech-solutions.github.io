@@ -554,21 +554,28 @@
             gap: 4px;
         }
         .menu-toggle-btn:hover { opacity: 0.9; }
-        .slide-dropdown-content {
+        /* Menu Slide Dropdown Styles - Pinalitang mas siksik at nakalinya pampulido */
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.slide-dropdown-content {
     display: none;
     position: absolute;
-    left: 0;
+    right: 0; /* Nakalinya sa kanang gilid ng button para pumunta paka-kaliwa ang bukas */
+    left: auto;
     top: 100%;
     margin-top: 6px;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     z-index: 99;
-    min-width: 220px; /* Mas pinalapad natin */
-    padding: 8px;
+    min-width: 180px; /* Binuhat natin para mas siksik at hindi masyadong malapad */
+    padding: 6px;
     flex-direction: column;
-    gap: 8px; /* May magandang agwat bawat button */
+    gap: 5px;
 }
 
 .slide-dropdown-content.show {
@@ -582,15 +589,15 @@
     background: var(--bg-color);
     color: var(--text-main);
     border: 1px solid var(--border-color);
-    padding: 14px 16px; /* Ginawang mataas at maluwag */
-    font-size: 0.9rem;   /* Mas malaki at litaw ang letra */
-    border-radius: 8px;
+    padding: 9px 12px; /* Ginawang katamtaman ang taas at laki para hindi sobranglaki */
+    font-size: 0.8rem;   /* Sakto ang liwanag at laki ng letra */
+    border-radius: 6px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 .slide-dropdown-content button:hover, 
@@ -969,7 +976,7 @@
                     <button type="button" id="exportPdfBtn">📄 Export PDF</button>
                     <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
                     <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
-		    <button type="button" id="exitMenuBtn" style="color: var(--danger); border-color: var(--danger); justify-content: center; font-weight: bold; margin-top: 6px;">❌ Exit Menu</button>
+		    <a href="javascript:void(0);" id="exitMenuBtn" style="justify-content: center; font-weight: 600; margin-top: 4px;">Close Menu</a>
 	      </div>
             </div>
             <input type="file" id="importFile" accept=".json" style="display: none;">
@@ -1077,7 +1084,6 @@
             <div class="button-group">
     		<button type="submit" class="btn-save" id="btnSave">I-save</button>
     		<button type="button" class="btn-export" id="downloadImgBtn" style="background-color: #0288d1;">📥 Download Image</button>
-   		<button type="button" class="btn-pdf" id="shareBtn" style="background-color: #0084ff;">📤 Share</button>
 	    </div>
         </form>
     </div>
@@ -2423,101 +2429,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         console.error("Error sa pag-capture ng image:", error);
     });
 });
-document.getElementById('shareBtn').addEventListener('click', async function() {
-    if (!currentDriverId) {
-        showCustomAlert("Babala", "Walang driver na napili.");
-        return;
-    }
 
-    showCustomAlert("Share", "Inihahanda ang larawan ng ulat para i-share...");
-
-    const targetElement = document.getElementById('reportTableCard');
-    const tableResponsive = targetElement.querySelector('.table-responsive');
-    const originalMaxHeight = tableResponsive.style.maxHeight;
-    const originalOverflow = tableResponsive.style.overflowX;
-    
-    tableResponsive.style.maxHeight = 'none';
-    tableResponsive.style.overflowX = 'visible';
-    targetElement.style.width = '100%';
-
-    const currentDriverName = driverNameInput.value || 'Driver';
-    const plateVal = plateNumberInput.value || 'N/A';
-    const driverObj = driversList.find(d => d.id === currentDriverId);
-    const codingVal = driverObj ? driverObj.coding : 'None';
-
-    const reportHeaderDiv = document.createElement('div');
-    reportHeaderDiv.id = 'tempReportHeader';
-    reportHeaderDiv.style.textAlign = 'center';
-    reportHeaderDiv.style.marginBottom = '12px';
-    reportHeaderDiv.style.padding = '8px';
-    reportHeaderDiv.style.borderBottom = '2px solid var(--primary)';
-    reportHeaderDiv.innerHTML = `
-        <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
-        <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main);">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
-        <p style="font-size: 0.75rem; opacity: 0.8; color: var(--text-main);">Buwan: ${selectMonth.value} ${selectYear.value}</p>
-    `;
-    targetElement.prepend(reportHeaderDiv);
-
-    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
-    inputFields.forEach(input => {
-        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
-    });
-
-    html2canvas(targetElement, {
-        scale: 2,
-        useCORS: true,
-        windowWidth: 1024,
-        backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
-    }).then(async canvas => {
-        const tempHeader = document.getElementById('tempReportHeader');
-        if (tempHeader) tempHeader.remove();
-        tableResponsive.style.maxHeight = originalMaxHeight;
-        tableResponsive.style.overflowX = originalOverflow;
-        targetElement.style.width = '';
-        renderTable();
-        
-        closeShopeeModal();
-
-        // I-convert ang canvas patungong File para ma-share nang direkta
-        canvas.toBlob(async function(blob) {
-            const fileName = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
-            const file = new File([blob], fileName, { type: 'image/png' });
-
-            // Suriin kung kaya ng browser ang pag-share ng files
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        title: 'Boundary Report',
-                        text: `Ulat para kay ${currentDriverName} (${selectMonth.value} ${selectYear.value})`,
-                        files: [file]
-                    });
-                } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        console.error("Error sa pag-share:", error);
-                    }
-                }
-            } else {
-                // Fallback: Kung hindi suportado ang file sharing, i-download na lang tulad ng dati
-                const downloadLink = document.createElement('a');
-                downloadLink.href = URL.createObjectURL(blob);
-                downloadLink.download = fileName;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                showCustomAlert("Impormasyon", "Na-download ang larawan dahil hindi direktang suportado ng iyong browser ang file sharing.");
-            }
-        }, 'image/png');
-
-    }).catch(error => {
-        const tempHeader = document.getElementById('tempReportHeader');
-        if (tempHeader) tempHeader.remove();
-        tableResponsive.style.maxHeight = originalMaxHeight;
-        tableResponsive.style.overflowX = originalOverflow;
-        targetElement.style.width = '';
-        renderTable();
-        console.error("Error sa pag-capture ng image:", error);
-    });
-});
 </script>
 
 <!-- General Alert/Prompt Modal (Shopee Modal Design) -->
