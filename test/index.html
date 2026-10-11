@@ -1029,9 +1029,9 @@
         </form>
     </div>
 
-    <div class="card">
-        <div class="table-header-container">
-            <span class="table-title-left">Record Up to the Last Payment / Balance</span>
+   <div class="card" id="reportCardContainer">
+    <div class="table-header-container">
+        <span class="table-title-left">Record Up to the Last Payment / Balance</span>
             <div class="table-actions-right">
                 <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
                 <div class="page-nav-right">
@@ -2266,91 +2266,173 @@ function closeGuideModal() {
     
     updateTierBadgeDisplay();
 	
-// Helper function para i-capture ang Report card bilang Image
+// Helper function para i-capture ang Report card gamit ang ID
     async function captureReportAsImage() {
-        const reportCard = document.querySelector('.card:has(table)'); // Kinukuha ang buong table report card
-        if (!reportCard) return null;
+        const reportCard = document.getElementById('reportCardContainer');
+        if (!reportCard) {
+            showCustomAlert("Error", "Hindi makita ang report table container.");
+            return null;
+        }
         
         try {
-            const canvas = await html2canvas(reportCard, { scale: 2, useCORS: true });
-            return new Promise((resolve) => {
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, 'image/png');
+            const canvas = await html2canvas(reportCard, { 
+                scale: 2, 
+                useCORS: true,
+                backgroundColor: null // Sumusunod sa kasalukuyang theme (light/dark)
             });
+            return canvas;
         } catch (error) {
             console.error("Error capturing image:", error);
+            showCustomAlert("Error", "Nagka-problema sa pagkuha ng image.");
             return null;
         }
     }
 
     // Download Image Button Logic
-    document.getElementById('downloadImgBtn').addEventListener('click', async function() {
+    document.getElementById('downloadImgBtn').addEventListener('click', function() {
         if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
+            showCustomAlert("Babala", "Walang driver na napili.");
             return;
         }
-        showCustomAlert("Sandali...", "Ginagawa ang image ng report...");
         
-        const reportCard = document.querySelector('.card:has(table)');
-        html2canvas(reportCard, { scale: 2 }).then(canvas => {
+        const reportCard = document.getElementById('reportCardContainer');
+        if (!reportCard) {
+            showCustomAlert("Error", "Hindi makita ang table container.");
+            return;
+        }
+
+        // Direktang i-render ang html2canvas nang walang sagabal na alert modal sa simula
+        html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
             const link = document.createElement('a');
             link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-            closeShopeeModal();
+        }).catch(err => {
+            console.error(err);
+            showCustomAlert("Error", "Hindi ma-convert ang image.");
         });
     });
 
-    // Share directly to Messenger Logic (Web Share API kung suportado ng phone, fallback sa download + Messenger link)
-    document.getElementById('shareMessengerBtn').addEventListener('click', async function() {
+    // Share to Messenger Button Logic
+    document.getElementById('shareMessengerBtn').addEventListener('click', function() {
         if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-share.");
+            showCustomAlert("Babala", "Walang driver na napili.");
             return;
         }
 
-        showCustomAlert("Sandali...", "inihahanda ang image para sa Messenger...");
-        
-        const reportCard = document.querySelector('.card:has(table)');
-        html2canvas(reportCard, { scale: 2 }).then(async canvas => {
+        const reportCard = document.getElementById('reportCardContainer');
+        if (!reportCard) {
+            showCustomAlert("Error", "Hindi makita ang table container.");
+            return;
+        }
+
+        html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
             canvas.toBlob(async blob => {
-                closeShopeeModal();
                 const file = new File([blob], "Boundary_Report.png", { type: "image/png" });
                 
-                // Kung sinusuportahan ng mobile browser ang direct file sharing (tulad ng Chrome sa Android)
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
                     try {
                         await navigator.share({
                             files: [file],
                             title: 'Boundary Monitoring Report',
-                            text: `Narito ang hulog report para sa ${monthsArray[activeMonthIndex]} ${activeYearVal}.`
+                            text: `Hulog report para sa ${monthsArray[activeMonthIndex]} ${activeYearVal}.`
                         });
                         return;
                     } catch (err) {
-                        console.log('Share canceled or failed', err);
+                        console.log('Share canceled', err);
                     }
                 }
                 
-                // Fallback: I-download muna tapos i-open ang Messenger kung sakaling hindi direktang suportado ng lumang browser
+                // Fallback kung sakaling hindi suportado ng browser ang direct share
                 const link = document.createElement('a');
                 link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
                 link.href = URL.createObjectURL(blob);
                 link.click();
 
-                showCustomAlert("Na-download na ang Image", "Na-save na sa gallery mo ang report image. Pwede mo na itong i-send nang diretso sa chat!");
+                showCustomAlert("Tagumpay", "Na-save na sa iyong device ang image file. Pwede mo na itong i-attach sa Messenger!");
             }, 'image/png');
+        }).catch(err => {
+            console.error(err);
+            showCustomAlert("Error", "Hindi ma-proseso ang image.");
         });
     });
 
-    // I-update din ang event listeners para sa menu CSV/PDF buttons
+    // Menu CSV Export Button Logic
     document.getElementById('menuExportCsvBtn').addEventListener('click', function() {
         slideDropdownContent.classList.remove('show');
-        exportCsvBtn.click(); // Trigger ang lumang CSV export logic
+        if (!currentDriverId) {
+            showCustomAlert("Babala", "Walang driver na napili para i-export.");
+            return;
+        }
+        // Direktang kinukuha ang CSV logic para hindi umasa sa lumang button ID
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let codingVal = driver ? driver.coding : 'None';
+        let currentDriverName = driverNameInput.value || 'Driver';
+        
+        const savedDays = Object.keys(records).map(Number);
+        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+        csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
+
+        let totalExpected = 0;
+        let totalGiven = 0;
+        let runningBalance = initialBalance;
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+
+        for (let i = 1; i <= limitDay; i++) {
+            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+            
+            let calculatedDefaultExpected = defaultExpected;
+            if (codingExcludeRadio.checked && codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal) {
+                calculatedDefaultExpected = 0;
+            }
+
+            let dayData = records[i] || { expected: calculatedDefaultExpected, given: 0, dateCovered: '', refNo: '' };
+            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedDefaultExpected;
+            let givenVal = dayData.given !== undefined ? dayData.given : 0;
+            
+            totalExpected += expVal;
+            totalGiven += givenVal;
+            let shortOver = givenVal - expVal;
+            runningBalance += (expVal - givenVal);
+
+            let row = [
+                dayOfWeek,
+                i < 10 ? '0' + i : i,
+                expVal,
+                givenVal,
+                `"${dayData.dateCovered || '-'}"`,
+                `"${dayData.refNo || '-'}"`,
+                shortOver,
+                runningBalance
+            ];
+            csvContent += row.join(",") + "\r\n";
+        }
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     });
 
+    // Menu PDF/Print Button Logic
     document.getElementById('menuExportPdfBtn').addEventListener('click', function() {
         slideDropdownContent.classList.remove('show');
-        exportPdfBtn.click(); // Trigger ang lumang PDF/Print logic
+        if (!currentDriverId) {
+            showCustomAlert("Babala", "Walang driver na napili para i-export.");
+            return;
+        }
+        window.print();
     });
 </script>
 
