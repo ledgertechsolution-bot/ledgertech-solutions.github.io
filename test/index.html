@@ -2288,152 +2288,171 @@ function closeGuideModal() {
         }
     }
 
-    // Download Image Button Logic
-    document.getElementById('downloadImgBtn').addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili.");
-            return;
-        }
-        
-        const reportCard = document.getElementById('reportCardContainer');
-        if (!reportCard) {
-            showCustomAlert("Error", "Hindi makita ang table container.");
-            return;
-        }
-
-        // Direktang i-render ang html2canvas nang walang sagabal na alert modal sa simula
-        html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(err => {
-            console.error(err);
-            showCustomAlert("Error", "Hindi ma-convert ang image.");
-        });
-    });
-
-    // Share to Messenger Button Logic
-    document.getElementById('shareMessengerBtn').addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili.");
-            return;
-        }
-
-        const reportCard = document.getElementById('reportCardContainer');
-        if (!reportCard) {
-            showCustomAlert("Error", "Hindi makita ang table container.");
-            return;
-        }
-
-        html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
-            canvas.toBlob(async blob => {
-                const file = new File([blob], "Boundary_Report.png", { type: "image/png" });
-                
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                    try {
-                        await navigator.share({
-                            files: [file],
-                            title: 'Boundary Monitoring Report',
-                            text: `Hulog report para sa ${monthsArray[activeMonthIndex]} ${activeYearVal}.`
-                        });
-                        return;
-                    } catch (err) {
-                        console.log('Share canceled', err);
-                    }
-                }
-                
-                // Fallback kung sakaling hindi suportado ng browser ang direct share
-                const link = document.createElement('a');
-                link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
-                link.href = URL.createObjectURL(blob);
-                link.click();
-
-                showCustomAlert("Tagumpay", "Na-save na sa iyong device ang image file. Pwede mo na itong i-attach sa Messenger!");
-            }, 'image/png');
-        }).catch(err => {
-            console.error(err);
-            showCustomAlert("Error", "Hindi ma-proseso ang image.");
-        });
-    });
-
-    // Menu CSV Export Button Logic
-    document.getElementById('menuExportCsvBtn').addEventListener('click', function() {
-        slideDropdownContent.classList.remove('show');
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        // Direktang kinukuha ang CSV logic para hindi umasa sa lumang button ID
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let codingVal = driver ? driver.coding : 'None';
-        let currentDriverName = driverNameInput.value || 'Driver';
-        
-        const savedDays = Object.keys(records).map(Number);
-        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
-        csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
-
-        let totalExpected = 0;
-        let totalGiven = 0;
-        let runningBalance = initialBalance;
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-
-        for (let i = 1; i <= limitDay; i++) {
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
-            let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+    // ==========================================
+    // IMAGE CAPTURE & DOWNLOAD LOGIC
+    // ==========================================
+    const downloadImgBtn = document.getElementById('downloadImgBtn');
+    if (downloadImgBtn) {
+        downloadImgBtn.addEventListener('click', function() {
+            if (!currentDriverId) {
+                showCustomAlert("Babala", "Walang driver na napili.");
+                return;
+            }
             
-            let calculatedDefaultExpected = defaultExpected;
-            if (codingExcludeRadio.checked && codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal) {
-                calculatedDefaultExpected = 0;
+            const reportCard = document.getElementById('reportCardContainer');
+            if (!reportCard) {
+                showCustomAlert("Error", "Hindi makita ang table container.");
+                return;
             }
 
-            let dayData = records[i] || { expected: calculatedDefaultExpected, given: 0, dateCovered: '', refNo: '' };
-            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedDefaultExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
+            html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Canvas Error:", err);
+                showCustomAlert("Error", "Hindi ma-convert ang image.");
+            });
+        });
+    }
+
+    // ==========================================
+    // SHARE TO MESSENGER LOGIC
+    // ==========================================
+    const shareMessengerBtn = document.getElementById('shareMessengerBtn');
+    if (shareMessengerBtn) {
+        shareMessengerBtn.addEventListener('click', function() {
+            if (!currentDriverId) {
+                showCustomAlert("Babala", "Walang driver na napili.");
+                return;
+            }
+
+            const reportCard = document.getElementById('reportCardContainer');
+            if (!reportCard) {
+                showCustomAlert("Error", "Hindi makita ang table container.");
+                return;
+            }
+
+            html2canvas(reportCard, { scale: 2, useCORS: true, backgroundColor: null }).then(canvas => {
+                canvas.toBlob(async blob => {
+                    const file = new File([blob], "Boundary_Report.png", { type: "image/png" });
+                    
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        try {
+                            await navigator.share({
+                                files: [file],
+                                title: 'Boundary Monitoring Report',
+                                text: `Hulog report para sa ${monthsArray[activeMonthIndex]} ${activeYearVal}.`
+                            });
+                            return;
+                        } catch (err) {
+                            console.log('Share canceled', err);
+                        }
+                    }
+                    
+                    // Fallback para sa mga browser na hindi direktang nagpapahintulot ng share ng file
+                    const link = document.createElement('a');
+                    link.download = `Boundary_Report_${monthsArray[activeMonthIndex]}_${activeYearVal}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    link.click();
+
+                    showCustomAlert("Tagumpay", "Na-save na sa iyong device ang image file. Pwede mo na itong i-attach sa Messenger!");
+                }, 'image/png');
+            }).catch(err => {
+                console.error("Canvas Error:", err);
+                showCustomAlert("Error", "Hindi ma-proseso ang image.");
+            });
+        });
+    }
+
+    // ==========================================
+    // MENU CSV EXPORT LOGIC
+    // ==========================================
+    const menuExportCsvBtn = document.getElementById('menuExportCsvBtn');
+    if (menuExportCsvBtn) {
+        menuExportCsvBtn.addEventListener('click', function() {
+            if (slideDropdownContent) slideDropdownContent.classList.remove('show');
+            if (!currentDriverId) {
+                showCustomAlert("Babala", "Walang driver na napili para i-export.");
+                return;
+            }
             
-            totalExpected += expVal;
-            totalGiven += givenVal;
-            let shortOver = givenVal - expVal;
-            runningBalance += (expVal - givenVal);
+            let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+            let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+            let driver = driversList.find(d => d.id === currentDriverId);
+            let codingVal = driver ? driver.coding : 'None';
+            let currentDriverName = driverNameInput.value || 'Driver';
+            
+            const savedDays = Object.keys(records).map(Number);
+            const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+            const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+            const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
 
-            let row = [
-                dayOfWeek,
-                i < 10 ? '0' + i : i,
-                expVal,
-                givenVal,
-                `"${dayData.dateCovered || '-'}"`,
-                `"${dayData.refNo || '-'}"`,
-                shortOver,
-                runningBalance
-            ];
-            csvContent += row.join(",") + "\r\n";
-        }
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+            csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
+            let totalExpected = 0;
+            let totalGiven = 0;
+            let runningBalance = initialBalance;
+            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
 
-    // Menu PDF/Print Button Logic
-    document.getElementById('menuExportPdfBtn').addEventListener('click', function() {
-        slideDropdownContent.classList.remove('show');
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        window.print();
-    });
+            for (let i = 1; i <= limitDay; i++) {
+                let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+                let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+                
+                let calculatedDefaultExpected = defaultExpected;
+                if (codingExcludeRadio.checked && codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal) {
+                    calculatedDefaultExpected = 0;
+                }
+
+                let dayData = records[i] || { expected: calculatedDefaultExpected, given: 0, dateCovered: '', refNo: '' };
+                let expVal = dayData.expected !== undefined ? dayData.expected : calculatedDefaultExpected;
+                let givenVal = dayData.given !== undefined ? dayData.given : 0;
+                
+                totalExpected += expVal;
+                totalGiven += givenVal;
+                let shortOver = givenVal - expVal;
+                runningBalance += (expVal - givenVal);
+
+                let row = [
+                    dayOfWeek,
+                    i < 10 ? '0' + i : i,
+                    expVal,
+                    givenVal,
+                    `"${dayData.dateCovered || '-'}"`,
+                    `"${dayData.refNo || '-'}"`,
+                    shortOver,
+                    runningBalance
+                ];
+                csvContent += row.join(",") + "\r\n";
+            }
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    }
+
+    // ==========================================
+    // MENU PDF EXPORT LOGIC
+    // ==========================================
+    const menuExportPdfBtn = document.getElementById('menuExportPdfBtn');
+    if (menuExportPdfBtn) {
+        menuExportPdfBtn.addEventListener('click', function() {
+            if (slideDropdownContent) slideDropdownContent.classList.remove('show');
+            if (!currentDriverId) {
+                showCustomAlert("Babala", "Walang driver na napili para i-export.");
+                return;
+            }
+            window.print();
+        });
+    }
 </script>
 
 <!-- General Alert/Prompt Modal (Shopee Modal Design) -->
