@@ -2428,44 +2428,83 @@ document.getElementById('shareBtn').addEventListener('click', async function() {
         showCustomAlert("Babala", "Walang driver na napili.");
         return;
     }
+
+    showCustomAlert("Share", "Hinahanda ang ulat at larawan para i-share...");
+
+    const targetElement = document.getElementById('reportTableCard');
+    const tableResponsive = targetElement.querySelector('.table-responsive');
+    const originalMaxHeight = tableResponsive.style.maxHeight;
+    const originalOverflow = tableResponsive.style.overflowX;
     
+    tableResponsive.style.maxHeight = 'none';
+    tableResponsive.style.overflowX = 'visible';
+    targetElement.style.width = '100%';
+
     const currentDriverName = driverNameInput.value || 'Driver';
-    const totalExpectedLbl = lblExpected.innerText;
-    const totalGivenLbl = lblGiven.innerText;
-    const totalBalanceLbl = lblBalance.innerText;
-    const monthYearStr = `${selectMonth.value} ${selectYear.value}`;
+    const plateVal = plateNumberInput.value || 'N/A';
+    const driverObj = driversList.find(d => d.id === currentDriverId);
+    const codingVal = driverObj ? driverObj.coding : 'None';
 
-    const textReport = 
-        `📊 BOUNDARY MONITORING REPORT 📊\n` +
-        `👤 Driver: ${currentDriverName}\n` +
-        `📅 Buwan: ${monthYearStr}\n` +
-        `--------------------------\n` +
-        `• Total Expected: ₱${totalExpectedLbl}\n` +
-        `• Total Given: ₱${totalGivenLbl}\n` +
-        `• Running Balance: ₱${totalBalanceLbl}\n` +
-        `--------------------------`;
+    const reportHeaderDiv = document.createElement('div');
+    reportHeaderDiv.id = 'tempReportHeader';
+    reportHeaderDiv.style.textAlign = 'center';
+    reportHeaderDiv.style.marginBottom = '12px';
+    reportHeaderDiv.style.padding = '8px';
+    reportHeaderDiv.style.borderBottom = '2px solid var(--primary)';
+    reportHeaderDiv.innerHTML = `
+        <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
+        <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main);">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
+        <p style="font-size: 0.75rem; opacity: 0.8; color: var(--text-main);">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+    `;
+    targetElement.prepend(reportHeaderDiv);
 
-    // Gamitin ang katutubong share ng telepono para makapili kung saan ibabahagi
-    if (navigator.share) {
-        try {
-            await navigator.share({
-                title: 'Boundary Report',
-                text: textReport
-            });
-            return; 
-        } catch (error) {
-            if (error.name === 'AbortError') return;
-        }
-    }
+    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
+    inputFields.forEach(input => {
+        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
+    });
 
-    // Fallback para sa PC o kung sakaling hindi suportado: Kopyahin sa clipboard
-    navigator.clipboard.writeText(textReport).then(() => {
+    html2canvas(targetElement, {
+        scale: 2,
+        useCORS: true,
+        windowWidth: 1024,
+        backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
+    }).then(canvas => {
+        const tempHeader = document.getElementById('tempReportHeader');
+        if (tempHeader) tempHeader.remove();
+        tableResponsive.style.maxHeight = originalMaxHeight;
+        tableResponsive.style.overflowX = originalOverflow;
+        targetElement.style.width = '';
+        renderTable();
+        
+        closeShopeeModal();
+
+        // 1. I-download ang image papunta sa gallery ng phone
+        const imageURL = canvas.toDataURL('image/png');
+        const downloadLink = document.createElement('a');
+        downloadLink.href = imageURL;
+        downloadLink.download = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        // 2. I-show ang abiso at buksan ang Messenger para ma-attach agad ang bagong download na image
         showCustomAlert(
-            "Na-kopya na sa Clipboard! 📋", 
-            "Naka-save na ang ulat. Pwede mo na itong i-paste sa gustong app."
+            "Na-save na ang Larawan! 📥", 
+            "Naka-save na ang ulat sa iyong Gallery. Bubuksan na ang Messenger — i-tap lang ang gallery icon para i-send ito."
         );
-    }).catch(err => {
-        showCustomAlert("Error", "Hindi ma-kopya ang ulat.");
+
+        setTimeout(() => {
+            window.open('https://www.messenger.com/', '_blank');
+        }, 1500);
+
+    }).catch(error => {
+        const tempHeader = document.getElementById('tempReportHeader');
+        if (tempHeader) tempHeader.remove();
+        tableResponsive.style.maxHeight = originalMaxHeight;
+        tableResponsive.style.overflowX = originalOverflow;
+        targetElement.style.width = '';
+        renderTable();
+        console.error("Error sa pag-capture ng image:", error);
     });
 });
 </script>
