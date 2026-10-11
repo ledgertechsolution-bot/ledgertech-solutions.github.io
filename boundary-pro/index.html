@@ -2423,23 +2423,23 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         console.error("Error sa pag-capture ng image:", error);
     });
 });
-document.getElementById('shareBtn').addEventListener('click', async function() {
+document.getElementById('shareBtn').addEventListener('click', function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
         return;
     }
-
-    showCustomAlert("Share", "Hinahanda ang ulat at larawan para i-share...");
 
     const targetElement = document.getElementById('reportTableCard');
     const tableResponsive = targetElement.querySelector('.table-responsive');
     const originalMaxHeight = tableResponsive.style.maxHeight;
     const originalOverflow = tableResponsive.style.overflowX;
     
+    // Alisin muna ang scroll para makuha ang buong table hanggang Running Bal column
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
     targetElement.style.width = '100%';
 
+    // Magdagdag ng Header Title & Driver Details sa taas para sa imahe
     const currentDriverName = driverNameInput.value || 'Driver';
     const plateVal = plateNumberInput.value || 'N/A';
     const driverObj = driversList.find(d => d.id === currentDriverId);
@@ -2458,6 +2458,7 @@ document.getElementById('shareBtn').addEventListener('click', async function() {
     `;
     targetElement.prepend(reportHeaderDiv);
 
+    // Palitan muna ng text ang mga input boxes para pantay at hindi maputol sa canvas
     const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
     inputFields.forEach(input => {
         input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
@@ -2476,9 +2477,7 @@ document.getElementById('shareBtn').addEventListener('click', async function() {
         targetElement.style.width = '';
         renderTable();
         
-        closeShopeeModal();
-
-        // 1. I-download ang image papunta sa gallery ng phone
+        // 1. I-download agad ang image papunta sa gallery/downloads ng phone
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
         downloadLink.href = imageURL;
@@ -2487,15 +2486,15 @@ document.getElementById('shareBtn').addEventListener('click', async function() {
         downloadLink.click();
         document.body.removeChild(downloadLink);
 
-        // 2. I-show ang abiso at buksan ang Messenger para ma-attach agad ang bagong download na image
+        // 2. Buksan ang Messenger para manual na ma-attach ang larawan galing sa gallery
         showCustomAlert(
-            "Na-save na ang Larawan! 📥", 
-            "Naka-save na ang ulat sa iyong Gallery. Bubuksan na ang Messenger — i-tap lang ang gallery icon para i-send ito."
+            "Na-download na ang Larawan! 📥", 
+            "Naka-save na ang kopya sa iyong Gallery. Bubuksan na ang Messenger — i-tap lang ang gallery icon para piliin at i-send ito."
         );
 
         setTimeout(() => {
             window.open('https://www.messenger.com/', '_blank');
-        }, 1500);
+        }, 1200);
 
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
