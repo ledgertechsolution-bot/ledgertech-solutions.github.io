@@ -2423,23 +2423,23 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         console.error("Error sa pag-capture ng image:", error);
     });
 });
-document.getElementById('shareBtn').addEventListener('click', function() {
+document.getElementById('shareBtn').addEventListener('click', async function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
         return;
     }
+
+    showCustomAlert("Share", "Inihahanda ang larawan ng ulat para i-share...");
 
     const targetElement = document.getElementById('reportTableCard');
     const tableResponsive = targetElement.querySelector('.table-responsive');
     const originalMaxHeight = tableResponsive.style.maxHeight;
     const originalOverflow = tableResponsive.style.overflowX;
     
-    // Alisin muna ang scroll para makuha ang buong table hanggang Running Bal column
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
     targetElement.style.width = '100%';
 
-    // Magdagdag ng Header Title & Driver Details sa taas para sa imahe
     const currentDriverName = driverNameInput.value || 'Driver';
     const plateVal = plateNumberInput.value || 'N/A';
     const driverObj = driversList.find(d => d.id === currentDriverId);
@@ -2458,7 +2458,6 @@ document.getElementById('shareBtn').addEventListener('click', function() {
     `;
     targetElement.prepend(reportHeaderDiv);
 
-    // Palitan muna ng text ang mga input boxes para pantay at hindi maputol sa canvas
     const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
     inputFields.forEach(input => {
         input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
@@ -2469,7 +2468,7 @@ document.getElementById('shareBtn').addEventListener('click', function() {
         useCORS: true,
         windowWidth: 1024,
         backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
-    }).then(canvas => {
+    }).then(async canvas => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
         tableResponsive.style.maxHeight = originalMaxHeight;
@@ -2477,24 +2476,37 @@ document.getElementById('shareBtn').addEventListener('click', function() {
         targetElement.style.width = '';
         renderTable();
         
-        // 1. I-download agad ang image papunta sa gallery/downloads ng phone
-        const imageURL = canvas.toDataURL('image/png');
-        const downloadLink = document.createElement('a');
-        downloadLink.href = imageURL;
-        downloadLink.download = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
+        closeShopeeModal();
 
-        // 2. Buksan ang Messenger para manual na ma-attach ang larawan galing sa gallery
-        showCustomAlert(
-            "Na-download na ang Larawan! 📥", 
-            "Naka-save na ang kopya sa iyong Gallery. Bubuksan na ang Messenger — i-tap lang ang gallery icon para piliin at i-send ito."
-        );
+        // I-convert ang canvas patungong File para ma-share nang direkta
+        canvas.toBlob(async function(blob) {
+            const fileName = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
+            const file = new File([blob], fileName, { type: 'image/png' });
 
-        setTimeout(() => {
-            window.open('https://www.messenger.com/', '_blank');
-        }, 1200);
+            // Suriin kung kaya ng browser ang pag-share ng files
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        title: 'Boundary Report',
+                        text: `Ulat para kay ${currentDriverName} (${selectMonth.value} ${selectYear.value})`,
+                        files: [file]
+                    });
+                } catch (error) {
+                    if (error.name !== 'AbortError') {
+                        console.error("Error sa pag-share:", error);
+                    }
+                }
+            } else {
+                // Fallback: Kung hindi suportado ang file sharing, i-download na lang tulad ng dati
+                const downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                showCustomAlert("Impormasyon", "Na-download ang larawan dahil hindi direktang suportado ng iyong browser ang file sharing.");
+            }
+        }, 'image/png');
 
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
