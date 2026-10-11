@@ -2354,11 +2354,15 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         return;
     }
 
-    // Tinanggal na natin ang prompt para diretsong mag-download
     const targetElement = document.getElementById('reportTableCard');
     const tableResponsive = targetElement.querySelector('.table-responsive');
     const originalMaxHeight = tableResponsive.style.maxHeight;
+    const originalOverflow = tableResponsive.style.overflowX;
+    
+    // TRICK PARA SA FULL WIDTH TABLE CAPTURE: Alisin muna ang scroll at gawing buo ang lapad
     tableResponsive.style.maxHeight = 'none';
+    tableResponsive.style.overflowX = 'visible';
+    targetElement.style.width = '100%';
 
     // 1. Pansamantalang magdagdag ng Header Title & Driver Details sa taas ng table para sa imahe
     const currentDriverName = driverNameInput.value || 'Driver';
@@ -2388,15 +2392,18 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     html2canvas(targetElement, {
         scale: 2,
         useCORS: true,
+        windowWidth: 1024, // Pwersahin nating mag-isip ang canvas na parang desktop/tablet width para lumabas ang lahat ng columns
         backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
     }).then(canvas => {
-        // Alisin ang pansamantalang header at i-restore ang table
+        // Alisin ang pansamantalang header at i-restore ang table styles at input boxes
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
-        renderTable();
         tableResponsive.style.maxHeight = originalMaxHeight;
+        tableResponsive.style.overflowX = originalOverflow;
+        targetElement.style.width = '';
+        renderTable();
         
-        // Diretsong download ng PNG file nang walang sagabal
+        // Diretsong download ng PNG file
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
         
@@ -2409,8 +2416,10 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
-        renderTable();
         tableResponsive.style.maxHeight = originalMaxHeight;
+        tableResponsive.style.overflowX = originalOverflow;
+        targetElement.style.width = '';
+        renderTable();
         console.error("Error sa pag-capture ng image:", error);
     });
 });
