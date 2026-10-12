@@ -267,25 +267,24 @@
         }
 
         .table-expected-input, .table-given-input {
-    width: 75px;
-    padding: 3px 2px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 0.75rem;
-    background: var(--card-bg);
-    color: var(--text-main);
-    text-align: center;
-    text-align-last: center;
-}
+            width: 75px;
+            padding: 3px 2px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            background: var(--card-bg);
+            color: var(--text-main);
+            text-align: center;
+            text-align-last: center;
+        }
 
-/* Para sa mga webkit browser tulad ng Chrome at Brave sa mobile/desktop */
-.table-expected-input::-webkit-inner-spin-button,
-.table-expected-input::-webkit-outer-spin-button,
-.table-given-input::-webkit-inner-spin-button,
-.table-given-input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
+        .table-expected-input::-webkit-inner-spin-button,
+        .table-expected-input::-webkit-outer-spin-button,
+        .table-given-input::-webkit-inner-spin-button,
+        .table-given-input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
 
         .button-group {
             display: flex;
@@ -446,6 +445,87 @@
             display: none;
         }
 
+        /* Floating Calculator Styles (Malaki at Madaling Pindutin) */
+        .floating-calc {
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            background: var(--card-bg);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            z-index: 99999;
+            padding: 12px;
+            user-select: none;
+        }
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--primary-light);
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: move;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+        .calc-close-btn {
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: bold;
+            color: var(--danger);
+            cursor: pointer;
+        }
+        .calc-screen {
+            width: 100%;
+            height: 50px;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: right;
+            padding: 8px 10px;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
+        }
+        .calc-btn {
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 14px 0;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .calc-btn:hover { opacity: 0.8; }
+        .calc-btn.operator {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .calc-btn.action-c {
+            background: #ffebee;
+            color: var(--danger);
+        }
+        .calc-btn.action-eq {
+            background: var(--primary);
+            color: white;
+        }
+
         .shopee-modal-overlay {
             display: none;
             position: fixed;
@@ -500,7 +580,6 @@
             cursor: pointer; 
         }
 
-        /* Lock Screen Overlay Styles */
         .app-lock-screen {
             display: none;
             position: fixed;
@@ -535,7 +614,6 @@
             opacity: 0.8;
         }
 
-        /* Menu Slide Dropdown Styles */
         .menu-container {
             position: relative;
             display: inline-block;
@@ -554,58 +632,53 @@
             gap: 4px;
         }
         .menu-toggle-btn:hover { opacity: 0.9; }
-        /* Menu Slide Dropdown Styles - Pinalitang mas siksik at nakalinya pampulido */
-.menu-container {
-    position: relative;
-    display: inline-block;
-}
 
-.slide-dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0; /* Nakalinya sa kanang gilid ng button para pumunta paka-kaliwa ang bukas */
-    left: auto;
-    top: 100%;
-    margin-top: 6px;
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 99;
-    min-width: 180px; /* Binuhat natin para mas siksik at hindi masyadong malapad */
-    padding: 6px;
-    flex-direction: column;
-    gap: 5px;
-}
+        .slide-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            left: auto;
+            top: 100%;
+            margin-top: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 99;
+            min-width: 180px;
+            padding: 6px;
+            flex-direction: column;
+            gap: 5px;
+        }
 
-.slide-dropdown-content.show {
-    display: flex;
-}
+        .slide-dropdown-content.show {
+            display: flex;
+        }
 
-.slide-dropdown-content button, 
-.slide-dropdown-content a {
-    width: 100%;
-    text-align: left;
-    background: var(--bg-color);
-    color: var(--text-main);
-    border: 1px solid var(--border-color);
-    padding: 9px 12px; /* Ginawang katamtaman ang taas at laki para hindi sobranglaki */
-    font-size: 0.8rem;   /* Sakto ang liwanag at laki ng letra */
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 600;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .slide-dropdown-content button, 
+        .slide-dropdown-content a {
+            width: 100%;
+            text-align: left;
+            background: var(--bg-color);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 9px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.slide-dropdown-content button:hover, 
-.slide-dropdown-content a:hover {
-    opacity: 0.85;
-    background: var(--primary-light);
-    color: var(--primary);
-}
+        .slide-dropdown-content button:hover, 
+        .slide-dropdown-content a:hover {
+            opacity: 0.85;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
 
         @media print {
             body {
@@ -613,7 +686,7 @@
                 color: #000000;
                 padding: 0;
             }
-            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month {
+            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .floating-calc {
                 display: none !important;
             }
             .card {
@@ -940,6 +1013,39 @@
     <button type="button" class="lock-padlock-btn" id="unlockAppBtn" title="I-tap para i-unlock">🔒</button>
 </div>
 
+<!-- Floating Calculator Widget -->
+<div class="floating-calc" id="floatingCalc">
+    <div class="calc-header" id="calcHeader">
+        <span>🧮 Calculator</span>
+        <button type="button" class="calc-close-btn" onclick="closeCalculator()">✕</button>
+    </div>
+    <div class="calc-screen" id="calcScreen">0</div>
+    <div class="calc-buttons">
+        <button type="button" class="calc-btn action-c" onclick="calcClear()">C</button>
+        <button type="button" class="calc-btn operator" onclick="calcAppend('/')">÷</button>
+        <button type="button" class="calc-btn operator" onclick="calcAppend('*')">×</button>
+        <button type="button" class="calc-btn operator" onclick="calcBackSpace()">⌫</button>
+        
+        <button type="button" class="calc-btn" onclick="calcAppend('7')">7</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('8')">8</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('9')">9</button>
+        <button type="button" class="calc-btn operator" onclick="calcAppend('-')">-</button>
+        
+        <button type="button" class="calc-btn" onclick="calcAppend('4')">4</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('5')">5</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('6')">6</button>
+        <button type="button" class="calc-btn operator" onclick="calcAppend('+')">+</button>
+        
+        <button type="button" class="calc-btn" onclick="calcAppend('1')">1</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('2')">2</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('3')">3</button>
+        <button type="button" class="calc-btn action-eq" style="grid-row: span 2; height: 100%; display: flex; align-items: center; justify-content: center;" onclick="calcEvaluate()">=</button>
+        
+        <button type="button" class="calc-btn" style="grid-column: span 2;" onclick="calcAppend('0')">0</button>
+        <button type="button" class="calc-btn" onclick="calcAppend('.')">.</button>
+    </div>
+</div>
+
 <div class="container">
     <header>
         <h1>Boundary Monitoring Pro</h1>
@@ -970,6 +1076,7 @@
             <div class="menu-container" id="menuContainer">
                 <button type="button" class="top-action-btn" id="menuToggleBtn">⚙️ Menu ▾</button>
                 <div class="slide-dropdown-content" id="slideDropdownContent">
+                    <button type="button" id="openCalcBtn" onclick="openCalculator()">🧮 Calculator</button>
                     <button type="button" id="exportJsonBtn">💾 Backup Data</button>
                     <button type="button" id="importJsonBtn">📂 Restore Data</button>
 		    <button type="button" id="exportCsvBtn">📊 Export CSV</button>
@@ -1276,7 +1383,7 @@
 
             <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">4. Pag-backup, Pag-export ng CSV, at Pagsara (Lock App)</p>
             <ul style="margin-left: 20px; margin-bottom: 8px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para makita ang mga opsyon tulad ng Backup Data (JSON), Restore Data, Tier Status/Upgrade, at Lock App kung gusto mong pansamantalang i-lock ang screen para hindi makalikot ng iba</li>
+                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para makita ang mga opsyon tulad ng Calculator, Backup Data, Restore Data, Tier Status/Upgrade, atbp.</li>
                 <li style="margin-bottom: 6px;">Export CSV / PDF: Gamitin ang mga ito para makapag-generate ng kopya ng ulat para sa accounting o kaya ay mai-print/save as PDF at image at mai-send sa driver</li>
             </ul>
 
@@ -1305,6 +1412,108 @@ function closeGuideModal() {
     }
 }
 
+// Floating Calculator Logic (Draggable & Large Digits)
+function openCalculator() {
+    if (typeof slideDropdownContent !== 'undefined' && slideDropdownContent) {
+        slideDropdownContent.classList.remove('show');
+    }
+    const calc = document.getElementById('floatingCalc');
+    if (calc) {
+        calc.style.display = 'block';
+    }
+}
+
+function closeCalculator() {
+    const calc = document.getElementById('floatingCalc');
+    if (calc) {
+        calc.style.display = 'none';
+    }
+}
+
+let calcExpression = "0";
+function updateCalcScreen() {
+    const screen = document.getElementById('calcScreen');
+    if (screen) {
+        screen.innerText = calcExpression;
+    }
+}
+
+function calcClear() {
+    calcExpression = "0";
+    updateCalcScreen();
+}
+
+function calcAppend(val) {
+    if (calcExpression === "0" && val !== ".") {
+        calcExpression = val;
+    } else {
+        calcExpression += val;
+    }
+    updateCalcScreen();
+}
+
+function calcBackSpace() {
+    if (calcExpression.length > 1) {
+        calcExpression = calcExpression.slice(0, -1);
+    } else {
+        calcExpression = "0";
+    }
+    updateCalcScreen();
+}
+
+function calcEvaluate() {
+    try {
+        let sanitized = calcExpression.replace(/×/g, '*').replace(/÷/g, '/');
+        let result = eval(sanitized);
+        calcExpression = String(Math.round(result * 100) / 100);
+        updateCalcScreen();
+    } catch (e) {
+        calcExpression = "Error";
+        updateCalcScreen();
+        setTimeout(() => { calcClear(); }, 1200);
+    }
+}
+
+// Draggable Handler para sa Calculator Header
+const calcHeader = document.getElementById('calcHeader');
+const floatingCalc = document.getElementById('floatingCalc');
+let isDragging = false, dragOffsetX = 0, dragOffsetY = 0;
+
+if (calcHeader && floatingCalc) {
+    calcHeader.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        dragOffsetX = e.clientX - floatingCalc.offsetLeft;
+        dragOffsetY = e.clientY - floatingCalc.offsetTop;
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        floatingCalc.style.left = (e.clientX - dragOffsetX) + 'px';
+        floatingCalc.style.top = (e.clientY - dragOffsetY) + 'px';
+        floatingCalc.style.transform = 'none';
+    });
+
+    document.addEventListener('mouseup', () => { isDragging = false; });
+
+    // Touch support para sa mobile dragging
+    calcHeader.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        let touch = e.touches[0];
+        dragOffsetX = touch.clientX - floatingCalc.offsetLeft;
+        dragOffsetY = touch.clientY - floatingCalc.offsetTop;
+    });
+
+    document.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        let touch = e.touches[0];
+        floatingCalc.style.left = (touch.clientX - dragOffsetX) + 'px';
+        floatingCalc.style.top = (touch.clientY - dragOffsetY) + 'px';
+        floatingCalc.style.transform = 'none';
+    });
+
+    document.addEventListener('touchend', () => { isDragging = false; });
+}
+
     const ua = navigator.userAgent || navigator.vendor || window.opera;
     const isFacebookApp = (ua.indexOf("FBAN") > -1) || (ua.indexOf("FBAV") > -1) || (ua.indexOf("Instagram") > -1);
 
@@ -1315,21 +1524,19 @@ function closeGuideModal() {
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            // Itim na may 80% opacity at blur effect para kita pa rin ang app sa likod
             warningBanner.style.backgroundColor = 'rgba(0, 0, 0, 0.82)';
             warningBanner.style.backdropFilter = 'blur(6px)';
             warningBanner.style.webkitBackdropFilter = 'blur(6px)';
-            warningBanner.style.color = '#ffffff'; // Puting kulay ng text
+            warningBanner.style.color = '#ffffff';
             warningBanner.style.padding = '18px 16px';
-            warningBanner.style.textAlign = 'left'; // Naka-left align para sa mga hakbang
+            warningBanner.style.textAlign = 'left';
             warningBanner.style.zIndex = '99999';
-            warningBanner.style.fontSize = '0.82rem'; // Saktong laki para magkasya ang 3 steps nang malinaw
+            warningBanner.style.fontSize = '0.82rem';
             warningBanner.style.fontWeight = '500';
             warningBanner.style.lineHeight = '1.45';
             warningBanner.style.boxShadow = '0 6px 20px rgba(0,0,0,0.5)';
             warningBanner.style.borderBottom = '2px solid rgba(255, 255, 255, 0.2)';
             
-            // Ang eksaktong mga hakbang na gusto mo
             warningBanner.innerHTML = `
                 <div style="font-weight: bold; font-size: 0.9rem; text-align: center; margin-bottom: 6px; color: #81c784;">📲 To Install BMPro Apps</div>
                 <div style="margin-bottom: 3px;">1. Sa taas may tatlong tuldok (⋮) click mo yan.</div>
@@ -1344,7 +1551,6 @@ function closeGuideModal() {
     let selectedTierCode = 'T1';
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtWNr3MbuMQHKceDvMev6knMb0axvhKhi43IGD2mzHsTB3wOmMjFkzUiN8tSRa3Mnt4A/exec";
 
-    // Menu Slide Toggle Logic
     const menuToggleBtn = document.getElementById('menuToggleBtn');
     const slideDropdownContent = document.getElementById('slideDropdownContent');
 
@@ -1507,7 +1713,6 @@ function closeGuideModal() {
     document.getElementById('shopeeModalText').innerText = message;
     document.getElementById('shopeeModalInputContainer').style.display = 'none';
     
-    // Lagyan ng Cancel at OK buttons
     document.getElementById('shopeeModalButtonContainer').innerHTML = `
         <button type="button" class="shopee-modal-btn" style="background: #ccc; color: #333; flex: 1;" onclick="closeShopeeModal()">Cancel</button>
         <button type="button" class="shopee-modal-btn" id="confirmActionBtn" style="flex: 1;">OK</button>
@@ -1515,7 +1720,6 @@ function closeGuideModal() {
     
     modal.style.display = 'flex';
     
-    // I-attach ang callback sa OK button
     document.getElementById('confirmActionBtn').onclick = function() {
         closeShopeeModal();
         if (onConfirm) onConfirm();
@@ -1663,7 +1867,6 @@ function closeGuideModal() {
     const codingDisplay = document.getElementById('codingDisplay');
     const printSignatureName = document.getElementById('printSignatureName');
     
-    // Coding rendering radio buttons
     const codingIncludeRadio = document.getElementById('codingInclude');
     const codingExcludeRadio = document.getElementById('codingExclude');
 
@@ -1797,12 +2000,10 @@ function closeGuideModal() {
     }
 
     function deleteDriver(id, name) {
-    // Gamitin natin ang showConfirmModal para sa ligtas na pagbura na may Cancel at OK
     showConfirmModal(
         "Tanggalin ang Driver", 
         `Sigurado ka bang gusto mong tanggalin si ${name || 'ang driver na ito'}?`, 
         function() {
-            // Burahin ang mga nakaimbak na records at configs ng driver na ito sa localStorage
             monthsArray.forEach(m => {
                 for(let y = 2024; y <= 2030; y++) {
                     localStorage.removeItem(`boundary_records_${id}_${m}_${y}`);
@@ -1811,7 +2012,6 @@ function closeGuideModal() {
                 }
             });
             
-            // Salain ang drivers list para maalis ang tinanggal na ID
             driversList = driversList.filter(d => d.id !== id);
             localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
             
@@ -2052,12 +2252,10 @@ function closeGuideModal() {
         return;
     }
 
-    // Gagamitin na natin ang may Cancel at OK na prompt
     showConfirmModal(
         "I-clear Buwan", 
         `Sigurado ka bang gusto mong i-clear ang mga tala para sa buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`, 
         function() {
-            // Ito ang mangyayari kapag pinindot ang OK
             localStorage.removeItem(getDriverRecordsKey());
             localStorage.removeItem(getDriverMonthConfigKey());
             localStorage.removeItem(getDriverCodingRenderingKey());
@@ -2366,7 +2564,7 @@ function closeGuideModal() {
     
     updateTierBadgeDisplay();
 
-// Function para sa Download Image (Kinakailangan ang html2canvas o maaari nating i-optimize)
+// High Quality Bondpaper Image Download
 document.getElementById('downloadImgBtn').addEventListener('click', function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
@@ -2378,12 +2576,10 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     const originalMaxHeight = tableResponsive.style.maxHeight;
     const originalOverflow = tableResponsive.style.overflowX;
     
-    // TRICK PARA SA FULL WIDTH TABLE CAPTURE: Alisin muna ang scroll at gawing buo ang lapad
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
     targetElement.style.width = '100%';
 
-    // 1. Pansamantalang magdagdag ng Header Title & Driver Details sa taas ng table para sa imahe
     const currentDriverName = driverNameInput.value || 'Driver';
     const plateVal = plateNumberInput.value || 'N/A';
     const driverObj = driversList.find(d => d.id === currentDriverId);
@@ -2394,27 +2590,26 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     reportHeaderDiv.style.textAlign = 'center';
     reportHeaderDiv.style.marginBottom = '12px';
     reportHeaderDiv.style.padding = '8px';
-    reportHeaderDiv.style.borderBottom = '2px solid var(--primary)';
+    reportHeaderDiv.style.borderBottom = '2px solid #2e7d32';
+    reportHeaderDiv.style.backgroundColor = '#ffffff';
     reportHeaderDiv.innerHTML = `
-        <h2 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
-        <p style="font-size: 0.85rem; font-weight: bold; color: var(--text-main);">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
-        <p style="font-size: 0.75rem; opacity: 0.8; color: var(--text-main);">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+        <h2 style="font-size: 1.2rem; color: #1b5e20; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
+        <p style="font-size: 0.9rem; font-weight: bold; color: #111111;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
+        <p style="font-size: 0.8rem; font-weight: 600; color: #333333;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
     `;
     targetElement.prepend(reportHeaderDiv);
 
-    // 2. Palitan muna ng text ang mga input boxes para pantay at hindi maputol sa canvas
     const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
     inputFields.forEach(input => {
-        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: 500; font-size: 0.75rem; padding: 3px 0;">${input.value}</div>`;
+        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: #000000;">${input.value}</div>`;
     });
 
     html2canvas(targetElement, {
-        scale: 2,
+        scale: 3,
         useCORS: true,
-        windowWidth: 1024, // Pwersahin nating mag-isip ang canvas na parang desktop/tablet width para lumabas ang lahat ng columns
-        backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg')
+        windowWidth: 1024,
+        backgroundColor: '#ffffff'
     }).then(canvas => {
-        // Alisin ang pansamantalang header at i-restore ang table styles at input boxes
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
         tableResponsive.style.maxHeight = originalMaxHeight;
@@ -2422,7 +2617,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         targetElement.style.width = '';
         renderTable();
         
-        // Diretsong download ng PNG file
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
         
@@ -2445,7 +2639,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
 
 </script>
 
-<!-- General Alert/Prompt Modal (Shopee Modal Design) -->
 <div class="shopee-modal-overlay" id="shopeeModal">
     <div class="shopee-modal-box">
         <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
