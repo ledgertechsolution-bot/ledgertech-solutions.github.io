@@ -1315,15 +1315,28 @@ function closeGuideModal() {
             warningBanner.style.top = '0';
             warningBanner.style.left = '0';
             warningBanner.style.width = '100%';
-            warningBanner.style.backgroundColor = '#FFD700'; 
-            warningBanner.style.color = '#000000'; 
-            warningBanner.style.padding = '14px 10px';
-            warningBanner.style.textAlign = 'center';
+            // Itim na may 80% opacity at blur effect para kita pa rin ang app sa likod
+            warningBanner.style.backgroundColor = 'rgba(0, 0, 0, 0.82)';
+            warningBanner.style.backdropFilter = 'blur(6px)';
+            warningBanner.style.webkitBackdropFilter = 'blur(6px)';
+            warningBanner.style.color = '#ffffff'; // Puting kulay ng text
+            warningBanner.style.padding = '18px 16px';
+            warningBanner.style.textAlign = 'left'; // Naka-left align para sa mga hakbang
             warningBanner.style.zIndex = '99999';
-            warningBanner.style.fontSize = '0.85rem';
-            warningBanner.style.fontWeight = 'bold';
-            warningBanner.style.boxShadow = '0 4px 10px rgba(0,0,0,0.3)';
-            warningBanner.innerHTML = 'To Install I-click ang <i>"MENU BUTTON"</i> ng Apps, select Guide.';
+            warningBanner.style.fontSize = '0.82rem'; // Saktong laki para magkasya ang 3 steps nang malinaw
+            warningBanner.style.fontWeight = '500';
+            warningBanner.style.lineHeight = '1.45';
+            warningBanner.style.boxShadow = '0 6px 20px rgba(0,0,0,0.5)';
+            warningBanner.style.borderBottom = '2px solid rgba(255, 255, 255, 0.2)';
+            
+            // Ang eksaktong mga hakbang na gusto mo
+            warningBanner.innerHTML = `
+                <div style="font-weight: bold; font-size: 0.9rem; text-align: center; margin-bottom: 6px; color: #81c784;">📲 To Install BMPro Apps</div>
+                <div style="margin-bottom: 3px;">1. Sa taas may tatlong tuldok (⋮) click mo yan.</div>
+                <div style="margin-bottom: 3px;">2. Hanapin at piliin ang <b>Open in External Browser</b></div>
+                <div>3. Pag nasa browser na, i-click ang tatlong tuldok (⋮) sa taas at hanapin ang <b>Install and Create Shortcut</b></div>
+            `;
+            
             document.body.prepend(warningBanner);
         });
     }
