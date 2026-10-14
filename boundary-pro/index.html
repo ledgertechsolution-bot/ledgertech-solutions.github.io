@@ -2346,7 +2346,7 @@ function closeGuideModal() {
     
     updateTierBadgeDisplay();
 
-// NA-UPDATE NA BAHAGI PARA SA DOWNLOAD IMAGE: Plain Bondpaper White Background + Matingkad at Malinaw na Document Quality
+// NA-UPDATE NA BAHAGI PARA SA DOWNLOAD IMAGE: White background, itim na linya, at may kulay pa rin ang Short/Over at Running Balance
 document.getElementById('downloadImgBtn').addEventListener('click', function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
@@ -2357,6 +2357,25 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     const tableResponsive = targetElement.querySelector('.table-responsive');
     const originalMaxHeight = tableResponsive.style.maxHeight;
     const originalOverflow = tableResponsive.style.overflowX;
+    
+    const originalBg = targetElement.style.backgroundColor;
+    const originalColor = targetElement.style.color;
+    targetElement.style.backgroundColor = '#ffffff';
+    targetElement.style.color = '#000000';
+
+    const tables = targetElement.querySelectorAll('table, th, td');
+    tables.forEach(el => {
+        el.style.borderColor = '#000000';
+        if (el.tagName === 'TH') {
+            el.style.color = '#000000';
+            el.style.backgroundColor = '#e8f5e9';
+        } else if (el.tagName === 'TD') {
+            // Panatilihin ang kulay ng text kung ito ay may class na text-danger o text-success
+            if (!el.classList.contains('text-danger') && !el.classList.contains('text-success')) {
+                el.style.color = '#000000';
+            }
+        }
+    });
     
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
@@ -2372,12 +2391,12 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     reportHeaderDiv.style.textAlign = 'center';
     reportHeaderDiv.style.marginBottom = '12px';
     reportHeaderDiv.style.padding = '8px';
-    reportHeaderDiv.style.borderBottom = '2px solid #2e7d32';
-    reportHeaderDiv.style.backgroundColor = '#ffffff'; // Plain white para sa bondpaper look
+    reportHeaderDiv.style.borderBottom = '2px solid #000000';
+    reportHeaderDiv.style.backgroundColor = '#ffffff';
     reportHeaderDiv.innerHTML = `
-        <h2 style="font-size: 1.2rem; color: #1b5e20; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
-        <p style="font-size: 0.9rem; font-weight: bold; color: #111111;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
-        <p style="font-size: 0.8rem; font-weight: 600; color: #333333;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+        <h2 style="font-size: 1.2rem; color: #000000; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
+        <p style="font-size: 0.9rem; font-weight: bold; color: #000000;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
+        <p style="font-size: 0.8rem; font-weight: 600; color: #000000;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
     `;
     targetElement.prepend(reportHeaderDiv);
 
@@ -2386,15 +2405,17 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: #000000;">${input.value}</div>`;
     });
 
-    // Pwersahin nating maging malinaw at parang de-kalidad na dokumento
     html2canvas(targetElement, {
-        scale: 3,                   // 3x resolution para maging napakatalim at hindi malabo ang texts
+        scale: 3,
         useCORS: true,
         windowWidth: 1024,
-        backgroundColor: '#ffffff'  // <-- PWERSAHIN NA MAGING PLAIN WHITE (Bondoaper Background)
+        backgroundColor: '#ffffff'
     }).then(canvas => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
+        
+        targetElement.style.backgroundColor = originalBg;
+        targetElement.style.color = originalColor;
         tableResponsive.style.maxHeight = originalMaxHeight;
         tableResponsive.style.overflowX = originalOverflow;
         targetElement.style.width = '';
@@ -2412,6 +2433,8 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
+        targetElement.style.backgroundColor = originalBg;
+        targetElement.style.color = originalColor;
         tableResponsive.style.maxHeight = originalMaxHeight;
         tableResponsive.style.overflowX = originalOverflow;
         targetElement.style.width = '';
