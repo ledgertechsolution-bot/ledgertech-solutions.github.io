@@ -2444,10 +2444,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
-
-        // --- NAGDAGDAG TAYO NG PROMPT DITO ---
-        showCustomAlert("Tagumpay", "Image saved in your gallery!");
-        
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
