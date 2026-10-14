@@ -1266,19 +1266,33 @@
                 <li style="margin-bottom: 6px;">I-tap ang I-save button. Agad na kakalkulahin ng app ang Short/Over at ang Running Balance</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">4. Pag-backup, Pag-export ng CSV, at Pagsara (Lock App)</p>
+            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">4. Download Image & Reports (Bagong Feature)</p>
+            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 6px;"><b>Download Image Button:</b> Pindutin ito para i-save ang buong talaan bilang litrato (PNG) sa iyong gallery. Mainam itong i-send direkta sa Messenger o chat ng driver bilang malinaw na resibo o report ng kanilang hulog.</li>
+                <li style="margin-bottom: 6px;">Kahit naka-Dark Mode ka sa app, awtomatikong magiging puti ang background at itim ang mga text sa mada-download na imahe para mukhang pormal at madaling basahin.</li>
+            </ul>
+
+            <!-- MGA MAHALAGANG PAALALA PARA IWAS DATA LOSS -->
+            <div style="background: #fff3e0; border: 1px solid #ffb74d; padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem; color: #5d4037;">
+                <strong style="display: block; margin-bottom: 6px; color: #e65100;">⚠️ Mahahalagang Paalala para Iwas-Bura / Data Loss:</strong>
+                <ul style="margin-left: 18px; opacity: 0.95; display: flex; flex-direction: column; gap: 4px;">
+                    <li><b>Huwag i-clear ang browser data</b> o i-uninstall ang browser/app nang walang backup, dahil dito nakasalalay ang mga records sa iyong phone.</li>
+                    <li><b>Ugaliing mag-Backup:</b> Pumunta sa <b>⚙️ Menu</b> at i-click ang <b>💾 Backup Data</b> tuwing katapusan ng linggo o buwan. I-save ang file sa Google Drive o i-send sa iyong Messenger para may kopya ka.</li>
+                    <li><b>Restore Data:</b> Kung sakaling lumipat ka ng phone o nabura ang data, gamitin lang ang <b>📂 Restore Data</b> gamit ang iyong hiny-save na backup file para maibalik lahat ng listahan at records sa isang pindot lang!</li>
+                </ul>
+            </div>
+
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART III: Menu Options</p>
             <ul style="margin-left: 20px; margin-bottom: 8px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para makita ang mga opsyon tulad ng Backup Data (JSON), Restore Data, Tier Status/Upgrade, et al.</li>
-                <li style="margin-bottom: 6px;">Export CSV / PDF: Gamitin ang mga ito para makapag-generate ng kopya ng ulat para sa accounting o kaya ay mai-print/save as PDF at image at mai-send sa driver</li>
+                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para ma-access ang Backup, Restore, Export CSV, Export PDF, Guide, at Tier Status / Upgrade.</li>
             </ul>
 
         </div>
         
-        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 0.9rem;" onclick="closeGuideModal()">Naintindihan / Isara</button>
+        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 0.9rem;" onclick="closeGuideModal()">Got It</button>
     </div>
 </div>
-
-<script>
+        <script>
 function openGuideModal() {
     if (typeof slideDropdownContent !== 'undefined' && slideDropdownContent) {
         slideDropdownContent.classList.remove('show');
@@ -2430,6 +2444,10 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         document.body.removeChild(downloadLink);
+
+        // --- NAGDAGDAG TAYO NG PROMPT DITO ---
+        showCustomAlert("Tagumpay", "Image saved in your gallery!");
+        
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
