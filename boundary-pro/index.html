@@ -939,6 +939,49 @@
             display: none;
             text-align: center;
         }
+/* Covert Privacy Mode Overlay na may smooth melting/fade effect */
+        .privacy-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--card-bg);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 999998;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            transform: translateY(-1005);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        .privacy-overlay.active {
+            opacity: 0.3; /* 30% transparency para hindi kita ang numero */
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .privacy-indicator {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: var(--danger);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            z-index: 999999;
+            display: none;
+            transition: opacity 0.3s;
+        }
+/* Privacy Footer Hint */
+        .privacy-footer-hint {
+            text-align: center;
+            font-size: 0.68rem;
+            opacity: 0.5;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -2601,9 +2644,41 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-			
+// Swipe Pababa (Pull-down) Privacy Mode Handler
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isPrivacyMode = false;
 
+    window.addEventListener('touchstart', e => {
+        touchStartY = e.changedTouches[0].screenY;
+    }, {passive: true});
 
+    window.addEventListener('touchend', e => {
+        touchEndY = e.changedTouches[0].screenY;
+        handlePullDownPrivacy();
+    }, {passive: true});
+
+    function handlePullDownPrivacy() {
+        const swipeDistance = touchEndY - touchStartY;
+        const overlay = document.getElementById('privacyOverlay');
+        const indicator = document.getElementById('privacyIndicator');
+
+        // Kapag nag-swipe pababa (Positive distance na lampas 80 pixels mula sa tuktok ng screen)
+        if (swipeDistance > 80 && window.scrollY === 0) {
+            isPrivacyMode = !isPrivacyMode;
+            if (overlay && indicator) {
+                if (isPrivacyMode) {
+                    overlay.classList.add('active');
+                    indicator.style.display = 'block';
+                } else {
+                    overlay.classList.remove('active');
+                    setTimeout(() => {
+                        if (!isPrivacyMode) indicator.style.display = 'none';
+                    }, 500); // Hintayin matapos ang fade-out animation bago itago ang badge
+                }
+            }
+        }
+    }
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
@@ -2622,6 +2697,10 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
 </div>
 
 <div id="toastNotification" class="toast-notification">Data Saved Successfully!</div>
+
+<div class="privacy-overlay" id="privacyOverlay"></div>
+<div class="privacy-footer-hint">↓ Swipe down from top for privacy mode ↓</div>
+<div class="privacy-indicator" id="privacyIndicator">🔒 Privacy Mode ON</div>
 
 </body>
 </html>
