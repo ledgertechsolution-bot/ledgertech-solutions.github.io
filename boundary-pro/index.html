@@ -2515,6 +2515,34 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
+			    // Awtomatikong lilipat sa kasunod na input box kapag pinindot ang Enter o Next sa mobile keypad
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.tagName === 'INPUT') {
+                e.preventDefault(); // Pigilan ang default form submit kung mayroon man
+                
+                // Kunin lahat ng pwede pagpilian na input boxes sa screen
+                const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+                const currentIndex = focusableInputs.indexOf(activeEl);
+                
+                if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
+                    // Lumipat sa kasunod na input box at i-highlight ang laman para madaling palitan
+                    const nextInput = focusableInputs[currentIndex + 1];
+                    nextInput.focus();
+                    if (nextInput.type === 'number' || nextInput.type === 'text') {
+                        nextInput.select();
+                    }
+                } else {
+                    // Kung nasa huling box na, i-blur na lang para magtago ang keypad nang maayos
+                    activeEl.blur();
+                }
+            }
+        }
+    });
+
+			
+
 
 </script>
 
