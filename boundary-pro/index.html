@@ -2496,35 +2496,28 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         });
     }
 
-// 1. Automatic na i-highlight (select) ang laman ng box pagka-tap para tuloy-tuloy ang type
+// 1. Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
+    if (window.visualViewport) {
+        let currentScrollPos = window.pageYOffset;
+        
+        window.addEventListener('scroll', () => {
+            currentScrollPos = window.pageYOffset;
+        }, { passive: true });
+
+        window.visualViewport.addEventListener('resize', () => {
+            window.scrollTo({
+                top: currentScrollPos,
+                behavior: 'instant'
+            });
+        });
+    }
+
+    // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
     document.addEventListener('focusin', function(e) {
         if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
             setTimeout(() => {
                 e.target.select();
             }, 50);
-        }
-    });
-
-    // 2. Tuloy-tuloy na Enter / Next navigation na hindi pinapatay ang keypad
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            const activeEl = document.activeElement;
-            if (activeEl && activeEl.tagName === 'INPUT') {
-                e.preventDefault();
-                
-                // I-save muna ang value bago lumipat sa sunod
-                activeEl.dispatchEvent(new Event('change'));
-                
-                const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
-                const currentIndex = focusableInputs.indexOf(activeEl);
-                
-                if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
-                    const nextInput = focusableInputs[currentIndex + 1];
-                    nextInput.focus();
-                } else if (currentIndex === focusableInputs.length - 1) {
-                    focusableInputs[0].focus();
-                }
-            }
         }
     });
 
