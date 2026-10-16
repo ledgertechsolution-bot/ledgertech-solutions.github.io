@@ -939,49 +939,6 @@
             display: none;
             text-align: center;
         }
-/* Side Swipe Privacy Mode Overlay (40% Transparency) */
-        .privacy-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: var(--card-bg);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 999998;
-            transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-            transform: translateX(-100%);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
-        }
-        .privacy-overlay.active {
-            opacity: 0.5; /* 50% transparency para mas malabo at protektado */
-            transform: translateX(0);
-            pointer-events: auto;
-        }
-        .privacy-indicator {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: var(--danger);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            z-index: 999999;
-            display: none;
-            transition: opacity 0.3s;
-        }
-/* Privacy Footer Hint */
-        .privacy-footer-hint {
-            text-align: center;
-            font-size: 0.68rem;
-            opacity: 0.5;
-            margin-top: 16px;
-            margin-bottom: 8px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--text-main);
-        }
     </style>
 </head>
 <body data-theme="light">
@@ -2644,41 +2601,9 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-// Side Swipe Privacy Mode Handler (Left or Right Swipe)
-    let touchStartX = 0;
-    let touchEndX = 0;
-    let isPrivacyMode = false;
+			
 
-    window.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
 
-    window.addEventListener('touchend', e => {
-        touchEndX = e.changedTouches[0].screenX;
-        handleSideSwipePrivacy();
-    }, {passive: true});
-
-    function handleSideSwipePrivacy() {
-        const swipeDistance = touchEndX - touchStartX;
-        const overlay = document.getElementById('privacyOverlay');
-        const indicator = document.getElementById('privacyIndicator');
-
-        // Kapag nag-swipe nang pahalang na lumagpas sa 80 pixels (pakanan o paktaliwa)
-        if (Math.abs(swipeDistance) > 80) {
-            isPrivacyMode = !isPrivacyMode;
-            if (overlay && indicator) {
-                if (isPrivacyMode) {
-                    overlay.classList.add('active');
-                    indicator.style.display = 'block';
-                } else {
-                    overlay.classList.remove('active');
-                    setTimeout(() => {
-                        if (!isPrivacyMode) indicator.style.display = 'none';
-                    }, 400);
-                }
-            }
-        }
-    }
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
@@ -2697,10 +2622,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
 </div>
 
 <div id="toastNotification" class="toast-notification">Data Saved Successfully!</div>
-
-<div class="privacy-overlay" id="privacyOverlay"></div>
-<div class="privacy-footer-hint">← Swipe right or left for privacy mode →</div>
-<div class="privacy-indicator" id="privacyIndicator">🔒 Privacy Mode ON</div>
 
 </body>
 </html>
