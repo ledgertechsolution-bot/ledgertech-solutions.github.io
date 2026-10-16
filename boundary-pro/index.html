@@ -2521,33 +2521,28 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-// Tuloy-tuloy na Enter / Next navigation sa table nang hindi pinapatay ang keypad
+// Tuloy-tuloy na paglipat ng input box gamit ang Next/Enter ng keypad nang hindi sumasara ang view
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
-            if (activeEl && activeEl.tagName === 'INPUT' && activeEl.hasAttribute('data-day')) {
+            if (activeEl && activeEl.tagName === 'INPUT') {
                 e.preventDefault();
                 
-                const day = parseInt(activeEl.getAttribute('data-day'));
-                const field = activeEl.getAttribute('data-field');
+                // Kunin lahat ng input fields sa buong pahina
+                const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
+                const currentIndex = focusableInputs.indexOf(activeEl);
                 
-                // I-save muna ang value
-                activeEl.dispatchEvent(new Event('change'));
-                
-                let nextInput = null;
-                if (field === 'expected') {
-                    // Kapag nasa Expected ka, ang sunod na lilipatan ay ang Given ng PAREHONG araw
-                    nextInput = document.querySelector(`input[data-day="${day}"][data-field="given"]`);
-                } else if (field === 'given') {
-                    // Kapag nasa Given ka, ang sunod na lilipatan ay ang Expected ng SUSUNOD na araw
-                    nextInput = document.querySelector(`input[data-day="${day + 1}"][data-field="expected"]`);
-                }
-                
-                if (nextInput) {
+                if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
+                    const nextInput = focusableInputs[currentIndex + 1];
                     nextInput.focus();
-                    nextInput.select();
-                } else {
-                    activeEl.blur();
+                    if (nextInput.type === 'number' || nextInput.type === 'text') {
+                        nextInput.select();
+                    }
+                } else if (currentIndex === focusableInputs.length - 1) {
+                    focusableInputs[0].focus();
+                    if (focusableInputs[0].type === 'number' || focusableInputs[0].type === 'text') {
+                        focusableInputs[0].select();
+                    }
                 }
             }
         }
