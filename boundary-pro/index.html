@@ -2479,6 +2479,43 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     });
 });
 
+			    // Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
+    if (window.visualViewport) {
+        let currentScrollPos = window.pageYOffset;
+        
+        window.addEventListener('scroll', () => {
+            currentScrollPos = window.pageYOffset;
+        }, { passive: true });
+
+        window.visualViewport.addEventListener('resize', () => {
+            // Pinapanatili nitong steady at hindi gumagalaw ang screen sa huling pwesto ng user
+            window.scrollTo({
+                top: currentScrollPos,
+                behavior: 'instant'
+            });
+        });
+    }
+
+			    // Automatic na maging blangko kapag tinap ang input box kung ang laman ay 0
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
+            if (e.target.value === '0') {
+                e.target.value = '';
+            }
+        }
+    });
+
+    // Kusang babalik sa 0 kapag lumipat ka ng ibang box at iniwan itong blangko para hindi masira ang komputasyon
+    document.addEventListener('focusout', function(e) {
+        if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
+            if (e.target.value === '') {
+                e.target.value = '0';
+                e.target.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+
+
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
