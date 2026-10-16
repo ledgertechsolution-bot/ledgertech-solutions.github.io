@@ -2496,33 +2496,23 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         });
     }
 
-			    // Automatic na maging blangko kapag tinap ang input box kung ang laman ay 0
+// 1. Automatic na i-highlight (select) ang laman ng box pagka-tap para tuloy-tuloy ang type
     document.addEventListener('focusin', function(e) {
         if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
-            if (e.target.value === '0') {
-                e.target.value = '';
-            }
+            setTimeout(() => {
+                e.target.select();
+            }, 50);
         }
     });
 
-    // Kusang babalik sa 0 kapag lumipat ka ng ibang box at iniwan itong blangko para hindi masira ang komputasyon
-    document.addEventListener('focusout', function(e) {
-        if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
-            if (e.target.value === '') {
-                e.target.value = '0';
-                e.target.dispatchEvent(new Event('change'));
-            }
-        }
-    });
-
-			    // Tuloy-tuloy na paglipat ng input box gamit ang Enter/Next nang hindi sumasara ang keypad
+    // 2. Tuloy-tuloy na Enter / Next navigation na hindi pinapatay ang keypad
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
             if (activeEl && activeEl.tagName === 'INPUT') {
                 e.preventDefault();
                 
-                // I-trigger muna ang change event para masave ang value bago lumipat
+                // I-save muna ang value bago lumipat sa sunod
                 activeEl.dispatchEvent(new Event('change'));
                 
                 const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
@@ -2531,19 +2521,12 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
                 if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
                     const nextInput = focusableInputs[currentIndex + 1];
                     nextInput.focus();
-                    if (nextInput.type === 'number' || nextInput.type === 'text') {
-                        nextInput.select();
-                    }
                 } else if (currentIndex === focusableInputs.length - 1) {
                     focusableInputs[0].focus();
-                    if (focusableInputs[0].type === 'number' || focusableInputs[0].type === 'text') {
-                        focusableInputs[0].select();
-                    }
                 }
             }
         }
     });
-
 
 			
 
