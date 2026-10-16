@@ -2305,8 +2305,8 @@ function renderTable() {
            row.innerHTML = `
                 <td>${dayDisplayHtml}</td>
                 <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" value="${expVal}" oninput="updateDailyExpected(${i}, this.value)" ...></td>
-		<td><input type="number" class="table-given-input" value="${givenVal}" oninput="updateDailyGiven(${i}, this.value)" ...></td>
+                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+<td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
                 <td>${dayData.dateCovered || '-'}</td>
                 <td>${dayData.refNo || '-'}</td>
                 <td class="${shortClass}">${fmt(shortOver)}</td>
@@ -2479,7 +2479,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     });
 });
 
-		 // Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
+			    // Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
     if (window.visualViewport) {
         let currentScrollPos = window.pageYOffset;
         
@@ -2505,7 +2505,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-   			 // Kusang babalik sa 0 kapag lumipat ka ng ibang box at iniwan itong blangko para hindi masira ang komputasyon
+    // Kusang babalik sa 0 kapag lumipat ka ng ibang box at iniwan itong blangko para hindi masira ang komputasyon
     document.addEventListener('focusout', function(e) {
         if (e.target.tagName === 'INPUT' && e.target.type === 'number') {
             if (e.target.value === '') {
@@ -2515,14 +2515,16 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-			 // Mas matatag na Enter/Next key navigation kahit nagre-render ang table
+			    // Tuloy-tuloy na paglipat ng input box gamit ang Enter/Next nang hindi sumasara ang keypad
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
             if (activeEl && activeEl.tagName === 'INPUT') {
                 e.preventDefault();
                 
-                // Kunin lahat ng active/visible inputs sa buong pahina kasama na ang nasa table
+                // I-trigger muna ang change event para masave ang value bago lumipat
+                activeEl.dispatchEvent(new Event('change'));
+                
                 const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
                 const currentIndex = focusableInputs.indexOf(activeEl);
                 
@@ -2533,7 +2535,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
                         nextInput.select();
                     }
                 } else if (currentIndex === focusableInputs.length - 1) {
-                    // Kung nasa dulo na, bumalik sa unang input para tuloy-tuloy pa rin
                     focusableInputs[0].focus();
                     if (focusableInputs[0].type === 'number' || focusableInputs[0].type === 'text') {
                         focusableInputs[0].select();
@@ -2542,6 +2543,11 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
             }
         }
     });
+
+
+			
+
+
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
