@@ -2305,8 +2305,8 @@ function renderTable() {
            row.innerHTML = `
                 <td>${dayDisplayHtml}</td>
                 <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" data-day="${i}" data-field="expected" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
-                <td><input type="number" class="table-given-input" data-day="${i}" data-field="given" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
+                <td><input type="number" class="table-expected-input" data-day="${i}" data-field="expected" value="${expVal}" title="Expected para sa araw na ito"></td>
+                <td><input type="number" class="table-given-input" data-day="${i}" data-field="given" value="${givenVal}" title="Given para sa araw na ito"></td>
                 <td>${dayData.dateCovered || '-'}</td>
                 <td>${dayData.refNo || '-'}</td>
                 <td class="${shortClass}">${fmt(shortOver)}</td>
@@ -2521,28 +2521,22 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-// Tuloy-tuloy na paglipat ng input box gamit ang Next/Enter ng keypad nang hindi sumasara ang view
+// Tuloy-tuloy na paglipat ng box gamit ang Enter/Next ng keypad nang walang auto-save habang nag-e-encode
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
-            if (activeEl && activeEl.tagName === 'INPUT') {
+            if (activeEl && (activeEl.classList.contains('table-expected-input') || activeEl.classList.contains('table-given-input'))) {
                 e.preventDefault();
                 
-                // Kunin lahat ng input fields sa buong pahina
-                const focusableInputs = Array.from(document.querySelectorAll('input:not([type="hidden"]):not([disabled])'));
-                const currentIndex = focusableInputs.indexOf(activeEl);
+                const allInputs = Array.from(document.querySelectorAll('.table-expected-input, .table-given-input'));
+                const currentIndex = allInputs.indexOf(activeEl);
                 
-                if (currentIndex > -1 && currentIndex < focusableInputs.length - 1) {
-                    const nextInput = focusableInputs[currentIndex + 1];
+                if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
+                    const nextInput = allInputs[currentIndex + 1];
                     nextInput.focus();
-                    if (nextInput.type === 'number' || nextInput.type === 'text') {
-                        nextInput.select();
-                    }
-                } else if (currentIndex === focusableInputs.length - 1) {
-                    focusableInputs[0].focus();
-                    if (focusableInputs[0].type === 'number' || focusableInputs[0].type === 'text') {
-                        focusableInputs[0].select();
-                    }
+                    nextInput.select();
+                } else {
+                    activeEl.blur();
                 }
             }
         }
