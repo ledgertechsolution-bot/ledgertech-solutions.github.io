@@ -922,6 +922,23 @@
             font-size: 0.95rem;
             color: var(--text-main);
         }
+/* Estilo para sa mabilis at kusang mawawalang success notification */
+        .toast-notification {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--success);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 999999;
+            display: none;
+            text-align: center;
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -1051,15 +1068,16 @@
     </div>
 
     <div class="card">
+       <div class="card">
         <form id="entryForm">
             <div class="form-row">
                 <div class="form-group">
                     <label>Date of payment:</label>
-                    <input type="number" id="dayDate" placeholder="Ex. 1, 5..." required min="1" max="31">
+                    <input type="number" id="dayDate" placeholder="Ex. 1, 5...">
                 </div>
                 <div class="form-group">
                     <label>Amount Given:</label>
-                    <input type="number" id="givenAmt" placeholder="0" required>
+                    <input type="number" id="givenAmt" placeholder="0">
                 </div>
             </div>
             <div class="form-row">
@@ -2072,11 +2090,10 @@ function closeGuideModal() {
         }
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
         const date = parseInt(dayDateInput.value);
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
         
-        if (date < 1 || date > maxDaysInCurrentMonth) {
-            showCustomAlert("Maling Petsa", `Ang ${monthsArray[activeMonthIndex]} ${activeYearVal} ay may hanggang ${maxDaysInCurrentMonth} na araw lamang.`);
-            return;
+        // Kung walang nilagay na petsa o amount, hayaan lang nang walang error prompt
+        if (!date || isNaN(date)) {
+            // Pwede ring mag-save o mag-skip kung walang date
         }
 
         const given = parseFloat(document.getElementById('givenAmt').value) || 0;
@@ -2084,28 +2101,39 @@ function closeGuideModal() {
         const refNo = document.getElementById('refNo').value;
         const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
 
-        let dayOfWeek = getDayOfWeek(date, activeMonthIndex, activeYearVal);
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let activeCoding = driver ? driver.coding : 'None';
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-        
-        let calculatedExpected = defaultExpected;
-        if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-            calculatedExpected = 0;
+        if (date >= 1 && date <= 31) {
+            let dayOfWeek = getDayOfWeek(date, activeMonthIndex, activeYearVal);
+            let driver = driversList.find(d => d.id === currentDriverId);
+            let activeCoding = driver ? driver.coding : 'None';
+            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+            
+            let calculatedExpected = defaultExpected;
+            if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+                calculatedExpected = 0;
+            }
+
+            if (!records[date]) {
+                records[date] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
+            }
+            records[date].expected = calculatedExpected;
+            records[date].given = given;
+            if(dateCovered) records[date].dateCovered = dateCovered;
+            if(refNo) records[date].refNo = refNo;
+
+            localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+            renderTable();
+            form.reset();
+            updateNextDaySuggestion(records);
         }
 
-        if (!records[date]) {
-            records[date] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
+        // Ipakita ang "Data Saved Successfully" notification nang walang OK button at kusa mawawala pagkalipas ng 1 segundo
+        const toast = document.getElementById('toastNotification');
+        if (toast) {
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 1000); // 1000ms = 1 segundo
         }
-        records[date].expected = calculatedExpected;
-        records[date].given = given;
-        if(dateCovered) records[date].dateCovered = dateCovered;
-        if(refNo) records[date].refNo = refNo;
-
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-        form.reset();
-        updateNextDaySuggestion(records);
     });
 
     window.updateDailyExpected = function(dayNum, newExpectedVal) {
@@ -2561,6 +2589,8 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         </div>
     </div>
 </div>
+
+<div id="toastNotification" class="toast-notification">Data Saved Successfully!</div>
 
 </body>
 </html>
