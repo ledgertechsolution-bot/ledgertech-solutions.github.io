@@ -2151,7 +2151,7 @@ function closeGuideModal() {
         window.print();
     });
 
-    exportCsvBtn.addEventListener('click', function() {
+  exportCsvBtn.addEventListener('click', function() {
         if (!currentDriverId) {
             showCustomAlert("Babala", "Walang driver na napili para i-export.");
             return;
@@ -2208,6 +2208,13 @@ function closeGuideModal() {
             csvContent += row.join(",") + "\r\n";
         }
 
+        if (initialBalance > 0) {
+            let prevRowCsv = `,,,,,,"Previous Balance",${initialBalance}`;
+            csvContent += prevRowCsv + "\r\n";
+            let totalWithPrevCsv = `,,,,,,"Total with Previous",${runningBalance + initialBalance}`;
+            csvContent += totalWithPrevCsv + "\r\n";
+        }
+
         csvContent += "\r\n\r\n";
         csvContent += `,,,,,,,Driver: "${currentDriverName}"\r\n`;
 
@@ -2220,7 +2227,7 @@ function closeGuideModal() {
         document.body.removeChild(link);
     });
 
-    function renderTable() {
+function renderTable() {
         if (!currentDriverId || driversList.length === 0) {
             tableBody.innerHTML = '';
             lblExpected.innerText = '0';
@@ -2236,7 +2243,10 @@ function closeGuideModal() {
         let initialBalance = parseFloat(previousBalanceInput.value) || 0;
         let totalExpected = 0;
         let totalGiven = 0;
-        let runningBalance = initialBalance;
+        let runningBalance = 0; 
+
+        // Ilagay agad dito ang helper function para magamit sa buong function
+        let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
         const savedDays = Object.keys(records).map(Number);
         const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
@@ -2252,9 +2262,9 @@ function closeGuideModal() {
 
         const limitDay = Math.min(Math.max(maxRecordedDay, 1), maxDaysInCurrentMonth);
         let driver = driversList.find(d => d.id === currentDriverId);
-        const activeCoding = driver ? driver.coding : 'None';
-        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-        const isExcludeCoding = codingExcludeRadio.checked;
+        let activeCoding = driver ? driver.coding : 'None';
+        let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        let isExcludeCoding = codingExcludeRadio.checked;
 
         if (pageIndicator) {
             pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
@@ -2281,43 +2291,55 @@ function closeGuideModal() {
             let shortOver = givenVal - expVal;
             runningBalance += (expVal - givenVal);
 
-            let isLastRow = (i === limitDay);
-            let runningBalClass = '';
-            
-            if (isLastRow) {
-                if (runningBalance > 0) {
-                    runningBalClass = 'text-danger'; 
-                } else if (runningBalance < 0) {
-                    runningBalClass = 'text-success'; 
-                }
-            }
-
             const row = document.createElement('tr');
             let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
-            const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+            // Dito natin ilalagay ang kulay: red kapag may balance (> 0), green kapag wala o sobra (<= 0)
+            let runningClass = runningBalance > 0 ? 'text-danger' : 'text-success';
+            let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
             let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
             if (isCodingDay) {
                 dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
             }
 
-            row.innerHTML = `
-    <td>${dayDisplayHtml}</td>
-    <td>${i < 10 ? '0' + i : i}</td>
-    <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
-    <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
-    <td>${dayData.dateCovered || '-'}</td>
-    <td>${dayData.refNo || '-'}</td>
-    <td class="${shortClass}">${fmt(shortOver)}</td>
-    <td class="${runningBalClass}"><strong>${fmt(runningBalance)}</strong></td>
-`;
+           row.innerHTML = `
+                <td>${dayDisplayHtml}</td>
+                <td>${i < 10 ? '0' + i : i}</td>
+                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+                <td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
+                <td>${dayData.dateCovered || '-'}</td>
+                <td>${dayData.refNo || '-'}</td>
+                <td class="${shortClass}">${fmt(shortOver)}</td>
+                <td class="${runningClass}">${fmt(runningBalance)}</td>
+            `;
             tableBody.appendChild(row);
         }
 
-        const fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+       // Dito natin iaayos ang alignment para pumatak sa Short/Over at Running Bal columns
+     let finalRunningBalance = runningBalance + initialBalance;
+        if (!isNaN(initialBalance) && initialBalance !== 0) {
+            const prevRow = document.createElement('tr');
+            prevRow.style.backgroundColor = 'var(--primary-light)';
+            prevRow.innerHTML = `
+                <td colspan="6" style="text-align: right; font-weight: normal;">Previous Balance:</td>
+                <td></td>
+                <td class="${initialBalance > 0 ? 'text-danger' : 'text-success'}" style="text-align: center;">${initialBalance > 0 ? '+' : ''}${fmt(initialBalance)}</td>
+            `;
+            tableBody.appendChild(prevRow);
+
+            const totalSumRow = document.createElement('tr');
+            totalSumRow.style.fontWeight = 'normal';
+            totalSumRow.innerHTML = `
+                <td colspan="6" style="text-align: right; font-weight: normal;">KABUUANG BALANSE (Kasama Previous):</td>
+                <td></td>
+                <td class="${finalRunningBalance > 0 ? 'text-danger' : 'text-success'}" style="text-align: center;">${fmt(finalRunningBalance)}</td>
+            `;
+            tableBody.appendChild(totalSumRow);
+        }
+
         lblExpected.innerText = `${fmt(totalExpected)}`;
         lblGiven.innerText = `${fmt(totalGiven)}`;
-        lblBalance.innerText = `${fmt(runningBalance)}`;
+        lblBalance.innerText = `${fmt(finalRunningBalance)}`;
         updateNextDaySuggestion(records);
     }
 
