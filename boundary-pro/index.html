@@ -2088,51 +2088,82 @@ function closeGuideModal() {
             showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
             return;
         }
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const date = parseInt(dayDateInput.value);
         
-        // Kung walang nilagay na petsa o amount, hayaan lang nang walang error prompt
-        if (!date || isNaN(date)) {
-            // Pwede ring mag-save o mag-skip kung walang date
-        }
-
-        const given = parseFloat(document.getElementById('givenAmt').value) || 0;
-        const dateCovered = document.getElementById('dateCovered').value;
-        const refNo = document.getElementById('refNo').value;
+        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
         const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        let driver = driversList.find(d => d.id === currentDriverId);
+        let activeCoding = driver ? driver.coding : 'None';
+        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+        let isExcludeCoding = codingExcludeRadio.checked;
 
-        if (date >= 1 && date <= 31) {
-            let dayOfWeek = getDayOfWeek(date, activeMonthIndex, activeYearVal);
-            let driver = driversList.find(d => d.id === currentDriverId);
-            let activeCoding = driver ? driver.coding : 'None';
-            let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+        // Kunin ang lahat ng inilagay o binago sa mismong table (Expected at Given inputs)
+        const expectedInputs = document.querySelectorAll('.table-expected-input');
+        const givenInputs = document.querySelectorAll('.table-given-input');
+
+        expectedInputs.forEach(input => {
+            const dayNum = parseInt(input.getAttribute('data-day'));
+            const val = parseFloat(input.value) || 0;
             
+            if (!records[dayNum]) {
+                let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
+                let calculatedExpected = defaultExpected;
+                if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+                    calculatedExpected = 0;
+                }
+                records[dayNum] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
+            }
+            records[dayNum].expected = val;
+        });
+
+        givenInputs.forEach(input => {
+            const dayNum = parseInt(input.getAttribute('data-day'));
+            const val = parseFloat(input.value) || 0;
+            
+            if (!records[dayNum]) {
+                let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
+                let calculatedExpected = defaultExpected;
+                if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+                    calculatedExpected = 0;
+                }
+                records[dayNum] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
+            }
+            records[dayNum].given = val;
+        });
+
+        // Kung sakaling may nilagay din sa pormahan sa itaas, isama na rin natin sa pag-save
+        const topDate = parseInt(dayDateInput.value);
+        const topGiven = parseFloat(document.getElementById('givenAmt').value);
+        const topDateCovered = document.getElementById('dateCovered').value;
+        const topRefNo = document.getElementById('refNo').value;
+
+        if (topDate >= 1 && topDate <= 31 && !isNaN(topGiven)) {
+            let dayOfWeek = getDayOfWeek(topDate, activeMonthIndex, activeYearVal);
             let calculatedExpected = defaultExpected;
-            if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+            if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
                 calculatedExpected = 0;
             }
 
-            if (!records[date]) {
-                records[date] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
+            if (!records[topDate]) {
+                records[topDate] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
             }
-            records[date].expected = calculatedExpected;
-            records[date].given = given;
-            if(dateCovered) records[date].dateCovered = dateCovered;
-            if(refNo) records[date].refNo = refNo;
-
-            localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-            renderTable();
-            form.reset();
-            updateNextDaySuggestion(records);
+            records[topDate].given = topGiven;
+            if (topDateCovered) records[topDate].dateCovered = topDateCovered;
+            if (topRefNo) records[topDate].refNo = topRefNo;
         }
 
-        // Ipakita ang "Data Saved Successfully" notification nang walang OK button at kusa mawawala pagkalipas ng 1 segundo
+        // I-save sa localStorage
+        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+        renderTable();
+        form.reset();
+        updateNextDaySuggestion(records);
+
+        // Ipakita ang "Data Saved Successfully" notification (1 segundo lang, walang OK button)
         const toast = document.getElementById('toastNotification');
         if (toast) {
             toast.style.display = 'block';
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 1000); // 1000ms = 1 segundo
+            }, 1000);
         }
     });
 
