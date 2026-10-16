@@ -2305,8 +2305,8 @@ function renderTable() {
            row.innerHTML = `
                 <td>${dayDisplayHtml}</td>
                 <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
-<td><input type="number" class="table-given-input" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
+                <td><input type="number" class="table-expected-input" data-day="${i}" data-field="expected" value="${expVal}" onchange="updateDailyExpected(${i}, this.value)" title="I-edit ang expected para sa araw na ito"></td>
+                <td><input type="number" class="table-given-input" data-day="${i}" data-field="given" value="${givenVal}" onchange="updateDailyGiven(${i}, this.value)" title="I-edit ang given para sa araw na ito"></td>
                 <td>${dayData.dateCovered || '-'}</td>
                 <td>${dayData.refNo || '-'}</td>
                 <td class="${shortClass}">${fmt(shortOver)}</td>
@@ -2518,6 +2518,38 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
             setTimeout(() => {
                 e.target.select();
             }, 50);
+        }
+    });
+
+// Tuloy-tuloy na Enter / Next navigation sa table nang hindi pinapatay ang keypad
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const activeEl = document.activeElement;
+            if (activeEl && activeEl.tagName === 'INPUT' && activeEl.hasAttribute('data-day')) {
+                e.preventDefault();
+                
+                const day = parseInt(activeEl.getAttribute('data-day'));
+                const field = activeEl.getAttribute('data-field');
+                
+                // I-save muna ang value
+                activeEl.dispatchEvent(new Event('change'));
+                
+                let nextInput = null;
+                if (field === 'expected') {
+                    // Kapag nasa Expected ka, ang sunod na lilipatan ay ang Given ng PAREHONG araw
+                    nextInput = document.querySelector(`input[data-day="${day}"][data-field="given"]`);
+                } else if (field === 'given') {
+                    // Kapag nasa Given ka, ang sunod na lilipatan ay ang Expected ng SUSUNOD na araw
+                    nextInput = document.querySelector(`input[data-day="${day + 1}"][data-field="expected"]`);
+                }
+                
+                if (nextInput) {
+                    nextInput.focus();
+                    nextInput.select();
+                } else {
+                    activeEl.blur();
+                }
+            }
         }
     });
 
