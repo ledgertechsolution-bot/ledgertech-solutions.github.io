@@ -278,6 +278,19 @@
             text-align-last: center;
         }
 
+.table-input-cell {
+    width: 100% !important;
+    text-align: center !important;
+    text-align-last: center !important;
+}
+
+/* Pantanggal ng arrow (spinner) sa gilid ng number input para mas lumitaw sa gitna */
+.table-input-cell::-webkit-inner-spin-button,
+.table-input-cell::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
         .table-expected-input::-webkit-inner-spin-button,
         .table-expected-input::-webkit-outer-spin-button,
         .table-given-input::-webkit-inner-spin-button,
@@ -394,24 +407,24 @@
             cursor: pointer;
         }
 
-        .table-responsive {
-            overflow-x: auto;
-            max-height: 380px;
-        }
+       .table-responsive {
+    border: none !important;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: none !important;
+    table-layout: fixed; /* Mahalaga para hindi lumagpas ang mga column */
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.75rem;
-            margin-top: 8px;
-            white-space: nowrap;
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 5px 6px;
-            text-align: center;
-        }
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 5px 4px;
+    text-align: center;
+    word-wrap: break-word;
+    overflow: hidden;
+    font-size: 0.75rem;
+}
 
         th {
             background-color: var(--primary-light);
@@ -637,14 +650,32 @@
                 -webkit-print-color-adjust: exact;
                 position: static !important;
             }
-            .table-expected-input, .table-given-input {
-                border: none !important;
-                background: transparent !important;
-                font-size: 0.75rem !important;
-                text-align: center !important;
-                padding: 0 !important;
-                color: #000 !important;
-            }
+            .table-given-input {
+    width: 100% !important;
+    max-width: 65px;
+    padding: 3px 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: center;
+}
+
+/* Pangkalahatang estilo para sa lahat ng input sa loob ng table cells */
+.table-given-input, 
+.table-input-cell {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    padding: 4px 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: center;
+}
             .print-signature {
                 display: block !important;
                 margin-top: 96px; 
@@ -939,6 +970,100 @@
             display: none;
             text-align: center;
         }
+/* Pantanggal at pagtakda ng tiyak na lapad para sa Date column */
+        th.date-col, td.date-col {
+            width: 50px !important; /* Pwede mong baguhin ang 50px kung gusto mo pang mas paliitin o lakihan */
+            min-width: 50px !important;
+            max-width: 50px !important;
+        }
+
+@media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 10px !important;
+                font-size: 12pt !important;
+            }
+            /* Itago ang lahat ng hindi kailangan sa pormal na dokumento */
+            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1 {
+                display: none !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin-bottom: 0px !important;
+                background: #ffffff !important;
+            }
+            /* Gumawa ng pormal na Header para sa Document/PDF output */
+            header::before {
+                content: "BOUNDARY MONITORING SYSTEM REPORT";
+                display: block;
+                font-size: 18pt;
+                font-weight: bold;
+                text-align: center;
+                margin-bottom: 5px;
+                color: #000000;
+            }
+            header p {
+                display: block !important;
+                font-size: 11pt !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                color: #000000 !important;
+                margin-bottom: 15px !important;
+            }
+            .table-responsive {
+                max-height: none !important;
+                overflow: visible !important;
+            }
+            table {
+                font-size: 10pt !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                page-break-inside: auto;
+            }
+            tr {
+                page-break-inside: avoid;
+                page-break-after: auto;
+            }
+            th, td {
+                border: 1px solid #000000 !important;
+                color: #000000 !important;
+                padding: 6px 4px !important;
+                background-color: #ffffff !important;
+            }
+            th {
+                background-color: #e8f5e9 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            /* Palitan ang mga input fields sa table ng normal na text para pormang dokumento */
+            input.table-input-cell, input.table-expected-input {
+                border: none !important;
+                background: transparent !important;
+                text-align: center !important;
+                font-weight: bold !important;
+                font-size: 10pt !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                width: 100% !important;
+            }
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                -webkit-appearance: none;
+                margin: 0;
+            }
+            .print-signature {
+                display: block !important;
+                margin-top: 60px !important;
+                text-align: right !important;
+                font-size: 11pt !important;
+                font-weight: bold !important;
+                color: #000000 !important;
+                page-break-inside: avoid;
+            }
+        }
     </style>
 </head>
 <body data-theme="light">
@@ -984,7 +1109,7 @@
 		    <button type="button" id="exportCsvBtn">📊 Export CSV</button>
                     <button type="button" id="exportPdfBtn">📄 Export PDF</button>
                     <button type="button" id="openGuideBtn" onclick="openGuideModal()">📘 Guide</button>
-                    <a href="javascript:void(0);" id="tierBadgeBtn" onclick="openUpgradeModal()">👑 <span id="tierBadgeText">Free Trial</span></a>
+                    <button type="button" id="tierBadgeBtn" style="width: 100%; text-align: left; background: var(--bg-color); color: var(--text-main); border: 1px 			solid var(--border-color); padding: 9px 12px; font-size: 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-			items: center; gap: 8px;">👑 <span id="tierBadgeText">Free Trial</span></button>
 		    <a href="javascript:void(0);" id="exitMenuBtn" style="justify-content: center; font-weight: 600; margin-top: 4px;">Close Menu</a>
 	      </div>
             </div>
@@ -1016,14 +1141,14 @@
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Coding Rendering:</label>
-                <div style="display: flex; align-items: center; gap: 14px; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); height: 38px;">
-                    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal;">
-                        <input type="radio" name="codingRendering" id="codingInclude" value="include" checked style="width: auto; margin: 0;"> Include
-                    </label>
-                    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal; color: var(--danger);">
-                        <input type="radio" name="codingRendering" id="codingExclude" value="exclude" style="width: auto; margin: 0;"> Exclude
-                    </label>
-                </div>
+               <div style="display: flex; align-items: center; gap: 14px; padding: 7px 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--card-bg); height: 38px;">
+    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal;">
+        <input type="radio" name="codingRendering" id="codingInclude" value="include" style="width: auto; margin: 0;"> Include
+    </label>
+    <label style="margin-bottom: 0; display: flex; align-items: center; gap: 4px; cursor: pointer; font-weight: normal; color: var(--danger);">
+        <input type="radio" name="codingRendering" id="codingExclude" value="exclude" checked style="width: auto; margin: 0;"> Exclude
+    </label>
+</div>
             </div>
         </div>
 
@@ -1040,12 +1165,12 @@
         
         <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Boundary Set:</label>
+                <label>Daily Boundary Set Up:</label>
                 <input type="number" id="standardExpected" value="1000">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Previous Balance:</label>
-                <input type="number" id="previousBalance" value="0" placeholder="Utang/Balanse galing nakaraang buwan">
+                <label>Updated Running Balance (URB):</label>
+                <input type="number" id="previousBalance" value="0" placeholder="URB simula sa itaas">
             </div>
         </div>
     </div>
@@ -1110,21 +1235,19 @@
                 </div>
             </div>
         </div>
-        
-        <div class="table-responsive">
+     <div class="table-responsive">
             <table>
-                <thead>
-                    <tr>
-                        <th>Day</th>
-                        <th>Date</th>
-                        <th>Expected</th>
-                        <th>Given</th>
-                        <th>Date Covered</th>
-                        <th>Ref No.</th>
-                        <th>Short / Over</th>
-                        <th>Running Bal</th>
-                    </tr>
-                </thead>
+               <thead>
+    <tr>
+        <th>Days</th>
+        <th class="date-col">Date</th> <!-- <--- Idagdag ito -->
+        <th>Amount Given</th>
+        <th>Date Covered</th>
+        <th>MOP / Ref No.</th>
+        <th>Paid</th>
+        <th>Balance</th>
+    </tr>
+</thead>
                 <tbody id="tableBody"></tbody>
             </table>
             <div class="print-signature" id="printSignatureName">Driver: ____________________</div>
@@ -1225,89 +1348,54 @@
     </div>
 </div>
 
-<!-- Guide / Paano Gamitin Modal -->
+<!-- Guide / Manual Instruction Modal -->
 <div class="upgrade-modal-overlay" id="guideModal">
-    <div class="upgrade-modal-box" style="max-width: 500px; text-align: left;">
+    <div class="upgrade-modal-box" style="max-width: 550px; text-align: left;">
         <button type="button" class="upgrade-modal-close" onclick="closeGuideModal()">✕</button>
-        <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 8px; font-size: 1.15rem;">📘 Gabay sa Paggamit ng App</div>
-        <div class="upgrade-modal-subtitle" style="text-align: center; margin-bottom: 16px; font-size: 0.85rem;">Boundary Monitoring Pro Guide</div>
+        <div class="upgrade-modal-title" style="text-align: center; margin-bottom: 8px; font-size: 1.15rem;">📘 BOUNDARY MONITORING PRO — MANUAL INSTRUCTION</div>
 
-        <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px; font-size: 0.9rem; line-height: 1.6; color: var(--text-main);">
+        <div style="max-height: 70vh; overflow-y: auto; padding-right: 8px; font-size: 0.85rem; line-height: 1.6; color: var(--text-main);">
             
-            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART I: Paano ilagay sa iyong cellphone Home Screen ang App na ito.</p>
-            
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">Unang Paraan: <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Open in External Browser</span></p>
-            <ol style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan.</li>
-                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Open in External Browser</span></li>
-                <li style="margin-bottom: 6px;">I-click ang tatlong tuldok (⋮) sa taas at hanapin ang Install and Create Shortcut</li>
-            </ol>
-
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">Pangalawang Paraan: <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">Copy Link</span></p>
-            <ol style="margin-left: 20px; margin-bottom: 16px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Sa taas may tatlong tuldok (⋮) click mo yan</li>
-                <li style="margin-bottom: 6px;">Hanapin at piliin ang <span style="background: var(--primary-light); padding: 2px 6px; border-radius: 4px; font-weight: bold; color: var(--primary);">copy link</span></li>
-                <li style="margin-bottom: 6px;">Punta ka sa browser na gusto mong gamitin (Ex: Chrome, Edge, Firefox, Brave, etc.) at i-paste ang link</li>
-                <li style="margin-bottom: 6px;">I-click ang tatlong tuldok (⋮) sa taas at hanapin ang Install and Create Shortcut</li>
-            </ol>
-
-            <div style="background: var(--primary-light); padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem;">
-                <strong style="display: block; margin-bottom: 6px;">Guide Recommended:</strong>
-                <ol style="margin-left: 18px; opacity: 0.95; display: flex; flex-direction: column; gap: 4px;">
-                    <li>Mas Magandang pumili ng browser na hindi mo laging ginagamit.</li>
-                    <li>Yan na ang magiging default browser na tagabukas ng Application na ito.</li>
-                </ol>
-            </div>
-
-            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART II: Paano Gamitin ang Boundary Monitoring Pro</p>
-
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">1. Add Driver</p>
-            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Pindutin ang + Add Driver na button para maglagay ng bagong driver at i-type ang mga kinakailangang detalye.</li>
-                <li style="margin-bottom: 6px;">Awtomatikong madedetect ng sistema ang coding day nito base sa plate number.</li>
-                <li style="margin-bottom: 6px;">Para lumipat ng driver, i-tap lamang ang dropdown box sa taas kung saan nakalagay ang pangalan ng kasalukuyang driver o gamitin ang built-in search bar nito</li>
+           
+	<p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.9rem;">PART I: Pagsasaayos ng Driver at Setup sa Itaas</p>
+            <ul style="margin-left: 18px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 4px;"><b>Piliin o Magdagdag ng Driver:</b> I-tap ang Driver Dropdown box sa pinakataas para mamili ng driver mula sa iyong listahan, o gamitin ang built-in Search Bar para mabilis na mahanap ang pangalan.</li>
+                <li style="margin-bottom: 4px;">Pindutin ang <b>"+ Add Driver"</b> button para maglagay ng bagong driver at ilagay ang kanyang Pangalan at Plate Number. Awtomatikong dedetektuhin ng sistema ang Coding Day nito base sa huling numero ng plate.</li>
+                <li style="margin-bottom: 4px;"><b>Month, Year & Coding Rendering:</b> Piliin ang tamang buwan at taon, o gamitin ang arrow buttons (◀ / ▶) sa tabi ng buwan para mabilis lumipat ng buwan.</li>
+                <li style="margin-bottom: 4px;"><b>Coding Rendering (Include / Exclude):</b> Piliin ang <b>Exclude</b> kung nais mong gawing 0 expected boundary ang driver tuwing araw ng kanilang coding.</li>
+                <li style="margin-bottom: 4px;"><b>Daily Boundary Set Up:</b> Ilagay rito ang napagkasunduang araw-araw na hulog o boundary ng driver (halimbawa: 1000 o 1200).</li>
+                <li style="margin-bottom: 4px;"><b>Updated Running Balance (URB):</b> Ilagay rito ang panimulang balanse o utang ng driver mula sa nakaraang buwan o linggo para awtomatikong maisama sa kabuuang kalkulasyon ng kasalukuyang buwan.</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">2. Pag-set ng Buwan, Taon, Coding Rendering, at Boundary Setup</p>
-            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Piliin ang tamang Month & Year (pwedeng gamitin ang month arrows sa ibaba para mabilis lumipat)</li>
-                <li style="margin-bottom: 6px;">Gamitin ang Coding Rendering (Include / Exclude) para itakda kung isasama o gagawing 0 ang expected amount tuwing coding day</li>
-                <li style="margin-bottom: 6px;">Ilagay ang kasunduang halaga sa Boundary Set (halimbawa: ₱1,000 o ₱1,200)</li>
-                <li style="margin-bottom: 6px;">Kung mayroon silang naiwang balanse o utang mula sa nakaraang buwan, ilagay ito sa Previous Balance para awtomatikong maisama sa komputasyon</li>
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.9rem;">PART II: Pag-save at Pag-encode ng Araw-araw na Hulog</p>
+            <ul style="margin-left: 18px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 4px;"><b>Paghuhulog:</b> Ilagay ang araw sa Date of payment (halimbawa: 1, 5, atbp.).</li>
+                <li style="margin-bottom: 4px;">Ilagay ang ibinigay na halaga sa <b>Amount Given</b>.</li>
+                <li style="margin-bottom: 4px;">Kung sakop ang ilang araw, ilagay ang range sa <b>Date Covered</b> (halimbawa: 10/1 - 10/7) at ilagay ang Reference Number o GCash/Cash sa <b>MOP</b>.</li>
+                <li style="margin-bottom: 4px;">Pindutin ang <b>I-save button</b>. Agad na kakalkulahin ng sistema ang Short/Over at ang Running Balance nang awtomatiko.</li>
+                <li style="margin-bottom: 4px;"><b>Auto-Advancing Date:</b> Pagka-tap ng save, kusa itong lilipat sa susunod na araw para mas mabilis at tuloy-tuloy ang iyong pag-encode ng mga hulog.</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">3. Pag-save ng Araw-araw na Hulog (Payment Entry)</p>
-            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Ilagay ang araw sa Date of payment (halimbawa: 1, 5, atbp)</li>
-                <li style="margin-bottom: 6px;">Ilagay ang ibinigay na pera sa Amount Given</li>
-                <li style="margin-bottom: 6px;">Pwedeng ilagay ang sakop na petsa (Date Covered) at ang Mode of Payment o Reference Number (MOP/Ref #) o cash</li>
-                <li style="margin-bottom: 6px;">I-tap ang I-save button. Agad na kakalkulahin ng app ang Short/Over at ang Running Balance</li>
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.9rem;">PART III: Menu Options (⚙️ Menu)</p>
+            <p style="margin-bottom: 4px; opacity: 0.9;">I-tap ang <b>⚙️ Menu ▾</b> button sa itaas para makita ang mga sumusunod na mahahalagang kasangkapan:</p>
+            <ul style="margin-left: 18px; margin-bottom: 12px; opacity: 0.95;">
+                <li style="margin-bottom: 4px;">💾 <b>Backup Data:</b> I-save ang kopya ng lahat ng records sa iyong phone bilang JSON file para ligtas sa data loss.</li>
+                <li style="margin-bottom: 4px;">📂 <b>Restore Data:</b> Gamitin ito para ibalik ang mga na-backup mong records sakaling lumipat ka ng cell phone.</li>
+                <li style="margin-bottom: 4px;">📊 <b>Export CSV:</b> I-export ang talaan sa spreadsheet format (Excel/CSV).</li>
+                <td style="margin-bottom: 4px;">📄 <b>Export PDF:</b> Buksan ang pormal at malinis na document layout para ma-save o ma-print bilang opisyal na report.</td>
+                <li style="margin-bottom: 4px;">📘 <b>Manual Instruction:</b> Para mabuksan ang gabay na ito anumang oras sa loob ng app.</li>
+                <li style="margin-bottom: 4px;">👑 <b>Tier Status:</b> Para makita ang kasalukuyang lisensya o mag-upgrade ng TIER (Personal, Entrepreneur, Established, Prime).</li>
             </ul>
 
-            <p style="font-weight: bold; margin-top: 8px; margin-bottom: 4px;">4. Download Image & Reports (Bagong Feature)</p>
-            <ul style="margin-left: 20px; margin-bottom: 12px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;"><b>Download Image Button:</b> Pindutin ito para i-save ang buong talaan bilang litrato (PNG) sa iyong gallery. Mainam itong i-send direkta sa Messenger o chat ng driver bilang malinaw na resibo o report ng kanilang hulog.</li>
-                <li style="margin-bottom: 6px;">Kahit naka-Dark Mode ka sa app, awtomatikong magiging puti ang background at itim ang mga text sa mada-download na imahe para mukhang pormal at madaling basahin.</li>
-            </ul>
-
-            <!-- MGA MAHALAGANG PAALALA PARA IWAS DATA LOSS -->
-            <div style="background: #fff3e0; border: 1px solid #ffb74d; padding: 10px 12px; border-radius: 6px; margin-bottom: 16px; font-size: 0.85rem; color: #5d4037;">
-                <strong style="display: block; margin-bottom: 6px; color: #e65100;">⚠️ Mahahalagang Paalala para Iwas-Bura / Data Loss:</strong>
-                <ul style="margin-left: 18px; opacity: 0.95; display: flex; flex-direction: column; gap: 4px;">
-                    <li><b>Huwag i-clear ang browser data</b> o i-uninstall ang browser/app nang walang backup, dahil dito nakasalalay ang mga records sa iyong phone.</li>
-                    <li><b>Ugaliing mag-Backup:</b> Pumunta sa <b>⚙️ Menu</b> at i-click ang <b>💾 Backup Data</b> tuwing katapusan ng linggo o buwan. I-save ang file sa Google Drive o i-send sa iyong Messenger para may kopya ka.</li>
-                    <li><b>Restore Data:</b> Kung sakaling lumipat ka ng phone o nabura ang data, gamitin lang ang <b>📂 Restore Data</b> gamit ang iyong hiny-save na backup file para maibalik lahat ng listahan at records sa isang pindot lang!</li>
-                </ul>
-            </div>
-
-            <p style="font-weight: bold; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.95rem;">PART III: Menu Options</p>
-            <ul style="margin-left: 20px; margin-bottom: 8px; opacity: 0.95;">
-                <li style="margin-bottom: 6px;">Menu Button (⚙️ Menu ▾): Pindutin ito para ma-access ang Backup, Restore, Export CSV, Export PDF, Guide, at Tier Status / Upgrade.</li>
+            <p style="font-weight: bold; color: var(--primary); margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; font-size: 0.9rem;">PART V: Pag-download ng Larawan (Download Image)</p>
+            <ul style="margin-left: 18px; margin-bottom: 8px; opacity: 0.95;">
+                <li style="margin-bottom: 4px;">Pindutin ang <b>📥 Download Image</b> button sa tabi ng save button.</li>
+                <li style="margin-bottom: 4px;">Awtomatiko itong gagawa ng malinis at pormal na litrato (PNG) ng buong talaan na may puting background na handang-handang i-send direkta sa Messenger o chat ng driver bilang opisyal na update o lingguhang report.</li>
             </ul>
 
         </div>
         
-        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 16px; padding: 12px; font-size: 0.9rem;" onclick="closeGuideModal()">Got It</button>
+        <button type="button" class="tier-select-btn" style="width: 100%; margin-top: 14px; padding: 10px; font-size: 0.85rem;" onclick="closeGuideModal()">Got It</button>
     </div>
 </div>
         <script>
@@ -1396,11 +1484,28 @@ function closeGuideModal() {
         return fp;
     }
 
+function updateTierBadgeDisplay() {
+    const activeTier = localStorage.getItem('boundary_active_tier');
+    const badgeText = document.getElementById('tierBadgeText');
+    if (badgeText) {
+        if (activeTier) {
+            badgeText.innerText = activeTier;
+        } else {
+            badgeText.innerText = 'Free Trial';
+        }
+    }
+}
+
     function openUpgradeModal() {
         slideDropdownContent.classList.remove('show');
         updateTierBadgeDisplay();
         document.getElementById('upgradeModal').style.display = 'flex';
     }
+
+document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    openUpgradeModal();
+});
 
     function closeUpgradeModal() {
         document.getElementById('upgradeModal').style.display = 'none';
@@ -1512,10 +1617,14 @@ function closeGuideModal() {
         }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
+   window.addEventListener('DOMContentLoaded', () => {
         getDeviceFingerprint();
         checkTrialAndLicenseStatus();
+	updateTierBadgeDisplay();
         setInterval(checkTrialAndLicenseStatus, 5000);
+        
+        // Tawagin ito para siguradong lilitaw agad ang calendar/table pagka-refresh
+        loadActiveDriverConfig();
     });
 
     let shopeeModalCallback = null;
@@ -1539,6 +1648,19 @@ function closeGuideModal() {
         if (onConfirm) onConfirm();
     };
 }
+
+     function showCustomAlert(title, message) {
+        const modal = document.getElementById('shopeeModal');
+        if (!modal) return;
+        document.getElementById('shopeeModalTitle').innerText = title;
+        document.getElementById('shopeeModalText').innerText = message;
+        document.getElementById('shopeeModalInputContainer').style.display = 'none';
+        document.getElementById('shopeeModalButtonContainer').innerHTML = `
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        `;
+        shopeeModalCallback = null;
+        modal.style.display = 'flex';
+    }
 
     function showCustomPrompt(title, message, placeholder, callback) {
         const modal = document.getElementById('shopeeModal');
@@ -1885,11 +2007,13 @@ function closeGuideModal() {
         let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
         previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : 0;
 
-        let savedCodingRendering = localStorage.getItem(getDriverCodingRenderingKey());
-        if (savedCodingRendering === 'exclude') {
-            codingExcludeRadio.checked = true;
-        } else {
+       let savedCodingRendering = localStorage.getItem(getDriverCodingRenderingKey());
+        if (savedCodingRendering === 'include') {
             codingIncludeRadio.checked = true;
+        } else {
+            codingExcludeRadio.checked = true;
+            // I-save na agad bilang exclude sa localStorage para hindi na bumalik sa include
+            localStorage.setItem(getDriverCodingRenderingKey(), 'exclude');
         }
 
         updateHeaderTitle();
@@ -1942,7 +2066,8 @@ function closeGuideModal() {
             
             localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
             
-            const renderingVal = codingExcludeRadio.checked ? 'exclude' : 'include';
+           // Gawing Exclude ang default kung sakaling walang naka-check
+            const renderingVal = codingIncludeRadio.checked ? 'include' : 'exclude';
             localStorage.setItem(getDriverCodingRenderingKey(), renderingVal);
 
             localStorage.setItem('boundary_drivers_list', JSON.stringify(driversList));
@@ -2082,125 +2207,184 @@ function closeGuideModal() {
     );
 };
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
-            return;
-        }
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Mangyaring pumili muna o magdagdag ng driver bago mag-save.");
+        return;
+    }
+    
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const boundarySet = parseFloat(standardExpectedInput.value) || 1200;
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let activeCoding = driver ? driver.coding : 'None';
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+    let isExcludeCoding = codingExcludeRadio.checked;
+
+    const topDate = parseInt(dayDateInput.value);
+    const topGiven = parseFloat(document.getElementById('givenAmt').value); // Kunin ang eksaktong value kahit 0 o blangko
+    const topDateCovered = document.getElementById('dateCovered').value.trim();
+    const topRefNo = document.getElementById('refNo').value.trim();
+
+    // I-save lamang ang record sa mismong Araw ng Pagbabayad (Date of payment) para sa MOP at Date Covered
+    if (topDate >= 1 && topDate <= 31) {
+        if (!records[topDate]) records[topDate] = {};
         
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let activeCoding = driver ? driver.coding : 'None';
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-        let isExcludeCoding = codingExcludeRadio.checked;
-
-        // Kunin ang lahat ng inilagay o binago sa mismong table (Expected at Given inputs)
-        const expectedInputs = document.querySelectorAll('.table-expected-input');
-        const givenInputs = document.querySelectorAll('.table-given-input');
-
-        expectedInputs.forEach(input => {
-            const dayNum = parseInt(input.getAttribute('data-day'));
-            const val = parseFloat(input.value) || 0;
-            
-            if (!records[dayNum]) {
-                let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
-                let calculatedExpected = defaultExpected;
-                if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-                    calculatedExpected = 0;
-                }
-                records[dayNum] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
-            }
-            records[dayNum].expected = val;
-        });
-
-        givenInputs.forEach(input => {
-            const dayNum = parseInt(input.getAttribute('data-day'));
-            const val = parseFloat(input.value) || 0;
-            
-            if (!records[dayNum]) {
-                let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
-                let calculatedExpected = defaultExpected;
-                if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-                    calculatedExpected = 0;
-                }
-                records[dayNum] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
-            }
-            records[dayNum].given = val;
-        });
-
-        // Kung sakaling may nilagay din sa pormahan sa itaas, isama na rin natin sa pag-save
-        const topDate = parseInt(dayDateInput.value);
-        const topGiven = parseFloat(document.getElementById('givenAmt').value);
-        const topDateCovered = document.getElementById('dateCovered').value;
-        const topRefNo = document.getElementById('refNo').value;
-
-        if (topDate >= 1 && topDate <= 31 && !isNaN(topGiven)) {
+        // Kung may inilagay na Amount Given (kahit 0 o higit pa), i-save ito
+        if (!isNaN(topGiven)) {
+            records[topDate].amountGiven = topGiven;
+            records[topDate].paid = topGiven;
+            // Kalkulahin ang balance para sa araw na ito kung may halaga
             let dayOfWeek = getDayOfWeek(topDate, activeMonthIndex, activeYearVal);
-            let calculatedExpected = defaultExpected;
+            let exp = boundarySet;
             if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-                calculatedExpected = 0;
+                exp = 0;
             }
-
-            if (!records[topDate]) {
-                records[topDate] = { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
-            }
-            records[topDate].given = topGiven;
-            if (topDateCovered) records[topDate].dateCovered = topDateCovered;
-            if (topRefNo) records[topDate].refNo = topRefNo;
+            records[topDate].balance = exp - topGiven;
         }
 
-        // I-save sa localStorage
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-        form.reset();
-        updateNextDaySuggestion(records);
+        if (topDateCovered) records[topDate].dateCovered = topDateCovered;
+        if (topRefNo) records[topDate].mop = topRefNo;
+    }
 
-        // Ipakita ang "Data Saved Successfully" notification (1 segundo lang, walang OK button)
-        const toast = document.getElementById('toastNotification');
-        if (toast) {
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 1000);
+    // Kung naglagay ng Date Covered na may range (hal. 10/1 - 10/7) at may Amount Given na > 0, saka lamang i-distribute
+    if (!isNaN(topGiven) && topGiven > 0 && topDateCovered && topDateCovered.includes('-')) {
+        let parts = topDateCovered.split('-');
+        let startPart = parts[0].trim();
+        let endPart = parts[1].trim();
+
+        let startDay = parseInt(startPart.includes('/') ? startPart.split('/').pop() : startPart);
+        let endDay = parseInt(endPart.includes('/') ? endPart.split('/').pop() : endPart);
+
+        if (!isNaN(startDay) && !isNaN(endDay) && startDay <= endDay) {
+            let validDays = [];
+            for (let d = startDay; d <= endDay; d++) {
+                let dayOfWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                let isCodingDay = (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+                if (!isCodingDay) {
+                    validDays.push(d);
+                }
+            }
+
+            if (validDays.length > 0) {
+                let distributedPaid = topGiven / validDays.length;
+
+                validDays.forEach(d => {
+                    let dayOfWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                    let exp = boundarySet;
+                    let isCodingDay = (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+                    if (isCodingDay) exp = 0;
+
+                    if (!records[d]) records[d] = {};
+                    records[d].paid = (records[d].paid || 0) + distributedPaid;
+                    records[d].amountGiven = records[d].paid; // I-sync
+                    records[d].balance = exp - records[d].paid;
+                });
+            }
         }
-    });
+    }
 
-    window.updateDailyExpected = function(dayNum, newExpectedVal) {
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+    form.reset();
+    updateNextDaySuggestion(records);
+
+    const toast = document.getElementById('toastNotification');
+    if (toast) {
+        toast.style.display = 'block';
+        setTimeout(() => {
+            toast.style.display = 'none';
+        }, 1000);
+    }
+});
+
+  window.updateDailyExpected = function(dayNum, newExpectedVal) {
         if (!currentDriverId) return;
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
         const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
         
         if (!records[dayNum]) {
-            records[dayNum] = { expected: defaultExpected, given: 0, dateCovered: '', refNo: '' };
+            records[dayNum] = { expected: defaultExpected, amountGiven: 0, paid: 0, balance: defaultExpected };
         }
         records[dayNum].expected = parseFloat(newExpectedVal) || 0;
-        localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-        renderTable();
-    };
-
-    window.updateDailyGiven = function(dayNum, newGivenVal) {
-        if (!currentDriverId) return;
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+        let paidVal = records[dayNum].paid || 0;
+        records[dayNum].balance = records[dayNum].expected - paidVal;
         
-        let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let activeCoding = driver ? driver.coding : 'None';
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-        let initialExp = defaultExpected;
-        if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-            initialExp = 0;
-        }
-
-        if (!records[dayNum]) {
-            records[dayNum] = { expected: initialExp, given: 0, dateCovered: '', refNo: '' };
-        }
-        records[dayNum].given = parseFloat(newGivenVal) || 0;
         localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
         renderTable();
     };
+
+window.updateDailyGiven = function(dayNum, newGivenVal) {
+    if (!currentDriverId) return;
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+    
+    let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let activeCoding = driver ? driver.coding : 'None';
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+    let initialExp = defaultExpected;
+    if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+        initialExp = 0;
+    }
+
+    // Kung binura o ginawang blangko ang input, alisin ang record para mawala ang balance
+    if (newGivenVal === '' || isNaN(newGivenVal)) {
+        if (records[dayNum]) {
+            delete records[dayNum].amountGiven;
+            delete records[dayNum].paid;
+            delete records[dayNum].balance;
+            if (!records[dayNum].dateCovered && !records[dayNum].mop) {
+                delete records[dayNum];
+            }
+        }
+    } else {
+        let val = parseFloat(newGivenVal);
+        if (!records[dayNum]) records[dayNum] = {};
+        records[dayNum].amountGiven = val;
+        records[dayNum].paid = val;
+        records[dayNum].balance = initialExp - val;
+    }
+
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+};
+
+window.updatePaid = function(dayNum, newPaidVal) {
+    if (!currentDriverId) return;
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
+    
+    let dayOfWeek = getDayOfWeek(dayNum, activeMonthIndex, activeYearVal);
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let activeCoding = driver ? driver.coding : 'None';
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+    let initialExp = defaultExpected;
+    if (codingExcludeRadio.checked && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
+        initialExp = 0;
+    }
+
+    // Kung binura o ginawang blangko ang input, alisin ang record para mawala ang balance
+    if (newPaidVal === '' || isNaN(newPaidVal)) {
+        if (records[dayNum]) {
+            delete records[dayNum].paid;
+            delete records[dayNum].amountGiven;
+            delete records[dayNum].balance;
+            if (!records[dayNum].dateCovered && !records[dayNum].mop) {
+                delete records[dayNum];
+            }
+        }
+    } else {
+        let val = parseFloat(newPaidVal);
+        if (!records[dayNum]) records[dayNum] = {};
+        records[dayNum].paid = val;
+        records[dayNum].amountGiven = val;
+        records[dayNum].balance = initialExp - val;
+    }
+
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+};
 
     exportPdfBtn.addEventListener('click', function() {
         if (!currentDriverId) {
@@ -2287,159 +2471,220 @@ function closeGuideModal() {
     });
 
 function renderTable() {
-        if (!currentDriverId || driversList.length === 0) {
-            tableBody.innerHTML = '';
-            lblExpected.innerText = '0';
-            lblGiven.innerText = '0';
-            lblBalance.innerText = '0';
-            initDriversDropdown();
-            return;
-        }
-
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    if (!currentDriverId || driversList.length === 0) {
         tableBody.innerHTML = '';
-        
-        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
-        let totalExpected = 0;
-        let totalGiven = 0;
-        let runningBalance = 0; 
-
-        // Ilagay agad dito ang helper function para magamit sa buong function
-        let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-        const savedDays = Object.keys(records).map(Number);
-        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        
-        if (savedDays.length === 0 && initialBalance === 0) {
-            lblExpected.innerText = '0';
-            lblGiven.innerText = '0';
-            lblBalance.innerText = '0';
-            updateNextDaySuggestion(records);
-            return;
-        }
-
-        const limitDay = Math.min(Math.max(maxRecordedDay, 1), maxDaysInCurrentMonth);
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let activeCoding = driver ? driver.coding : 'None';
-        let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-        let isExcludeCoding = codingExcludeRadio.checked;
-
-        if (pageIndicator) {
-            pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
-        }
-
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-
-        for (let i = 1; i <= limitDay; i++) {
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
-            let isCodingDay = (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
-
-            let calculatedExpected = defaultExpected;
-            if (isExcludeCoding && isCodingDay) {
-                calculatedExpected = 0;
-            }
-
-            let dayData = records[i] || { expected: calculatedExpected, given: 0, dateCovered: '', refNo: '' };
-            
-            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
-
-            totalExpected += expVal;
-            totalGiven += givenVal;
-            let shortOver = givenVal - expVal;
-            runningBalance += (expVal - givenVal);
-
-            const row = document.createElement('tr');
-            let shortClass = shortOver < 0 ? 'text-danger' : 'text-success';
-            // Dito natin ilalagay ang kulay: red kapag may balance (> 0), green kapag wala o sobra (<= 0)
-            let runningClass = runningBalance > 0 ? 'text-danger' : 'text-success';
-            let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-
-            let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
-            if (isCodingDay) {
-                dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
-            }
-
-           row.innerHTML = `
-                <td>${dayDisplayHtml}</td>
-                <td>${i < 10 ? '0' + i : i}</td>
-                <td><input type="number" class="table-expected-input" data-day="${i}" data-field="expected" value="${expVal}" title="Expected para sa araw na ito"></td>
-                <td><input type="number" class="table-given-input" data-day="${i}" data-field="given" value="${givenVal}" title="Given para sa araw na ito"></td>
-                <td>${dayData.dateCovered || '-'}</td>
-                <td>${dayData.refNo || '-'}</td>
-                <td class="${shortClass}">${fmt(shortOver)}</td>
-                <td class="${runningClass}">${fmt(runningBalance)}</td>
-            `;
-            tableBody.appendChild(row);
-        }
-
-       // Dito natin iaayos ang alignment para pumatak sa Short/Over at Running Bal columns
-     let finalRunningBalance = runningBalance + initialBalance;
-        if (!isNaN(initialBalance) && initialBalance !== 0) {
-            const prevRow = document.createElement('tr');
-            prevRow.style.backgroundColor = 'var(--primary-light)';
-            prevRow.innerHTML = `
-                <td colspan="6" style="text-align: right; font-weight: normal;">Previous Balance:</td>
-                <td></td>
-                <td class="${initialBalance > 0 ? 'text-danger' : 'text-success'}" style="text-align: center;">${initialBalance > 0 ? '+' : ''}${fmt(initialBalance)}</td>
-            `;
-            tableBody.appendChild(prevRow);
-
-            const totalSumRow = document.createElement('tr');
-            totalSumRow.style.fontWeight = 'normal';
-            totalSumRow.innerHTML = `
-                <td colspan="6" style="text-align: right; font-weight: normal;">KABUUANG BALANSE (Kasama Previous):</td>
-                <td></td>
-                <td class="${finalRunningBalance > 0 ? 'text-danger' : 'text-success'}" style="text-align: center;">${fmt(finalRunningBalance)}</td>
-            `;
-            tableBody.appendChild(totalSumRow);
-        }
-
-        lblExpected.innerText = `${fmt(totalExpected)}`;
-        lblGiven.innerText = `${fmt(totalGiven)}`;
-        lblBalance.innerText = `${fmt(finalRunningBalance)}`;
-        updateNextDaySuggestion(records);
-    }
-
-    if (driversList.length > 0) {
-        loadActiveDriverConfig();
-    } else {
+        lblExpected.innerText = '0';
+        lblGiven.innerText = '0';
+        lblBalance.innerText = '0';
         initDriversDropdown();
+        return;
     }
 
-    function updateTierBadgeDisplay() {
-        const activeKey = localStorage.getItem('boundary_active_key');
-        const activeTier = localStorage.getItem('boundary_active_tier') || 'Entrepreneur';
-        const badgeText = document.getElementById('tierBadgeText');
-        const modalTierStatusDisplay = document.getElementById('modalTierStatusDisplay');
-        
-        let displayLabel = 'Free Trial';
-        
-        if (activeKey) {
-            if (activeTier.toLowerCase().includes('personal')) {
-                displayLabel = 'Personal Use (1 Driver) - Licensed';
-            } else if (activeTier.toLowerCase().includes('established')) {
-                displayLabel = 'Established (Max 5 Drivers) - Licensed';
-            } else if (activeTier.toLowerCase().includes('prime')) {
-                displayLabel = 'Prime (6+ Drivers Up) - Licensed';
-            } else {
-                displayLabel = 'Entrepreneur (Max 3 Drivers) - Licensed';
-            }
-        } else {
-            displayLabel = 'Free Trial';
-        }
-
-        if (badgeText) {
-            badgeText.textContent = activeKey ? (activeTier.toLowerCase().includes('personal') ? 'Personal Use (1 Driver)' : activeTier.toLowerCase().includes('established') ? 'Established (Max 5 Drivers)' : activeTier.toLowerCase().includes('prime') ? 'Prime (6+ Drivers Up)' : 'Entrepreneur (Max 3 Drivers)') : 'Free Trial';
-        }
-
-        if (modalTierStatusDisplay) {
-            modalTierStatusDisplay.textContent = displayLabel;
-        }
-    }
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    tableBody.innerHTML = '';
     
-    updateTierBadgeDisplay();
+    let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let totalExpected = 0;
+    let totalGiven = 0;
+    let runningBalance = initialBalance; 
+
+    let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    let boundarySet = parseFloat(standardExpectedInput.value) || 1200;
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let activeCoding = driver ? driver.coding : 'None';
+    let isExcludeCoding = codingExcludeRadio.checked;
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+
+    let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    if (pageIndicator) {
+        pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
+    }
+
+    let weekCounter = 1;
+    let accumulatedUrbForRunning = initialBalance;
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+        let isCodingDay = (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+        
+        let expectedForDay = boundarySet;
+        if (isExcludeCoding && isCodingDay) {
+            expectedForDay = 0;
+        }
+
+       let dayData = records[i] || null;
+        let amountGiven = dayData && dayData.amountGiven !== undefined ? dayData.amountGiven : (dayData && dayData.given ? dayData.given : '');
+        let paidVal = dayData && dayData.paid !== undefined ? dayData.paid : '';
+        let dateCovered = dayData ? (dayData.dateCovered || '') : '';
+        let mopRef = dayData ? (dayData.mop || dayData.refNo || '') : '';
+        
+        // Tinatanggap na ang 0 bilang valid entry para lumabas ang balance
+        let hasPayment = dayData && (
+            (dayData.amountGiven !== undefined && dayData.amountGiven !== '' && !isNaN(dayData.amountGiven)) || 
+            (dayData.paid !== undefined && dayData.paid !== '' && !isNaN(dayData.paid))
+        );
+        let balanceVal = 0;
+        let balanceDisplayHtml = '';
+        let balanceClass = '';
+
+      if (hasPayment) {
+            balanceVal = expectedForDay - paidVal;
+            if (isExcludeCoding && isCodingDay) {
+                balanceVal = 0;
+            }
+            
+            // Kung mas malaki ang binayad kaysa sa expected (Overpaid / Negative balance), Berde (text-success)
+            // Kung may balanse pa o sakto, Itim (text-main o walang class)
+            if (balanceVal < 0) {
+                balanceClass = 'text-success'; // Berde kapag over
+            } else {
+                balanceClass = ''; // Itim kapag normal / may balanse pa
+            }
+            
+            let textColorStyle = balanceVal < 0 ? 'color: var(--success);' : 'color: var(--text-main);';
+            balanceDisplayHtml = `<td style="font-weight: bold; text-align: center; ${textColorStyle}">${fmt(balanceVal)}</td>`;
+            
+            totalExpected += expectedForDay;
+            totalGiven += amountGiven;
+        } else {
+            balanceDisplayHtml = `<td></td>`;
+        }
+
+       const row = document.createElement('tr');
+        balanceClass = balanceVal > 0 ? 'text-danger' : 'text-success';
+
+        let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
+        if (isCodingDay) {
+            dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
+        }
+row.innerHTML = `
+    <td>${dayDisplayHtml}</td>
+    <td class="date-col">${i < 10 ? '0' + i : i}</td>
+    <td><input type="number" class="table-input-cell" style="text-align: center;" data-day="${i}" data-field="amountGiven" value="${amountGiven !== '' ? amountGiven : ''}" onchange="updateDailyGiven(${i}, this.value)"></td>
+    <td><input type="text" class="table-input-cell" style="text-align: center;" value="${dateCovered}" onchange="updateDateCovered(${i}, this.value)"></td>
+    <td><input type="text" class="table-input-cell" style="text-align: center;" value="${mopRef}" onchange="updateMop(${i}, this.value)"></td>
+    <td style="text-align: center;">
+        <input type="number" class="table-input-cell" style="font-weight: bold; text-align: center;" value="${paidVal !== '' ? paidVal : ''}" onchange="updatePaid(${i}, this.value)">
+    </td>
+    ${balanceDisplayHtml}
+`;
+        tableBody.appendChild(row);
+
+      if (dayOfWeek === 'Sun') {
+            let currentWeekBalance = 0;
+            let startDay = Math.max(1, i - 6);
+            
+            // Kalkulahin ang eksaktong petsa ng simula at dulo ng linggong ito para sa buwan at taon
+            let startMonthStr = monthsArray[activeMonthIndex].slice(0, 3); // Halimbawa: Oct
+            let dateRangeStr = `${startMonthStr} ${startDay}-${i}, ${activeYearVal}`;
+
+            for (let d = startDay; d <= i; d++) {
+                let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                let dIsCoding = (activeCoding !== 'None' && fullDayNames[dWeek] === activeCoding);
+                let dExp = boundarySet;
+                if (isExcludeCoding && dIsCoding) dExp = 0;
+                
+                let dData = records[d] || null;
+                if (dData && (dData.amountGiven !== undefined || dData.paid !== undefined)) {
+                    let dPaid = dData.paid !== undefined ? dData.paid : (dData.amountGiven !== undefined ? dData.amountGiven : 0);
+                    let dBal = dExp - dPaid;
+                    if (isExcludeCoding && dIsCoding) dBal = 0;
+                    currentWeekBalance += dBal;
+                }
+            }
+
+            let customWeeklyKey = `weekly_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekCounter}`;
+            let savedCustomWeekly = localStorage.getItem(customWeeklyKey);
+            let activeWeeklyVal = savedCustomWeekly !== null && savedCustomWeekly !== '' ? parseFloat(savedCustomWeekly) : currentWeekBalance;
+
+            accumulatedUrbForRunning += activeWeeklyVal;
+            
+            let customUrbKey = `urb_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekCounter}`;
+            let savedCustomUrb = localStorage.getItem(customUrbKey);
+            let activeUrbVal = (savedCustomUrb !== null && savedCustomUrb !== '') ? parseFloat(savedCustomUrb) : accumulatedUrbForRunning;
+
+            accumulatedUrbForRunning = activeUrbVal;
+
+          const weeklyBalRow = document.createElement('tr');
+            weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
+            weeklyBalRow.innerHTML = `
+                <td colspan="6" style="text-align: left; font-weight: bold; padding: 8px 10px; border-right: none; color: var(--text-main);">
+                    Weekly Balance (Week ${weekCounter} — ${dateRangeStr}):
+                </td>
+                <td style="padding: 6px; text-align: center; border-left: none;">
+                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger);" value="${savedCustomWeekly !== null && savedCustomWeekly !== '' ? savedCustomWeekly : currentWeekBalance}" onchange="updateCustomWeekly(${weekCounter}, this.value)">
+                </td>
+            `;
+            tableBody.appendChild(weeklyBalRow);
+
+            // Suriin muna kung may laman o record ang linggong ito bago magpakita ng URB value
+            let hasWeekData = false;
+            for (let d = startDay; d <= i; d++) {
+                let dData = records[d];
+                if (dData && ((dData.amountGiven !== undefined && dData.amountGiven !== '' && !isNaN(dData.amountGiven)) || (dData.paid !== undefined && dData.paid !== '' && !isNaN(dData.paid)))) {
+                    hasWeekData = true;
+                    break;
+                }
+            }
+
+           const urbRow = document.createElement('tr');
+            urbRow.style.backgroundColor = 'var(--primary-light)';
+            urbRow.innerHTML = `
+                <td colspan="6" style="text-align: left; font-weight: bold; padding: 8px 10px; border-right: none; color: var(--text-main);">
+                    Updated Running Balance (URB) — Week ${weekCounter}:
+                </td>
+                <td style="padding: 6px; text-align: center; border-left: none; font-weight: bold; color: var(--danger);">
+                    ${hasWeekData ? fmt(activeUrbVal) : ''}
+                </td>
+            `;
+            tableBody.appendChild(urbRow);
+            
+            weekCounter++;
+        }
+    }
+
+    lblExpected.innerText = `${fmt(totalExpected)}`;
+    lblGiven.innerText = `${fmt(totalGiven)}`;
+    lblBalance.innerText = `${fmt(accumulatedUrbForRunning)}`;
+    updateNextDaySuggestion(records);
+}
+
+// Mga auxiliary update functions para sa editable fields
+window.updateDateCovered = function(dayNum, val) {
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    if (!records[dayNum]) records[dayNum] = {};
+    records[dayNum].dateCovered = val;
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+};
+
+window.updateMop = function(dayNum, val) {
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    if (!records[dayNum]) records[dayNum] = {};
+    records[dayNum].mop = val;
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+};
+
+window.updateBalance = function(dayNum, val) {
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    if (!records[dayNum]) records[dayNum] = {};
+    records[dayNum].balance = parseFloat(val) || 0;
+    localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
+    renderTable();
+};
+
+window.updateCustomUrb = function(weekNum, val) {
+    if (!currentDriverId) return;
+    let customUrbKey = `urb_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekNum}`;
+    localStorage.setItem(customUrbKey, val);
+    renderTable();
+};
+
+window.updateCustomWeekly = function(weekNum, val) {
+    if (!currentDriverId) return;
+    let customWeeklyKey = `weekly_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekNum}`;
+    localStorage.setItem(customWeeklyKey, val);
+    renderTable();
+};
 
 // NA-UPDATE NA BAHAGI PARA SA DOWNLOAD IMAGE: White background, itim na linya, at may kulay pa rin ang Short/Over at Running Balance
 document.getElementById('downloadImgBtn').addEventListener('click', function() {
@@ -2448,6 +2693,46 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         return;
     }
 
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    const savedDays = Object.keys(records).map(Number).filter(d => {
+        let r = records[d];
+        return r && (r.amountGiven > 0 || r.paid > 0 || r.given > 0 || (r.dateCovered && r.dateCovered.trim() !== '') || (r.mop && r.mop.trim() !== ''));
+    });
+
+    // Hanapin ang huling araw na may entry o kaya ay hanggang sa dulo ng huling linggo na may laman
+    let maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 7;
+    let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    
+    // Kunin hanggang sa huling Linggo na sakop ng mga tala para hindi sumama ang mga blangkong araw sa ibaba
+    let limitDay = daysInMonth;
+    for (let i = daysInMonth; i >= 1; i--) {
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+        if (i >= maxRecordedDay && dayOfWeek === 'Sun') {
+            limitDay = i;
+            break;
+        }
+    }
+    if (limitDay < maxRecordedDay) {
+        // Kung sakaling lumampas, hanapin ang susunod na Linggo
+        for (let i = maxRecordedDay; i <= daysInMonth; i++) {
+            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+            limitDay = i;
+            if (dayOfWeek === 'Sun') break;
+        }
+    }
+
+    // Pansamantalang itago o i-filter ang mga rows na lalampas sa limitDay para hindi makasama sa screenshot
+    const allRows = tableBody.querySelectorAll('tr');
+    let currentRowCount = 0;
+    allRows.forEach(row => {
+        currentRowCount++;
+        // Ang bawat araw ay katumbas ng 1 row, tapos may kasamang weekly/urb rows tuwing Linggo.
+        // I-hide ang mga rows na lampas sa ating limitDay.
+        if (currentRowCount > (limitDay * 3)) { // Tinatayang sukat base sa rows at weekly blocks
+            row.style.display = 'none';
+        }
+    });
+
     const targetElement = document.getElementById('reportTableCard');
     const tableResponsive = targetElement.querySelector('.table-responsive');
     const originalMaxHeight = tableResponsive.style.maxHeight;
@@ -2455,17 +2740,19 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     
     const originalBg = targetElement.style.backgroundColor;
     const originalColor = targetElement.style.color;
+    
+    // Purong puting background para sa pormal na itsura
     targetElement.style.backgroundColor = '#ffffff';
     targetElement.style.color = '#000000';
 
-    const tables = targetElement.querySelectorAll('table, th, td');
+    const tables = targetElement.querySelectorAll('table, th, td, tr');
     tables.forEach(el => {
+        el.style.backgroundColor = '#ffffff';
         el.style.borderColor = '#000000';
         if (el.tagName === 'TH') {
             el.style.color = '#000000';
-            el.style.backgroundColor = '#e8f5e9';
+            el.style.backgroundColor = '#e8f5e9'; // Banayad na berdeng header para pormal tingnan
         } else if (el.tagName === 'TD') {
-            // Panatilihin ang kulay ng text kung ito ay may class na text-danger o text-success
             if (!el.classList.contains('text-danger') && !el.classList.contains('text-success')) {
                 el.style.color = '#000000';
             }
@@ -2475,6 +2762,10 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
     targetElement.style.width = '100%';
+
+    // Alisin muna pansamantala ang Clear button at Month arrows sa header bago mag-capture para mas malinis
+    const actionBtnsRight = targetElement.querySelector('.table-actions-right');
+    if (actionBtnsRight) actionBtnsRight.style.display = 'none';
 
     const currentDriverName = driverNameInput.value || 'Driver';
     const plateVal = plateNumberInput.value || 'N/A';
@@ -2495,9 +2786,11 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     `;
     targetElement.prepend(reportHeaderDiv);
 
-    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-given-input');
+    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-input-cell');
     inputFields.forEach(input => {
-        input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: #000000;">${input.value}</div>`;
+        if(input.offsetParent !== null) { // Kung visible ang input
+            input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: #000000;">${input.value}</div>`;
+        }
     });
 
     html2canvas(targetElement, {
@@ -2508,13 +2801,14 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     }).then(canvas => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
+        if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
         
         targetElement.style.backgroundColor = originalBg;
         targetElement.style.color = originalColor;
         tableResponsive.style.maxHeight = originalMaxHeight;
         tableResponsive.style.overflowX = originalOverflow;
         targetElement.style.width = '';
-        renderTable();
+        renderTable(); // I-rebuild ang table para maibalik ang normal state
         
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
@@ -2528,6 +2822,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     }).catch(error => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
+        if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
         targetElement.style.backgroundColor = originalBg;
         targetElement.style.color = originalColor;
         tableResponsive.style.maxHeight = originalMaxHeight;
@@ -2538,22 +2833,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     });
 });
 
-			    // Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
-    if (window.visualViewport) {
-        let currentScrollPos = window.pageYOffset;
-        
-        window.addEventListener('scroll', () => {
-            currentScrollPos = window.pageYOffset;
-        }, { passive: true });
 
-        window.visualViewport.addEventListener('resize', () => {
-            // Pinapanatili nitong steady at hindi gumagalaw ang screen sa huling pwesto ng user
-            window.scrollTo({
-                top: currentScrollPos,
-                behavior: 'instant'
-            });
-        });
-    }
 
 // 1. Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
     if (window.visualViewport) {
