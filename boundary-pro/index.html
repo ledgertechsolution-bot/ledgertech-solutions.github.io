@@ -1065,7 +1065,7 @@ th, td {
             }
         }
 
-/* Custom mobile table fix */
+/* Pinalawak at binuo para maging maluwag at malinis sa phone */
 .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -1075,27 +1075,30 @@ th, td {
 
 table {
     width: 100%;
+    min-width: 480px; /* Nagbibigay ng sapat na espasyo para hindi magsiksikan ang mga kolum */
     border-collapse: collapse;
-    table-layout: fixed;
 }
 
 th, td {
-    padding: 4px 2px;
-    font-size: 0.65rem;
+    padding: 6px 4px;
+    font-size: 0.75rem;
     text-align: center;
     word-wrap: break-word;
-    overflow: hidden;
 }
 
-th.date-col, td.date-col {
-    width: 35px !important;
-    min-width: 35px !important;
-}
+/* Eksaktong sukat para sa bawat kolum para hindi mag-collapse */
+th:nth-child(1), td:nth-child(1) { width: 55px; } /* Days */
+th:nth-child(2), td:nth-child(2) { width: 38px; } /* Date */
+th:nth-child(3), td:nth-child(3) { width: 65px; } /* Amount Given */
+th:nth-child(4), td:nth-child(4) { width: 75px; } /* Date Covered */
+th:nth-child(5), td:nth-child(5) { width: 75px; } /* MOP / Ref No. */
+th:nth-child(6), td:nth-child(6) { width: 65px; } /* Paid */
+th:nth-child(7), td:nth-child(7) { width: 75px; } /* Balance */
 
 .table-input-cell, .table-expected-input, .table-given-input {
     width: 100% !important;
-    padding: 3px 1px !important;
-    font-size: 0.68rem !important;
+    padding: 4px 2px !important;
+    font-size: 0.75rem !important;
     text-align: center !important;
 }
     </style>
