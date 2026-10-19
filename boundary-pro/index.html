@@ -1064,43 +1064,6 @@ th, td {
                 page-break-inside: avoid;
             }
         }
-
-/* Pinalawak at binuo para maging maluwag at malinis sa phone */
-.table-responsive {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border: none;
-}
-
-table {
-    width: 100%;
-    min-width: 480px; /* Nagbibigay ng sapat na espasyo para hindi magsiksikan ang mga kolum */
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 6px 4px;
-    font-size: 0.75rem;
-    text-align: center;
-    word-wrap: break-word;
-}
-
-/* Eksaktong sukat para sa bawat kolum para hindi mag-collapse */
-th:nth-child(1), td:nth-child(1) { width: 55px; } /* Days */
-th:nth-child(2), td:nth-child(2) { width: 38px; } /* Date */
-th:nth-child(3), td:nth-child(3) { width: 65px; } /* Amount Given */
-th:nth-child(4), td:nth-child(4) { width: 75px; } /* Date Covered */
-th:nth-child(5), td:nth-child(5) { width: 75px; } /* MOP / Ref No. */
-th:nth-child(6), td:nth-child(6) { width: 65px; } /* Paid */
-th:nth-child(7), td:nth-child(7) { width: 75px; } /* Balance */
-
-.table-input-cell, .table-expected-input, .table-given-input {
-    width: 100% !important;
-    padding: 4px 2px !important;
-    font-size: 0.75rem !important;
-    text-align: center !important;
-}
     </style>
 </head>
 <body data-theme="light">
@@ -2335,6 +2298,35 @@ form.addEventListener('submit', function(e) {
     }
 });
 
+window.updateCustomWeekly = function(weekNum, val) {
+    if (!currentDriverId) return;
+    let monthKey = `${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    let weeklyStoreKey = `bmpro_weekly_ovr_${currentDriverId}_${monthKey}`;
+    
+    let weeklyOverrides = JSON.parse(localStorage.getItem(weeklyStoreKey)) || {};
+    
+    if (val === '' || isNaN(val)) {
+        delete weeklyOverrides[`w${weekNum}`];
+    } else {
+        weeklyOverrides[`w${weekNum}`] = parseFloat(val);
+    }
+    
+    localStorage.setItem(weeklyStoreKey, JSON.stringify(weeklyOverrides));
+    
+    let urbStoreKey = `bmpro_urb_ovr_${currentDriverId}_${monthKey}`;
+    let urbOverrides = JSON.parse(localStorage.getItem(urbStoreKey)) || {};
+    delete urbOverrides[`w${weekNum}`];
+    localStorage.setItem(urbStoreKey, JSON.stringify(urbOverrides));
+
+    // Huwag munang i-rerender ang buong table kung nagta-type pa para hindi mawala ang focus sa input box
+};
+
+// Gamitin ang 'change' o 'blur' para sa pinal na pag-save ng weekly balance
+window.saveCustomWeekly = function(weekNum, val) {
+    updateCustomWeekly(weekNum, val);
+    renderTable();
+};
+
   window.updateDailyExpected = function(dayNum, newExpectedVal) {
         if (!currentDriverId) return;
         let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
@@ -2540,6 +2532,13 @@ function renderTable() {
     let weekCounter = 1;
     let accumulatedUrbForRunning = initialBalance;
 
+    let monthKey = `${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    let weeklyStoreKey = `bmpro_weekly_ovr_${currentDriverId}_${monthKey}`;
+    let weeklyOverrides = JSON.parse(localStorage.getItem(weeklyStoreKey)) || {};
+
+    let urbStoreKey = `bmpro_urb_ovr_${currentDriverId}_${monthKey}`;
+    let urbOverrides = JSON.parse(localStorage.getItem(urbStoreKey)) || {};
+
     for (let i = 1; i <= daysInMonth; i++) {
         let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
         let isCodingDay = (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
@@ -2549,13 +2548,12 @@ function renderTable() {
             expectedForDay = 0;
         }
 
-       let dayData = records[i] || null;
+        let dayData = records[i] || null;
         let amountGiven = dayData && dayData.amountGiven !== undefined ? dayData.amountGiven : (dayData && dayData.given ? dayData.given : '');
         let paidVal = dayData && dayData.paid !== undefined ? dayData.paid : '';
         let dateCovered = dayData ? (dayData.dateCovered || '') : '';
         let mopRef = dayData ? (dayData.mop || dayData.refNo || '') : '';
         
-        // Tinatanggap na ang 0 bilang valid entry para lumabas ang balance
         let hasPayment = dayData && (
             (dayData.amountGiven !== undefined && dayData.amountGiven !== '' && !isNaN(dayData.amountGiven)) || 
             (dayData.paid !== undefined && dayData.paid !== '' && !isNaN(dayData.paid))
@@ -2564,18 +2562,16 @@ function renderTable() {
         let balanceDisplayHtml = '';
         let balanceClass = '';
 
-      if (hasPayment) {
+        if (hasPayment) {
             balanceVal = expectedForDay - paidVal;
             if (isExcludeCoding && isCodingDay) {
                 balanceVal = 0;
             }
             
-            // Kung mas malaki ang binayad kaysa sa expected (Overpaid / Negative balance), Berde (text-success)
-            // Kung may balanse pa o sakto, Itim (text-main o walang class)
             if (balanceVal < 0) {
-                balanceClass = 'text-success'; // Berde kapag over
+                balanceClass = 'text-success';
             } else {
-                balanceClass = ''; // Itim kapag normal / may balanse pa
+                balanceClass = '';
             }
             
             let textColorStyle = balanceVal < 0 ? 'color: var(--success);' : 'color: var(--text-main);';
@@ -2587,32 +2583,38 @@ function renderTable() {
             balanceDisplayHtml = `<td></td>`;
         }
 
-       const row = document.createElement('tr');
+        const row = document.createElement('tr');
         balanceClass = balanceVal > 0 ? 'text-danger' : 'text-success';
 
         let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
         if (isCodingDay) {
             dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
         }
-row.innerHTML = `
-    <td>${dayDisplayHtml}</td>
-    <td class="date-col">${i < 10 ? '0' + i : i}</td>
-    <td><input type="number" class="table-input-cell" style="text-align: center;" data-day="${i}" data-field="amountGiven" value="${amountGiven !== '' ? amountGiven : ''}" onchange="updateDailyGiven(${i}, this.value)"></td>
-    <td><input type="text" class="table-input-cell" style="text-align: center;" value="${dateCovered}" onchange="updateDateCovered(${i}, this.value)"></td>
-    <td><input type="text" class="table-input-cell" style="text-align: center;" value="${mopRef}" onchange="updateMop(${i}, this.value)"></td>
-    <td style="text-align: center;">
-        <input type="number" class="table-input-cell" style="font-weight: bold; text-align: center;" value="${paidVal !== '' ? paidVal : ''}" onchange="updatePaid(${i}, this.value)">
-    </td>
-    ${balanceDisplayHtml}
-`;
+        
+        row.innerHTML = `
+            <td>${dayDisplayHtml}</td>
+            <td class="date-col">${i < 10 ? '0' + i : i}</td>
+            <td><input type="number" class="table-input-cell" style="text-align: center;" data-day="${i}" data-field="amountGiven" value="${amountGiven !== '' ? amountGiven : ''}" onchange="updateDailyGiven(${i}, this.value)"></td>
+            <td><input type="text" class="table-input-cell" style="text-align: center;" value="${dateCovered}" onchange="updateDateCovered(${i}, this.value)"></td>
+            <td><input type="text" class="table-input-cell" style="text-align: center;" value="${mopRef}" onchange="updateMop(${i}, this.value)"></td>
+            <td style="text-align: center;">
+                <input type="number" class="table-input-cell" style="font-weight: bold; text-align: center;" value="${paidVal !== '' ? paidVal : ''}" onchange="updatePaid(${i}, this.value)">
+            </td>
+            ${balanceDisplayHtml}
+        `;
         tableBody.appendChild(row);
 
-      if (dayOfWeek === 'Sun') {
+        // Kapag tumama sa Linggo (Sunday)
+        if (dayOfWeek === 'Sun')  {
             let currentWeekBalance = 0;
-            let startDay = Math.max(1, i - 6);
-            
-            // Kalkulahin ang eksaktong petsa ng simula at dulo ng linggong ito para sa buwan at taon
-            let startMonthStr = monthsArray[activeMonthIndex].slice(0, 3); // Halimbawa: Oct
+            let startDay = i;
+            for (let d = i; d >= 1; d--) {
+                startDay = d;
+                let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                if (dWeek === 'Mon' || d === 1) break;
+            }
+
+            let startMonthStr = monthsArray[activeMonthIndex].slice(0, 3);
             let dateRangeStr = `${startMonthStr} ${startDay}-${i}, ${activeYearVal}`;
 
             for (let d = startDay; d <= i; d++) {
@@ -2630,31 +2632,46 @@ row.innerHTML = `
                 }
             }
 
-            let customWeeklyKey = `weekly_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekCounter}`;
-            let savedCustomWeekly = localStorage.getItem(customWeeklyKey);
-            let activeWeeklyVal = savedCustomWeekly !== null && savedCustomWeekly !== '' ? parseFloat(savedCustomWeekly) : currentWeekBalance;
+            // Gamitin ang naka-save na manual override kung meron, kung wala ay ang computed sum
+            let activeWeeklyVal = (weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance;
 
             accumulatedUrbForRunning += activeWeeklyVal;
             
-            let customUrbKey = `urb_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekCounter}`;
-            let savedCustomUrb = localStorage.getItem(customUrbKey);
-            let activeUrbVal = (savedCustomUrb !== null && savedCustomUrb !== '') ? parseFloat(savedCustomUrb) : accumulatedUrbForRunning;
+            let activeUrbVal = (urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning;
 
             accumulatedUrbForRunning = activeUrbVal;
 
-          const weeklyBalRow = document.createElement('tr');
+            const weeklyBalRow = document.createElement('tr');
             weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
+            
+            let isWeekComplete = true;
+            for (let d = startDay; d <= i; d++) {
+                let dData = records[d];
+                if (!dData || (dData.amountGiven === undefined || dData.amountGiven === '' || isNaN(dData.amountGiven)) && (dData.paid === undefined || dData.paid === '' || isNaN(dData.paid))) {
+                    let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                    let dIsCoding = (activeCoding !== 'None' && fullDayNames[dWeek] === activeCoding);
+                    if (!isExcludeCoding || !dIsCoding) {
+                        isWeekComplete = false;
+                    }
+                }
+            }
+
             weeklyBalRow.innerHTML = `
-                <td colspan="6" style="text-align: left; font-weight: bold; padding: 8px 10px; border-right: none; color: var(--text-main);">
-                    Weekly Balance (Week ${weekCounter} — ${dateRangeStr}):
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 5px 8px; color: var(--text-main); font-size: 0.75rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <span>(Week ${weekCounter} — ${dateRangeStr})</span>
+                        <span style="font-weight: bold; white-space: nowrap;">Weekly Balance:</span>
+                    </div>
                 </td>
-                <td style="padding: 6px; text-align: center; border-left: none;">
-                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger);" value="${savedCustomWeekly !== null && savedCustomWeekly !== '' ? savedCustomWeekly : currentWeekBalance}" onchange="updateCustomWeekly(${weekCounter}, this.value)">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center;">
+                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 3px;" 
+value="${activeWeeklyVal}" 
+oninput="updateCustomWeekly(${weekCounter}, this.value)"
+onchange="saveCustomWeekly(${weekCounter}, this.value)">
                 </td>
             `;
             tableBody.appendChild(weeklyBalRow);
 
-            // Suriin muna kung may laman o record ang linggong ito bago magpakita ng URB value
             let hasWeekData = false;
             for (let d = startDay; d <= i; d++) {
                 let dData = records[d];
@@ -2664,19 +2681,20 @@ row.innerHTML = `
                 }
             }
 
-           const urbRow = document.createElement('tr');
+            const urbRow = document.createElement('tr');
             urbRow.style.backgroundColor = 'var(--primary-light)';
             urbRow.innerHTML = `
-                <td colspan="6" style="text-align: left; font-weight: bold; padding: 8px 10px; border-right: none; color: var(--text-main);">
-                    Updated Running Balance (URB) — Week ${weekCounter}:
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: right; font-weight: bold; padding: 5px 8px; font-size: 0.75rem; white-space: nowrap;">
+                    Updated Running Balance:
                 </td>
-                <td style="padding: 6px; text-align: center; border-left: none; font-weight: bold; color: var(--danger);">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center; font-weight: bold; color: var(--danger); font-size: 0.8rem;">
                     ${hasWeekData ? fmt(activeUrbVal) : ''}
                 </td>
             `;
             tableBody.appendChild(urbRow);
-            
             weekCounter++;
+            
+            if (i === daysInMonth) break;
         }
     }
 
@@ -2716,11 +2734,32 @@ window.updateCustomUrb = function(weekNum, val) {
     renderTable();
 };
 
-window.updateCustomWeekly = function(weekNum, val) {
-    if (!currentDriverId) return;
-    let customWeeklyKey = `weekly_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}_w${weekNum}`;
-    localStorage.setItem(customWeeklyKey, val);
-    renderTable();
+window.clearCurrentMonthData = function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili.");
+        return;
+    }
+
+    showConfirmModal(
+        "I-clear Buwan", 
+        `Sigurado ka bang gusto mong i-clear ang mga tala para sa buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`, 
+        function() {
+            localStorage.removeItem(getDriverRecordsKey());
+            localStorage.removeItem(getDriverMonthConfigKey());
+            localStorage.removeItem(getDriverCodingRenderingKey());
+            
+            // BURAHIN ANG MAHIKANG ITO: Diretso nang binubura ang buong object para sa buwang ito
+            let monthKey = `${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+            localStorage.removeItem(`bmpro_weekly_ovr_${currentDriverId}_${monthKey}`);
+            localStorage.removeItem(`bmpro_urb_ovr_${currentDriverId}_${monthKey}`);
+
+            previousBalanceInput.value = 0;
+            codingIncludeRadio.checked = true;
+            loadActiveDriverConfig();
+            form.reset();
+            showCustomAlert("Tagumpay", "Matagumpay na na-clear ang buwang ito.");
+        }
+    );
 };
 
 // NA-UPDATE NA BAHAGI PARA SA DOWNLOAD IMAGE: White background, itim na linya, at may kulay pa rin ang Short/Over at Running Balance
@@ -2872,21 +2911,55 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
 
 
 
-// 1. Pantanggal ng biglaang pag-talon o pag-uga ng screen kapag lumalabas ang mobile keypad
+// 1. Ayusin ang visualViewport resize para hindi mag-uga o tumalon ang screen pagka-tap ng next sa phone
     if (window.visualViewport) {
-        let currentScrollPos = window.pageYOffset;
+        let lastHeight = window.visualViewport.height;
         
-        window.addEventListener('scroll', () => {
-            currentScrollPos = window.pageYOffset;
-        }, { passive: true });
-
         window.visualViewport.addEventListener('resize', () => {
-            window.scrollTo({
-                top: currentScrollPos,
-                behavior: 'instant'
-            });
+            // Kunin ang kasalukuyang scroll position para hindi ito magbago bigla
+            const currentScrollY = window.pageYOffset;
+            
+            // Kung lumiit ang height (ibig sabihin lumabas ang keypad), huwag hayaang mag-jump ang view
+            if (window.visualViewport.height < lastHeight) {
+                window.scrollTo({
+                    top: currentScrollY,
+                    behavior: 'instant'
+                });
+            }
+            lastHeight = window.visualViewport.height;
         });
     }
+
+    // 2. Automatic na i-select ang laman ng input para madaling i-type ang susunod
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
+            setTimeout(() => {
+                e.target.select();
+            }, 50);
+        }
+    });
+
+    // 3. Maayos na paglipat gamit ang Enter o Next button ng mobile keypad na hindi nagpapagalaw sa screen
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const activeEl = document.activeElement;
+            if (activeEl && (activeEl.classList.contains('table-input-cell') || activeEl.classList.contains('table-expected-input'))) {
+                e.preventDefault();
+                
+                const allInputs = Array.from(document.querySelectorAll('.table-input-cell, .table-expected-input'));
+                const currentIndex = allInputs.indexOf(activeEl);
+                
+                if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
+                    const nextInput = allInputs[currentIndex + 1];
+                    // Gamitin ang preventScroll para hindi mag-auto scroll paitaas ang browser
+                    nextInput.focus({ preventScroll: true });
+                    nextInput.select();
+                } else {
+                    activeEl.blur();
+                }
+            }
+        }
+    });
 
     // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
     document.addEventListener('focusin', function(e) {
@@ -2897,7 +2970,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-// Tuloy-tuloy na paglipat ng box gamit ang Enter/Next ng keypad nang walang auto-save habang nag-e-encode
+   // Tuloy-tuloy na paglipat ng box gamit ang Enter/Next ng keypad nang walang auto-save habang nag-e-encode
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
@@ -2918,9 +2991,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-			
-
-
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
@@ -2939,6 +3009,21 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
 </div>
 
 <div id="toastNotification" class="toast-notification">Data Saved Successfully!</div>
+
+<div class="shopee-modal-overlay" id="shopeeModal">
+    <div class="shopee-modal-box">
+        <div class="shopee-modal-title" id="shopeeModalTitle">Mensahe</div>
+        <div class="shopee-modal-text" id="shopeeModalText">Ito ang nilalaman ng mensahe.</div>
+        
+        <div id="shopeeModalInputContainer" style="display: none;">
+            <input type="text" id="shopeeModalInputVal" class="shopee-modal-input" placeholder="" style="width: 100%; padding: 8px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.8rem; margin-bottom: 12px; background: var(--card-bg); color: var(--text-main); text-align: center; outline: none;">
+        </div>
+
+        <div id="shopeeModalButtonContainer" style="display: flex; gap: 6px; justify-content: center;">
+            <button type="button" class="shopee-modal-btn" onclick="closeShopeeModal()">OK</button>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>
