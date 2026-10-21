@@ -2678,7 +2678,7 @@ function renderTable() {
                 }
             }
 
-            weeklyBalRow.innerHTML = `
+          weeklyBalRow.innerHTML = `
                 <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 5px 8px; color: var(--text-main); font-size: 0.75rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                         <span>(Week ${weekCounter} — ${dateRangeStr})</span>
@@ -2686,10 +2686,12 @@ function renderTable() {
                     </div>
                 </td>
                 <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center;">
-                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 3px;" 
+                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 3px; ${!isWeekComplete ? 'background-color: rgba(0,0,0,0.05); opacity: 0.7; cursor: not-allowed;' : ''}" 
 value="${activeWeeklyVal}" 
-oninput="updateCustomWeekly(${weekCounter}, this.value)"
-onchange="saveCustomWeekly(${weekCounter}, this.value)">
+${!isWeekComplete ? 'readonly' : ''}
+onfocus="if(!${isWeekComplete}) { showCustomAlert('Hindi Pa Kumpleto', 'Hindi pwedeng baguhin o i-override ang weekly balance hangga\'t hindi kumpleto ang mga araw ng hulog sa linggong ito.'); this.blur(); return; }"
+oninput="${isWeekComplete ? `updateCustomWeekly(${weekCounter}, this.value)` : ''}"
+onchange="${isWeekComplete ? `saveCustomWeekly(${weekCounter}, this.value)` : ''}">
                 </td>
             `;
             tableBody.appendChild(weeklyBalRow);
