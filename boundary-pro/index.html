@@ -414,7 +414,29 @@ table {
     width: 100%;
     border-collapse: collapse;
     border: none !important;
-    table-layout: fixed; /* Mahalaga para hindi lumagpas ang mga column */
+}
+
+/* Unipormeng estilo para sa lahat ng input sa loob ng table para swak sa mobile */
+.table-input-cell, .table-expected-input, .table-given-input {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box;
+    padding: 6px 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: center;
+}
+
+/* Pantanggal ng arrow (spinner) sa gilid ng number input */
+.table-input-cell::-webkit-inner-spin-button,
+.table-input-cell::-webkit-outer-spin-button,
+.table-expected-input::-webkit-inner-spin-button,
+.table-expected-input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 th, td {
@@ -2939,27 +2961,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-    // 3. Maayos na paglipat gamit ang Enter o Next button ng mobile keypad na hindi nagpapagalaw sa screen
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            const activeEl = document.activeElement;
-            if (activeEl && (activeEl.classList.contains('table-input-cell') || activeEl.classList.contains('table-expected-input'))) {
-                e.preventDefault();
-                
-                const allInputs = Array.from(document.querySelectorAll('.table-input-cell, .table-expected-input'));
-                const currentIndex = allInputs.indexOf(activeEl);
-                
-                if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
-                    const nextInput = allInputs[currentIndex + 1];
-                    // Gamitin ang preventScroll para hindi mag-auto scroll paitaas ang browser
-                    nextInput.focus({ preventScroll: true });
-                    nextInput.select();
-                } else {
-                    activeEl.blur();
-                }
-            }
-        }
-    });
+   
 
     // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
     document.addEventListener('focusin', function(e) {
@@ -2970,19 +2972,32 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-   // Tuloy-tuloy na paglipat ng box gamit ang Enter/Next ng keypad nang walang auto-save habang nag-e-encode
+ // Automatic na i-highlight ang laman ng input pagka-tap para madaling i-type
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
+            setTimeout(() => {
+                e.target.select();
+            }, 50);
+        }
+    });
+
+    // Stable at steady na paglipat gamit ang Enter/Next sa mobile keypad nang walang pag-uga ng screen
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const activeEl = document.activeElement;
-            if (activeEl && (activeEl.classList.contains('table-expected-input') || activeEl.classList.contains('table-given-input'))) {
+            if (activeEl && (
+                activeEl.classList.contains('table-input-cell') || 
+                activeEl.classList.contains('table-expected-input') || 
+                activeEl.classList.contains('table-given-input')
+            )) {
                 e.preventDefault();
                 
-                const allInputs = Array.from(document.querySelectorAll('.table-expected-input, .table-given-input'));
+                const allInputs = Array.from(document.querySelectorAll('.table-input-cell, .table-expected-input, .table-given-input'));
                 const currentIndex = allInputs.indexOf(activeEl);
                 
                 if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
                     const nextInput = allInputs[currentIndex + 1];
-                    nextInput.focus();
+                    nextInput.focus({ preventScroll: true }); // Pinipigilan ang pag-talon ng screen pataas/pababa
                     nextInput.select();
                 } else {
                     activeEl.blur();
