@@ -1087,71 +1087,58 @@ th, td {
             }
         }
 
-	/* --- DAGDAG NA CSS PARA SA MALAWAK AT HINDI SSIKSIK NA MOBILE TABLE --- */
-table {
+	/* --- BALIK SA SIDE-SCROLL LAYOUT PARA HINDI SSIKSIK --- */
+.table-responsive {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
     width: 100%;
-    border-collapse: collapse;
-    table-layout: auto !important;
 }
 
-th, td {
-    border: 1px solid var(--border-color);
-    padding: 4px 2px !important;
-    text-align: center;
-    font-size: 0.7rem;
-    word-wrap: break-word;
-    overflow: hidden;
+table {
+    width: 750px !important; /* Pinapalawak ang buong table para lumitaw ang side scroll */
+    max-width: none !important;
+    table-layout: fixed !important;
 }
 
-/* Paglalaan ng sapat na espasyo sa bawat column para hindi siksik */
-td:nth-child(4), td:nth-child(5), th:nth-child(4), th:nth-child(5) {
-    width: 28% !important;
-    min-width: 65px !important;
-}
+/* Paglalaan ng sapat at maluwag na espasyo sa bawat column */
+th:nth-child(1), td:nth-child(1) { width: 75px; min-width: 75px; } /* Days */
+th.date-col, td.date-col { width: 50px; min-width: 50px; } /* Date */
+th:nth-child(3), td:nth-child(3) { width: 95px; min-width: 95px; } /* Amount Given */
+th:nth-child(4), td:nth-child(4) { width: 110px; min-width: 110px; } /* Date Covered (Maluwag na) */
+th:nth-child(5), td:nth-child(5) { width: 115px; min-width: 115px; } /* MOP / Ref No. (Maluwag na) */
+th:nth-child(6), td:nth-child(6) { width: 90px; min-width: 90px; } /* Paid (Maluwag na) */
+th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (Maluwag na) */
 
-td:nth-child(3), th:nth-child(3) {
-    width: 15% !important;
-    min-width: 40px !important;
-}
-
-td.date-col, th.date-col, td:nth-child(7), th:nth-child(7) {
-    width: 9% !important;
-    min-width: 25px !important;
-}
-
-td:nth-child(6), th:nth-child(6) {
-    width: 10% !important;
-    min-width: 30px !important;
-}
-
-td:nth-child(1), th:nth-child(1) {
-    width: 13% !important;
-    min-width: 40px !important;
-}
-
+/* Pagsasaayos ng mga input cell para hindi siksik sa loob */
 .table-input-cell, .table-expected-input {
     width: 100% !important;
-    height: auto !important;
     box-sizing: border-box;
-    padding: 6px 1px !important;
-    border: none !important;
-    border-radius: 0px !important;
-    font-size: 0.7rem;
-    background: transparent !important;
-    color: var(--text-main);
+    padding: 5px 4px !important;
+    font-size: 0.75rem;
     text-align: center;
-    margin: 0;
-    line-height: 1;
 }
 
-.weekly-header-text {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 2px;
-    font-weight: bold;
-    font-size: 0.7rem;
+/* --- TANGGALIN ANG BOXES/BORDERS SA LOOB NG CELLS PARA MALUWAG TINGNAN --- */
+.table-input-cell, 
+.table-expected-input, 
+.table-given-input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    padding: 6px 2px !important;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+/* Kapag pinindot (focused) ang input, magbibigay lang ng napaka-banayad na highlight sa ilalim nang walang mabigat na box */
+.table-input-cell:focus, 
+.table-expected-input:focus, 
+.table-given-input:focus {
+    background: rgba(46, 125, 50, 0.08) !important;
+    border-bottom: 2px solid var(--primary) !important;
 }
     </style>
 </head>
