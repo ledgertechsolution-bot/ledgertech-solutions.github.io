@@ -1086,6 +1086,73 @@ th, td {
                 page-break-inside: avoid;
             }
         }
+
+	/* --- DAGDAG NA CSS PARA SA MALAWAK AT HINDI SSIKSIK NA MOBILE TABLE --- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto !important;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 4px 2px !important;
+    text-align: center;
+    font-size: 0.7rem;
+    word-wrap: break-word;
+    overflow: hidden;
+}
+
+/* Paglalaan ng sapat na espasyo sa bawat column para hindi siksik */
+td:nth-child(4), td:nth-child(5), th:nth-child(4), th:nth-child(5) {
+    width: 28% !important;
+    min-width: 65px !important;
+}
+
+td:nth-child(3), th:nth-child(3) {
+    width: 15% !important;
+    min-width: 40px !important;
+}
+
+td.date-col, th.date-col, td:nth-child(7), th:nth-child(7) {
+    width: 9% !important;
+    min-width: 25px !important;
+}
+
+td:nth-child(6), th:nth-child(6) {
+    width: 10% !important;
+    min-width: 30px !important;
+}
+
+td:nth-child(1), th:nth-child(1) {
+    width: 13% !important;
+    min-width: 40px !important;
+}
+
+.table-input-cell, .table-expected-input {
+    width: 100% !important;
+    height: auto !important;
+    box-sizing: border-box;
+    padding: 6px 1px !important;
+    border: none !important;
+    border-radius: 0px !important;
+    font-size: 0.7rem;
+    background: transparent !important;
+    color: var(--text-main);
+    text-align: center;
+    margin: 0;
+    line-height: 1;
+}
+
+.weekly-header-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    font-weight: bold;
+    font-size: 0.7rem;
+}
     </style>
 </head>
 <body data-theme="light">
@@ -2679,10 +2746,10 @@ function renderTable() {
             }
 
           weeklyBalRow.innerHTML = `
-                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 5px 8px; color: var(--text-main); font-size: 0.75rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <span>(Week ${weekCounter} — ${dateRangeStr})</span>
-                        <span style="font-weight: bold; white-space: nowrap;">Weekly Balance:</span>
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 4px !important; color: var(--text-main);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px;">
+                        <span class="weekly-header-text">(Week ${weekCounter} — ${dateRangeStr})</span>
+                        <span style="font-weight: bold; white-space: nowrap; font-size: 0.7rem;">Weekly Balance:</span>
                     </div>
                 </td>
                 <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center;">
