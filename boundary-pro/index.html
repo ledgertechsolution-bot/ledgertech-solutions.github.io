@@ -1142,14 +1142,13 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
 }
 
 /* --- FLOATING CALCULATOR STYLES (Compact & Draggable) --- */
-    .floating-calc-container {
+  .floating-calc-container {
         display: none;
         position: fixed;
-        top: 80px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 240px; /* Pinaliit ang lapad para hindi masyadong sakop ang screen */
-        background: rgba(248, 250, 252, 0.92); /* Medyo transparent para makita ang likod */
+        top: 12px;
+        left: 12px;
+        width: 240px;
+        background: rgba(248, 250, 252, 0.95);
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
         border: 1px solid #cbd5e1;
@@ -1168,8 +1167,6 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
         display: flex;
         justify-content: space-between;
         align-items: center;
-        cursor: grab;
-        touch-action: none;
     }
     .calc-header:active {
         cursor: grabbing;
@@ -2836,7 +2833,7 @@ function renderTable() {
 
             accumulatedUrbForRunning = activeUrbVal;
 
-            const weeklyBalRow = document.createElement('tr');
+           const weeklyBalRow = document.createElement('tr');
             weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
             
             let isWeekComplete = true;
@@ -2851,20 +2848,20 @@ function renderTable() {
                 }
             }
 
-         weeklyBalRow.innerHTML = `
-                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 4px !important; color: var(--text-main);">
+            weeklyBalRow.innerHTML = `
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 2px 6px !important; color: var(--text-main); vertical-align: middle;">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px;">
-                        <span class="weekly-header-text">(Week ${weekCounter} — ${dateRangeStr})</span>
-                        <span style="font-weight: bold; white-space: nowrap; font-size: 0.7rem;">Weekly Balance:</span>
+                        <span class="weekly-header-text" style="line-height: 1.2;">(Week ${weekCounter} — ${dateRangeStr})</span>
+                        <span style="font-weight: bold; white-space: nowrap; font-size: 0.7rem; line-height: 1.2;">Weekly Balance:</span>
                     </div>
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center;">
-                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 3px; ${!isWeekComplete ? 'background-color: rgba(0,0,0,0.05); opacity: 0.7; cursor: not-allowed;' : ''}" 
-value="${activeWeeklyVal}" 
-${!isWeekComplete ? 'readonly' : ''}
-onfocus="if(!${isWeekComplete}) { showCustomAlert('Paalala', 'Hintayin natin na makumpleto muna ang daily balance bago baguhin ang total amount.'); this.blur(); return; }"
-oninput="${isWeekComplete ? `updateCustomWeekly(${weekCounter}, this.value)` : ''}"
-onchange="${isWeekComplete ? `saveCustomWeekly(${weekCounter}, this.value)` : ''}">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle;">
+                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 2px !important; height: 26px; box-sizing: border-box; ${!isWeekComplete ? 'background-color: rgba(0,0,0,0.05); opacity: 0.7; cursor: not-allowed;' : ''}" 
+                    value="${activeWeeklyVal}" 
+                    ${!isWeekComplete ? 'readonly' : ''}
+                    onfocus="if(!${isWeekComplete}) { showCustomAlert('Paalala', 'Hintayin natin na makumpleto muna ang daily balance bago baguhin ang total amount.'); this.blur(); return; }"
+                    oninput="${isWeekComplete ? `updateCustomWeekly(${weekCounter}, this.value)` : ''}"
+                    onchange="${isWeekComplete ? `saveCustomWeekly(${weekCounter}, this.value)` : ''}">
                 </td>
             `;
             tableBody.appendChild(weeklyBalRow);
@@ -2881,10 +2878,10 @@ onchange="${isWeekComplete ? `saveCustomWeekly(${weekCounter}, this.value)` : ''
             const urbRow = document.createElement('tr');
             urbRow.style.backgroundColor = 'var(--primary-light)';
             urbRow.innerHTML = `
-                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: right; font-weight: bold; padding: 5px 8px; font-size: 0.75rem; white-space: nowrap;">
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: right; font-weight: bold; padding: 2px 8px !important; font-size: 0.75rem; white-space: nowrap; vertical-align: middle; height: 30px;">
                     Updated Running Balance:
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 4px; text-align: center; font-weight: bold; color: var(--danger); font-size: 0.8rem;">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; font-weight: bold; color: var(--danger); font-size: 0.8rem; vertical-align: middle; height: 30px;">
                     ${hasWeekData ? fmt(activeUrbVal) : ''}
                 </td>
             `;
@@ -3229,8 +3226,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
             calcExpression = "0";
         }
     }
-
-   // --- FLOATING CALCULATOR DRAG LOGIC (Pointer Events) ---
+// --- FLOATING CALCULATOR DRAG LOGIC (Pointer Events) ---
     const calcContainer = document.getElementById('floatingCalc');
     const calcHeader = document.getElementById('calcHeader');
     
