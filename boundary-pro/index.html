@@ -2567,7 +2567,6 @@ window.updateDailyGiven = function(dayNum, newGivenVal) {
         initialExp = 0;
     }
 
-    // Kung binura o ginawang blangko ang input, alisin ang record para mawala ang balance
     if (newGivenVal === '' || isNaN(newGivenVal)) {
         if (records[dayNum]) {
             delete records[dayNum].amountGiven;
@@ -2586,7 +2585,9 @@ window.updateDailyGiven = function(dayNum, newGivenVal) {
     }
 
     localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-    renderTable();
+    // HUWAG tawagin ang renderTable() dito para hindi masara ang keypad! 
+    // I-update lang natin ang summary sa itaas:
+    updateSummaryTotalsOnly();
 };
 
 window.updatePaid = function(dayNum, newPaidVal) {
@@ -2603,7 +2604,6 @@ window.updatePaid = function(dayNum, newPaidVal) {
         initialExp = 0;
     }
 
-    // Kung binura o ginawang blangko ang input, alisin ang record para mawala ang balance
     if (newPaidVal === '' || isNaN(newPaidVal)) {
         if (records[dayNum]) {
             delete records[dayNum].paid;
@@ -2622,7 +2622,8 @@ window.updatePaid = function(dayNum, newPaidVal) {
     }
 
     localStorage.setItem(getDriverRecordsKey(), JSON.stringify(records));
-    renderTable();
+    // HUWAG din tawagin ang renderTable() dito
+    updateSummaryTotalsOnly();
 };
 
     exportPdfBtn.addEventListener('click', function() {
@@ -3282,6 +3283,82 @@ function openPrevBalInfo() {
         "Previous Running Balance", 
         "Dito ilagay ang Updated Running Balance ng nakaraang Buwan, Sa Previous daily balance naman, manual mo ito idaragdag sa weekly Balance total sum para maisama sa Updated Running Blance ."
     );
+}
+
+function updateSummaryTotalsOnly() {
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let totalExpected = 0;
+    let totalGiven = 0;
+    let runningBalance = initialBalance; 
+
+    let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    let boundarySet = parseFloat(standardExpectedInput.value) || 1200;
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let activeCoding = driver ? driver.coding : 'None';
+    let isExcludeCoding = codingExcludeRadio.checked;
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+    let fmt = (num) => num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
+    let accumulatedUrbForRunning = initialBalance;
+    let weekCounter = 1;
+    let monthKey = `${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    let weeklyStoreKey = `bmpro_weekly_ovr_${currentDriverId}_${monthKey}`;
+    let weeklyOverrides = JSON.parse(localStorage.getItem(weeklyStoreKey)) || {};
+    let urbStoreKey = `bmpro_urb_ovr_${currentDriverId}_${monthKey}`;
+    let urbOverrides = JSON.parse(localStorage.getItem(urbStoreKey)) || {};
+
+    for (let i = 1; i <= daysInMonth; i++) {
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+        let isCodingDay = (activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+        let expectedForDay = boundarySet;
+        if (isExcludeCoding && isCodingDay) expectedForDay = 0;
+
+        let dayData = records[i] || null;
+        let amountGiven = dayData && dayData.amountGiven !== undefined ? dayData.amountGiven : 0;
+        
+        let hasPayment = dayData && (
+            (dayData.amountGiven !== undefined && dayData.amountGiven !== '' && !isNaN(dayData.amountGiven)) || 
+            (dayData.paid !== undefined && dayData.paid !== '' && !isNaN(dayData.paid))
+        );
+
+        if (hasPayment) {
+            totalExpected += expectedForDay;
+            totalGiven += parseFloat(amountGiven) || 0;
+        }
+
+        if (dayOfWeek === 'Sun') {
+            let currentWeekBalance = 0;
+            let startDay = i;
+            for (let d = i; d >= 1; d--) {
+                startDay = d;
+                let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                if (dWeek === 'Mon' || d === 1) break;
+            }
+            for (let d = startDay; d <= i; d++) {
+                let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
+                let dIsCoding = (activeCoding !== 'None' && fullDayNames[dWeek] === activeCoding);
+                let dExp = boundarySet;
+                if (isExcludeCoding && dIsCoding) dExp = 0;
+                let dData = records[d] || null;
+                if (dData && (dData.amountGiven !== undefined || dData.paid !== undefined)) {
+                    let dPaid = dData.paid !== undefined ? dData.paid : (dData.amountGiven !== undefined ? dData.amountGiven : 0);
+                    let dBal = dExp - dPaid;
+                    if (isExcludeCoding && dIsCoding) dBal = 0;
+                    currentWeekBalance += dBal;
+                }
+            }
+            let activeWeeklyVal = Math.round((weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance);
+            accumulatedUrbForRunning += activeWeeklyVal;
+            let activeUrbVal = Math.round((urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning);
+            accumulatedUrbForRunning = activeUrbVal;
+            weekCounter++;
+        }
+    }
+
+    lblExpected.innerText = `${fmt(totalExpected)}`;
+    lblGiven.innerText = `${fmt(totalGiven)}`;
+    lblBalance.innerText = `${fmt(accumulatedUrbForRunning)}`;
 }
 
 </script>
