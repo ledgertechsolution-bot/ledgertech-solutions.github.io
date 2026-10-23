@@ -654,8 +654,10 @@ th, td {
                 overflow: visible !important;
             }
             table {
-                font-size: 0.75rem;
-                width: 100%;
+                font-size: 10pt !important;
+                width: 100% !important;
+                border-collapse: collapse !important;
+                table-layout: auto !important; /* Siguraduhing naka-auto para pantay ang hatian ng 7 kolum */
                 page-break-inside: auto;
             }
             tr {
@@ -1250,6 +1252,128 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
 }
 .info-icon-btn:hover {
     opacity: 1;
+}
+
+body {
+    overflow-anchor: none; /* Pinipigilan ang browser na mang-auto-scroll */
+}
+
+input.table-input-cell {
+    /* Siguraduhing walang heavy transitions sa input para hindi mag-lag ang focus */
+    transition: none !important; 
+}
+
+@media print {
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 5px !important;
+        font-size: 10pt !important;
+    }
+    
+    /* Itago ang mga hindi kailangan sa pormal na PDF/Print */
+    .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1, .summary-grid {
+        display: none !important;
+    }
+
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 0px !important;
+        background: #ffffff !important;
+    }
+
+    /* Pormal na Header para sa PDF */
+    header::before {
+        content: "BOUNDARY MONITORING SYSTEM REPORT";
+        display: block;
+        font-size: 14pt;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 3px;
+        color: #000000;
+    }
+    
+    header p {
+        display: block !important;
+        font-size: 9.5pt !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        color: #000000 !important;
+        margin-bottom: 10px !important;
+    }
+
+    .table-responsive {
+        max-height: none !important;
+        overflow: visible !important;
+        width: 100% !important;
+    }
+
+    /* Siguraduhing magkakasya ang buong table nang may tamang sukat sa bawat column */
+    table {
+        font-size: 8.5pt !important;
+        width: 100% !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important; /* Fixed para masunod ang eksaktong lapad ng columns */
+        page-break-inside: auto;
+    }
+
+    /* Eksaktong hatian ng 7 columns para magkasya ang Balance sa kanan */
+    th:nth-child(1), td:nth-child(1) { width: 14% !important; } /* Days */
+    th.date-col, td.date-col { width: 9% !important; }         /* Date */
+    th:nth-child(3), td:nth-child(3) { width: 16% !important; } /* Amount Given */
+    th:nth-child(4), td:nth-child(4) { width: 18% !important; } /* Date Covered */
+    th:nth-child(5), td:nth-child(5) { width: 16% !important; } /* MOP / Ref No. */
+    th:nth-child(6), td:nth-child(6) { width: 14% !important; } /* Paid */
+    th:nth-child(7), td:nth-child(7) { width: 13% !important; } /* Balance (Siguradong kasama na!) */
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    th, td {
+        border: 1px solid #000000 !important;
+        color: #000000 !important;
+        padding: 4px 2px !important;
+        background-color: #ffffff !important;
+        word-break: break-word;
+    }
+
+    th {
+        background-color: #e8f5e9 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Pormal na hitsura ng mga input sa loob ng print table */
+    input.table-input-cell, input.table-expected-input, .table-given-input {
+        border: none !important;
+        background: transparent !important;
+        text-align: center !important;
+        font-weight: bold !important;
+        font-size: 8.5pt !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    .print-signature {
+        display: block !important;
+        margin-top: 40px !important;
+        text-align: right !important;
+        font-size: 10pt !important;
+        font-weight: bold !important;
+        color: #000000 !important;
+        page-break-inside: avoid;
+    }
 }
 
     </style>
@@ -2615,81 +2739,69 @@ window.updatePaid = function(dayNum, newPaidVal) {
         window.print();
     });
 
-  exportCsvBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
-        let initialBalance = parseFloat(previousBalanceInput.value) || 0;
-        let driver = driversList.find(d => d.id === currentDriverId);
-        let codingVal = driver ? driver.coding : 'None';
-        let currentDriverName = driverNameInput.value || 'Driver';
+document.getElementById('exportCsvBtn').addEventListener('click', function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili para i-export.");
+        return;
+    }
+    let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
+    let driver = driversList.find(d => d.id === currentDriverId);
+    let codingVal = driver ? driver.coding : 'None';
+    let currentDriverName = driverNameInput.value || 'Driver';
+    let boundarySet = parseFloat(standardExpectedInput.value) || 1200;
+    let isExcludeCoding = codingExcludeRadio.checked;
+    
+    const savedDays = Object.keys(records).map(Number);
+    const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
+    const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
+    const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
+
+    let csvContent = "data:text/csv;charset=utf-8,";
+    csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+    // Pagtugma ng headers sa kasalukuyang table layout
+    csvContent += "Day,Date,Amount Given,Date Covered,MOP / Ref No.,Paid,Balance\r\n";
+
+    let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
+
+    for (let i = 1; i <= limitDay; i++) {
+        let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
+        let isCodingDay = (codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal);
+        let expVal = boundarySet;
+        if (isExcludeCoding && isCodingDay) expVal = 0;
+
+        let dayData = records[i] || {};
+        let amountGiven = dayData.amountGiven !== undefined ? dayData.amountGiven : (dayData.given !== undefined ? dayData.given : '');
+        let paidVal = dayData.paid !== undefined ? dayData.paid : '';
+        let dateCovered = dayData.dateCovered || '';
+        let mopRef = dayData.mop || dayData.refNo || '';
         
-        const savedDays = Object.keys(records).map(Number);
-        const maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 0;
-        const maxDaysInCurrentMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
-        const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
-        csvContent += "Day,Date,Expected,Given,Date Covered,Ref No.,Short / Over,Running Bal\r\n";
-
-        let totalExpected = 0;
-        let totalGiven = 0;
-        let runningBalance = initialBalance;
-
-        let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
-
-        for (let i = 1; i <= limitDay; i++) {
-            let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
-            let defaultExpected = parseFloat(standardExpectedInput.value) || 1200;
-            
-            let calculatedDefaultExpected = defaultExpected;
-            if (codingExcludeRadio.checked && codingVal !== 'None' && fullDayNames[dayOfWeek] === codingVal) {
-                calculatedDefaultExpected = 0;
-            }
-
-            let dayData = records[i] || { expected: calculatedDefaultExpected, given: 0, dateCovered: '', refNo: '' };
-            let expVal = dayData.expected !== undefined ? dayData.expected : calculatedDefaultExpected;
-            let givenVal = dayData.given !== undefined ? dayData.given : 0;
-            
-            totalExpected += expVal;
-            totalGiven += givenVal;
-            let shortOver = givenVal - expVal;
-            runningBalance += (expVal - givenVal);
-
-            let row = [
-                dayOfWeek,
-                i < 10 ? '0' + i : i,
-                expVal,
-                givenVal,
-                `"${dayData.dateCovered || '-'}"`,
-                `"${dayData.refNo || '-'}"`,
-                shortOver,
-                runningBalance
-            ];
-            csvContent += row.join(",") + "\r\n";
+        // Pagkalkula ng Balance para sa CSV row na ito
+        let balanceVal = '';
+        if (paidVal !== '' && !isNaN(paidVal)) {
+            balanceVal = Math.round(expVal - parseFloat(paidVal));
+            if (isExcludeCoding && isCodingDay) balanceVal = 0;
         }
 
-        if (initialBalance > 0) {
-            let prevRowCsv = `,,,,,,"Previous Balance",${initialBalance}`;
-            csvContent += prevRowCsv + "\r\n";
-            let totalWithPrevCsv = `,,,,,,"Total with Previous",${runningBalance + initialBalance}`;
-            csvContent += totalWithPrevCsv + "\r\n";
-        }
+        let row = [
+            dayOfWeek,
+            i < 10 ? '0' + i : i,
+            amountGiven,
+            `"${dateCovered}"`,
+            `"${mopRef}"`,
+            paidVal,
+            balanceVal
+        ];
+        csvContent += row.join(",") + "\r\n";
+    }
 
-        csvContent += "\r\n\r\n";
-        csvContent += `,,,,,,,Driver: "${currentDriverName}"\r\n`;
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${monthsArray[activeMonthIndex]}_${activeYearVal}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+});
 
 function renderTable() {
     if (!currentDriverId || driversList.length === 0) {
@@ -3031,7 +3143,14 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
-    targetElement.style.width = '100%';
+    
+    // Itakda ang sapat na lapad para magkasya ang lahat ng 7 kolum nang hindi napuputol
+    targetElement.style.width = '780px';
+    const tableEl = targetElement.querySelector('table');
+    if (tableEl) {
+        tableEl.style.width = '780px';
+        tableEl.style.tableLayout = 'auto';
+    }
 
     // Alisin muna pansamantala ang Clear button at Month arrows sa header bago mag-capture para mas malinis
     const actionBtnsRight = targetElement.querySelector('.table-actions-right');
@@ -3073,12 +3192,16 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         if (tempHeader) tempHeader.remove();
         if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
         
-        targetElement.style.backgroundColor = originalBg;
+       targetElement.style.backgroundColor = originalBg;
         targetElement.style.color = originalColor;
         tableResponsive.style.maxHeight = originalMaxHeight;
         tableResponsive.style.overflowX = originalOverflow;
         targetElement.style.width = '';
-        renderTable(); // I-rebuild ang table para maibalik ang normal state
+        if (tableEl) {
+            tableEl.style.width = '';
+            tableEl.style.tableLayout = '';
+        }
+        renderTable();
         
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
@@ -3153,30 +3276,30 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-    // Stable at steady na paglipat gamit ang Enter/Next sa mobile keypad nang walang pag-uga ng screen
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            const activeEl = document.activeElement;
-            if (activeEl && (
-                activeEl.classList.contains('table-input-cell') || 
-                activeEl.classList.contains('table-expected-input') || 
-                activeEl.classList.contains('table-given-input')
-            )) {
-                e.preventDefault();
-                
-                const allInputs = Array.from(document.querySelectorAll('.table-input-cell, .table-expected-input, .table-given-input'));
-                const currentIndex = allInputs.indexOf(activeEl);
-                
-                if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
-                    const nextInput = allInputs[currentIndex + 1];
-                    nextInput.focus({ preventScroll: true }); // Pinipigilan ang pag-talon ng screen pataas/pababa
-                    nextInput.select();
-                } else {
-                    activeEl.blur();
-                }
+   // Stable at steady na paglipat gamit ang Enter/Next sa mobile keypad nang walang pag-uga ng screen
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const activeEl = document.activeElement;
+        if (activeEl && (
+            activeEl.classList.contains('table-input-cell') || 
+            activeEl.classList.contains('table-expected-input') || 
+            activeEl.classList.contains('table-given-input')
+        )) {
+            e.preventDefault();
+            
+            const allInputs = Array.from(document.querySelectorAll('.table-input-cell, .table-expected-input, .table-given-input'));
+            const currentIndex = allInputs.indexOf(activeEl);
+            
+            if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
+                const nextInput = allInputs[currentIndex + 1];
+                nextInput.focus({ preventScroll: true }); // Pinipigilan ang pag-talon ng screen pataas/pababa
+                nextInput.select();
+            } else {
+                activeEl.blur();
             }
         }
-    });
+    }
+});
 
 // --- FLOATING CALCULATOR LOGIC & DRAGGING ---
     function toggleCalculator() {
