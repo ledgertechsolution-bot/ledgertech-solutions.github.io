@@ -1001,93 +1001,7 @@ th, td {
             max-width: 50px !important;
         }
 
-@media print {
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                padding: 10px !important;
-                font-size: 12pt !important;
-            }
-            /* Itago ang lahat ng hindi kailangan sa pormal na dokumento */
-            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1 {
-                display: none !important;
-            }
-            .card {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin-bottom: 0px !important;
-                background: #ffffff !important;
-            }
-            /* Gumawa ng pormal na Header para sa Document/PDF output */
-            header::before {
-                content: "BOUNDARY MONITORING SYSTEM REPORT";
-                display: block;
-                font-size: 18pt;
-                font-weight: bold;
-                text-align: center;
-                margin-bottom: 5px;
-                color: #000000;
-            }
-            header p {
-                display: block !important;
-                font-size: 11pt !important;
-                font-weight: bold !important;
-                text-align: center !important;
-                color: #000000 !important;
-                margin-bottom: 15px !important;
-            }
-            .table-responsive {
-                max-height: none !important;
-                overflow: visible !important;
-            }
-            table {
-                font-size: 10pt !important;
-                width: 100% !important;
-                border-collapse: collapse !important;
-                page-break-inside: auto;
-            }
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
-            th, td {
-                border: 1px solid #000000 !important;
-                color: #000000 !important;
-                padding: 6px 4px !important;
-                background-color: #ffffff !important;
-            }
-            th {
-                background-color: #e8f5e9 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            /* Palitan ang mga input fields sa table ng normal na text para pormang dokumento */
-            input.table-input-cell, input.table-expected-input {
-                border: none !important;
-                background: transparent !important;
-                text-align: center !important;
-                font-weight: bold !important;
-                font-size: 10pt !important;
-                color: #000000 !important;
-                padding: 0 !important;
-                width: 100% !important;
-            }
-            input::-webkit-outer-spin-button,
-            input::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            .print-signature {
-                display: block !important;
-                margin-top: 60px !important;
-                text-align: right !important;
-                font-size: 11pt !important;
-                font-weight: bold !important;
-                color: #000000 !important;
-                page-break-inside: avoid;
-            }
-        }
+
 
 	/* --- BALIK SA SIDE-SCROLL LAYOUT PARA HINDI SSIKSIK --- */
 .table-responsive {
@@ -2501,27 +2415,7 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
         changeMonth(1);
     });
 
-    window.clearCurrentMonthData = function() {
-    if (!currentDriverId) {
-        showCustomAlert("Babala", "Walang driver na napili.");
-        return;
-    }
-
-    showConfirmModal(
-        "I-clear Buwan", 
-        `Sigurado ka bang gusto mong i-clear ang mga tala para sa buwang ng ${monthsArray[activeMonthIndex]} ${activeYearVal}?`, 
-        function() {
-            localStorage.removeItem(getDriverRecordsKey());
-            localStorage.removeItem(getDriverMonthConfigKey());
-            localStorage.removeItem(getDriverCodingRenderingKey());
-            previousBalanceInput.value = 0;
-            codingIncludeRadio.checked = true;
-            loadActiveDriverConfig();
-            form.reset();
-            showCustomAlert("Tagumpay", "Matagumpay na na-clear ang buwang ito.");
-        }
-    );
-};
+   
 
 form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -3247,16 +3141,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         });
     }
 
-    // 2. Automatic na i-select ang laman ng input para madaling i-type ang susunod
-    document.addEventListener('focusin', function(e) {
-        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
-            setTimeout(() => {
-                e.target.select();
-            }, 50);
-        }
-    });
-
-   
+  
 
     // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
     document.addEventListener('focusin', function(e) {
@@ -3276,7 +3161,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-   // Stable at steady na paglipat gamit ang Enter/Next sa mobile keypad nang walang pag-uga ng screen
+// Naayos na Enter/Next key navigation para hindi mawala ang mobile keypad at hindi umuga ang screen
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
         const activeEl = document.activeElement;
@@ -3292,8 +3177,12 @@ document.addEventListener('keydown', function(e) {
             
             if (currentIndex > -1 && currentIndex < allInputs.length - 1) {
                 const nextInput = allInputs[currentIndex + 1];
-                nextInput.focus({ preventScroll: true }); // Pinipigilan ang pag-talon ng screen pataas/pababa
-                nextInput.select();
+                
+                // I-blur muna saglit o direktang i-focus nang may konting delay para hindi mag-collapse ang virtual keyboard sa android
+                setTimeout(() => {
+                    nextInput.focus();
+                    nextInput.select();
+                }, 10);
             } else {
                 activeEl.blur();
             }
