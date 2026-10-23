@@ -1141,50 +1141,56 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
     border-bottom: 2px solid var(--primary) !important;
 }
 
-/* --- FLOATING CALCULATOR STYLES (Orange, Gray, Blue Theme) --- */
+/* --- FLOATING CALCULATOR STYLES (Compact & Draggable) --- */
     .floating-calc-container {
         display: none;
         position: fixed;
-        top: 100px;
+        top: 80px;
         left: 50%;
         transform: translateX(-50%);
-        width: 290px;
-        background: #f8fafc; /* Light Gray Background */
-        border: 2px solid #cbd5e1;
-        border-radius: 14px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        width: 240px; /* Pinaliit ang lapad para hindi masyadong sakop ang screen */
+        background: rgba(248, 250, 252, 0.92); /* Medyo transparent para makita ang likod */
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         z-index: 999999;
         overflow: hidden;
         user-select: none;
     }
     .calc-header {
-        background: #3b82f6; /* Blue Header */
+        background: #3b82f6;
         color: white;
-        padding: 9px 12px;
-        font-size: 0.85rem;
+        padding: 6px 10px;
+        font-size: 0.75rem;
         font-weight: bold;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        cursor: move;
+        cursor: grab;
+        touch-action: none;
+    }
+    .calc-header:active {
+        cursor: grabbing;
     }
     .calc-close-btn {
         background: none;
         border: none;
         color: white;
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: bold;
         cursor: pointer;
     }
     .calc-screen {
         width: 100%;
-        height: 55px;
+        height: 40px;
         background: #ffffff;
         color: #1e293b;
-        font-size: 1.6rem;
+        font-size: 1.2rem;
         font-weight: bold;
         text-align: right;
-        padding: 8px 14px;
+        padding: 6px 10px;
         border: none;
         border-bottom: 1px solid #e2e8f0;
         outline: none;
@@ -1193,18 +1199,18 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
     .calc-buttons-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
-        gap: 6px;
-        padding: 10px;
-        background: #f8fafc;
+        gap: 4px;
+        padding: 8px;
+        background: rgba(248, 250, 252, 0.98);
     }
     .calc-btn {
-        background: #ffffff; /* Light Gray/White buttons */
+        background: #ffffff;
         color: #334155;
         border: 1px solid #cbd5e1;
-        padding: 14px 0;
-        font-size: 1.2rem;
+        padding: 8px 0;
+        font-size: 0.95rem;
         font-weight: bold;
-        border-radius: 8px;
+        border-radius: 6px;
         cursor: pointer;
         text-align: center;
         box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -1213,14 +1219,14 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
         background: #f1f5f9;
     }
     .calc-btn-operator {
-        background: #e2e8f0; /* Gray para sa operations (+, -, x, ÷) */
+        background: #e2e8f0;
         color: #0f172a;
     }
     .calc-btn-operator:hover {
         background: #cbd5e1;
     }
     .calc-btn-equal {
-        background: #3b82f6; /* Blue para sa Equal button (=) */
+        background: #3b82f6;
         color: white;
         grid-column: span 2;
     }
@@ -1228,7 +1234,7 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
         background: #2563eb;
     }
     .calc-btn-clear {
-        background: #f97316; /* Orange para sa Clear (C) button */
+        background: #f97316;
         color: white;
     }
     .calc-btn-clear:hover {
@@ -3224,25 +3230,17 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     }
 
-    // Draggable Functionality para sa Calculator header (Mouse at Touch/Mobile support)
+   // --- FLOATING CALCULATOR DRAG LOGIC (Pointer Events) ---
     const calcContainer = document.getElementById('floatingCalc');
     const calcHeader = document.getElementById('calcHeader');
     
     let isDragging = false;
     let startX, startY, initialX, initialY;
 
-    calcHeader.addEventListener('mousedown', dragStart);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-
-    calcHeader.addEventListener('touchstart', dragStart, { passive: true });
-    document.addEventListener('touchmove', drag, { passive: true });
-    document.addEventListener('touchend', dragEnd);
-
-    function dragStart(e) {
+    calcHeader.addEventListener('pointerdown', (e) => {
         isDragging = true;
-        startX = e.clientX || e.touches[0].clientX;
-        startY = e.clientY || e.touches[0].clientY;
+        startX = e.clientX;
+        startY = e.clientY;
         
         const rect = calcContainer.getBoundingClientRect();
         initialX = rect.left;
@@ -3251,23 +3249,25 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         calcContainer.style.transform = 'none';
         calcContainer.style.left = initialX + 'px';
         calcContainer.style.top = initialY + 'px';
-    }
-
-    function drag(e) {
-        if (!isDragging) return;
-        const currentX = e.clientX || e.touches[0].clientX;
-        const currentY = e.clientY || e.touches[0].clientY;
         
-        const dx = currentX - startX;
-        const dy = currentY - startY;
+        calcHeader.setPointerCapture(e.pointerId);
+    });
+
+    calcHeader.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
         
         calcContainer.style.left = (initialX + dx) + 'px';
         calcContainer.style.top = (initialY + dy) + 'px';
-    }
+    });
 
-    function dragEnd() {
+    calcHeader.addEventListener('pointerup', (e) => {
         isDragging = false;
-    }
+        try {
+            calcHeader.releasePointerCapture(e.pointerId);
+        } catch(err) {}
+    });
 
 function openPrevBalInfo() {
     showCustomAlert(
