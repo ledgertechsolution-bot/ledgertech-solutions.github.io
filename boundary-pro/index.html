@@ -1160,60 +1160,51 @@ th:nth-child(6), td:nth-child(6) { width: 15% !important; } /* Paid */
 th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas maluwag na para hindi maputol) */
 
 @media print {
-        /* Alisin ang kulay sa buong background ng print view */
-        html, body {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-        }
-
-        body * {
-            visibility: hidden;
-        }
-        
-        #reportTableCard, #reportTableCard * {
-            visibility: visible;
-        }
-        
-        #reportTableCard {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100% !important;
-            background: #ffffff !important;
-            background-color: #ffffff !important; /* Pilit na gagawing plain white */
-            box-shadow: none !important;
-            border: none !important;
-            padding: 10px !important;
-            margin: 0 !important;
-        }
-
-        /* Siguraduhing pati ang mga kasunod na container o card sa loob ay puti rin */
-        .card {
-            background: #ffffff !important;
-            background-color: #ffffff !important;
-            box-shadow: none !important;
-            border: none !important;
-        }
-
-        .table-actions-right {
-            display: none !important;
-        }
-
-        .print-driver-header {
-            display: block !important;
-            text-align: center;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 8px;
-        }
-
-        .print-signature {
-            display: block !important;
-            margin-top: 40px;
-            text-align: right;
-            font-weight: bold;
-        }
+    html, body {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
     }
+
+    body * {
+        visibility: hidden;
+    }
+    
+    #reportTableCard, #reportTableCard * {
+        visibility: visible;
+    }
+
+    #reportTableCard {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border: none !important;
+        padding: 10px !important;
+        margin: 0 !important;
+    }
+
+    .table-actions-right, #entryForm {
+        display: none !important;
+    }
+
+    .print-summary-grid {
+        display: grid !important;
+    }
+
+    .print-only-header {
+        display: block !important;
+    }
+
+    .print-signature {
+        display: block !important;
+        margin-top: 40px;
+        text-align: right;
+        font-weight: bold;
+
+    }
+}
 
     </style>
 </head>
@@ -1305,8 +1296,8 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
 
         <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Pangalan:</label>
-                <input type="text" id="driverName" placeholder="Pangalan ng Driver">
+                <label>Driver Name:</label>
+                <input type="text" id="driverName" placeholder="List Empty">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Plate / Coding: <span id="codingDisplay" style="color: var(--primary); font-weight: bold;">Wala</span>:</label>
@@ -1317,21 +1308,21 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
      <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Prev Running Bal:</label>
-                <input type="number" id="previousBalance" value="0" placeholder="URB simula sa itaas">
+                <input type="number" id="previousBalance" value="0" placeholder="0">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Prev Daily Bal:</label>
-                <input type="number" id="dailyPreviousBalance" value="0" placeholder="Daily bal simula sa itaas">
+                <input type="number" id="dailyPreviousBalance" value="0" placeholder="0">
             </div>
         </div>
 
      
-        <div class="form-row" style="margin-top: 6px;">
-            <div class="form-group" style="margin-bottom: 0;" style="grid-column: span 2;">
-                <label>Daily Boundary Set Up:</label>
-                <input type="number" id="standardExpected" value="1200" placeholder="1200">
-            </div>
-        </div>
+      <div class="form-row" style="margin-top: 6px;">
+    <div class="form-group" style="margin-bottom: 0;" style="grid-column: span 2;">
+        <label>Daily Boundary Set Up:</label>
+        <input type="number" id="standardExpected" value="" placeholder="0">
+    </div>
+</div>
 
     <div class="card">
         <div class="summary-grid">
@@ -1380,15 +1371,47 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
 	    </div>
         </form>
     </div>
-
-    <div class="card" id="reportTableCard">
-<div class="print-driver-header" style="display: none;">
-            <h2 style="font-size: 1.2rem; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
-            <p id="printHeaderInfo" style="font-size: 0.9rem; font-weight: bold; margin-bottom: 2px;"></p>
-            <p id="printHeaderMonth" style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;"></p>
-            <p id="printHeaderBalances" style="font-size: 0.75rem; font-weight: bold; color: #c62828; display: none;"></p>
+<!-- Print Summary Grid (Lilitaw lang kapag nag-print/PDF) -->
+        <div class="print-summary-grid" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; text-align: center;">
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Expected</div>
+                <div id="printLblExpected" style="font-size: 0.85rem; font-weight: bold; color: #000000;">0</div>
+            </div>
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Given</div>
+                <div id="printLblGiven" style="font-size: 0.85rem; font-weight: bold; color: #000000;">0</div>
+            </div>
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Running Bal</div>
+                <div id="printLblBalance" style="font-size: 0.85rem; font-weight: bold; color: #c62828;">0</div>
+            </div>
         </div>
-    	<div class="table-header-container">
+<div class="card" id="reportTableCard">
+        <!-- Print Header & Summary Grid na may Guhit sa Baba -->
+        <div class="print-only-header" style="display: none; text-align: center; margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 10px;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 4px; font-weight: bold; color: #000;">BOUNDARY MONITORING REPORT</h2>
+            <p id="printDriverInfo" style="font-size: 0.9rem; font-weight: bold; margin-bottom: 3px; color: #000;"></p>
+            <p id="printMonthInfo" style="font-size: 0.8rem; font-weight: 600; margin-bottom: 3px; color: #000;"></p>
+            <p id="printBalInfo" style="font-size: 0.75rem; font-weight: bold; color: #c62828; margin-bottom: 8px;"></p>
+
+            <!-- Print Summary Grid (Nasa loob na ng header para masama sa ilalim ang guhit) -->
+            <div class="print-summary-grid" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; text-align: center;">
+                <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                    <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Expected</div>
+                    <div id="printLblExpected" style="font-size: 0.85rem; font-weight: bold; color: #000000;">0</div>
+                </div>
+                <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                    <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Given</div>
+                    <div id="printLblGiven" style="font-size: 0.85rem; font-weight: bold; color: #000000;">0</div>
+                </div>
+                <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                    <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Running Bal</div>
+                    <div id="printLblBalance" style="font-size: 0.85rem; font-weight: bold; color: #c62828;">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-header-container">
             <span class="table-title-left">Record Up to the Last Payment / Balance</span>
             <div class="table-actions-right">
                 <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
@@ -1400,25 +1423,25 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
                 </div>
             </div>
         </div>
-     <div class="table-responsive">
+        
+        <div class="table-responsive">
             <table>
-               <thead>
-    <tr>
-        <th>Days</th>
-        <th class="date-col">Date</th> <!-- <--- Idagdag ito -->
-        <th>Allocated</th>
-        <th>Wkly Remit / Date Covered</th>
-        <th>MOP / Ref No.</th>
-        <th>Amt Paid</th>
-        <th>Balance</th>
-    </tr>
-</thead>
+                <thead>
+                    <tr>
+                        <th>Days</th>
+                        <th class="date-col">Date</th>
+                        <th>Allocated</th>
+                        <th>Wkly Remit / Date Covered</th>
+                        <th>MOP / Ref No.</th>
+                        <th>Amt Paid</th>
+                        <th>Balance</th>
+                    </tr>
+                </thead>
                 <tbody id="tableBody"></tbody>
             </table>
             <div class="print-signature" id="printSignatureName">Driver: ____________________</div>
         </div>
     </div>
-</div>
 
 <!-- Mag-upgrade ng Tier Modal -->
 <div class="upgrade-modal-overlay" id="upgradeModal">
@@ -2578,38 +2601,32 @@ window.updatePaid = function(dayNum, newPaidVal) {
     updateSummaryTotalsOnly();
 };
 
- exportPdfBtn.addEventListener('click', function() {
-        if (!currentDriverId) {
-            showCustomAlert("Babala", "Walang driver na napili para i-export.");
-            return;
-        }
-        
-        // Kunin ang detalye ng driver at mga balanse
-        const currentDriverName = driverNameInput.value || 'Driver';
-        const plateVal = plateNumberInput.value || 'N/A';
-        const driverObj = driversList.find(d => d.id === currentDriverId);
-        const codingVal = driverObj ? driverObj.coding : 'None';
-        
-        const prevRunningVal = previousBalanceInput.value || '0';
-        const prevDailyVal = document.getElementById('dailyPreviousBalance') ? document.getElementById('dailyPreviousBalance').value : '0';
-        
-        const printHeaderInfo = document.getElementById('printHeaderInfo');
-        const printHeaderMonth = document.getElementById('printHeaderMonth');
-        const printHeaderBalances = document.getElementById('printHeaderBalances');
-        
-        if (printHeaderInfo) {
-            printHeaderInfo.innerText = `Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}`;
-        }
-        if (printHeaderMonth) {
-            printHeaderMonth.innerText = `Buwan: ${selectMonth.value} ${selectYear.value}`;
-        }
-        if (printHeaderBalances) {
-            printHeaderBalances.innerText = `Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}`;
-            printHeaderBalances.style.display = 'block';
-        }
+document.getElementById('exportPdfBtn').addEventListener('click', function() {
+    if (!currentDriverId) {
+        showCustomAlert("Babala", "Walang driver na napili para i-export.");
+        return;
+    }
+    
+    // Kunin ang mga detalye ng driver para lumitaw sa PDF/Print view
+    const currentDriverName = driverNameInput.value || 'Driver';
+    const plateVal = plateNumberInput.value || 'N/A';
+    const driverObj = driversList.find(d => d.id === currentDriverId);
+    const codingVal = driverObj ? driverObj.coding : 'None';
+    
+    const prevRunningVal = previousBalanceInput.value || '0';
+    const prevDailyVal = document.getElementById('dailyPreviousBalance') ? document.getElementById('dailyPreviousBalance').value : '0';
+    
+    // Isalin ang mga detalye sa print header elements
+    document.getElementById('printDriverInfo').innerText = `Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}`;
+    document.getElementById('printMonthInfo').innerText = `Buwan: ${selectMonth.value} ${selectYear.value}`;
+    document.getElementById('printBalInfo').innerText = `Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}`;
 
-        window.print();
-    });
+    document.getElementById('printLblExpected').innerText = document.getElementById('lblExpected').innerText;
+    document.getElementById('printLblGiven').innerText = document.getElementById('lblGiven').innerText;
+    document.getElementById('printLblBalance').innerText = document.getElementById('lblBalance').innerText;
+
+    window.print();
+});
 
 document.getElementById('exportCsvBtn').addEventListener('click', function() {
     if (!currentDriverId) {
@@ -2936,7 +2953,6 @@ window.clearCurrentMonthData = function() {
     );
 };
 
-// NA-UPDATE NA BAHAGI PARA SA DOWNLOAD IMAGE: White background, itim na linya, at may kulay pa rin ang Short/Over at Running Balance
 document.getElementById('downloadImgBtn').addEventListener('click', function() {
     if (!currentDriverId) {
         showCustomAlert("Babala", "Walang driver na napili.");
@@ -2949,11 +2965,9 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         return r && (r.amountGiven > 0 || r.paid > 0 || r.given > 0 || (r.dateCovered && r.dateCovered.trim() !== '') || (r.mop && r.mop.trim() !== ''));
     });
 
-    // Hanapin ang huling araw na may entry o kaya ay hanggang sa dulo ng huling linggo na may laman
     let maxRecordedDay = savedDays.length > 0 ? Math.max(...savedDays) : 7;
     let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
     
-    // Kunin hanggang sa huling Linggo na sakop ng mga tala para hindi sumama ang mga blangkong araw sa ibaba
     let limitDay = daysInMonth;
     for (let i = daysInMonth; i >= 1; i--) {
         let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
@@ -2963,7 +2977,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     }
     if (limitDay < maxRecordedDay) {
-        // Kung sakaling lumampas, hanapin ang susunod na Linggo
         for (let i = maxRecordedDay; i <= daysInMonth; i++) {
             let dayOfWeek = getDayOfWeek(i, activeMonthIndex, activeYearVal);
             limitDay = i;
@@ -2971,37 +2984,34 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     }
 
-    // Pansamantalang itago o i-filter ang mga rows na lalampas sa limitDay para hindi makasama sa screenshot
     const allRows = tableBody.querySelectorAll('tr');
     let currentRowCount = 0;
     allRows.forEach(row => {
         currentRowCount++;
-        // Ang bawat araw ay katumbas ng 1 row, tapos may kasamang weekly/urb rows tuwing Linggo.
-        // I-hide ang mga rows na lampas sa ating limitDay.
-        if (currentRowCount > (limitDay * 3)) { // Tinatayang sukat base sa rows at weekly blocks
+        if (currentRowCount > (limitDay * 3)) {
             row.style.display = 'none';
         }
     });
 
-    const targetElement = document.getElementById('reportTableCard');
-    const tableResponsive = targetElement.querySelector('.table-responsive');
-    const originalMaxHeight = tableResponsive.style.maxHeight;
-    const originalOverflow = tableResponsive.style.overflowX;
+    // Hanapin ang card kung nasaan ang table container
+    const tableCardElement = tableBody.closest('.card'); 
+    const tableResponsive = tableCardElement.querySelector('.table-responsive');
+    const originalMaxHeight = tableResponsive ? tableResponsive.style.maxHeight : '';
+    const originalOverflow = tableResponsive ? tableResponsive.style.overflowX : '';
     
-    const originalBg = targetElement.style.backgroundColor;
-    const originalColor = targetElement.style.color;
+    const originalBg = tableCardElement.style.backgroundColor;
+    const originalColor = tableCardElement.style.color;
     
-    // Purong puting background para sa pormal na itsura
-    targetElement.style.backgroundColor = '#ffffff';
-    targetElement.style.color = '#000000';
+    tableCardElement.style.backgroundColor = '#ffffff';
+    tableCardElement.style.color = '#000000';
 
-    const tables = targetElement.querySelectorAll('table, th, td, tr');
+    const tables = tableCardElement.querySelectorAll('table, th, td, tr');
     tables.forEach(el => {
         el.style.backgroundColor = '#ffffff';
         el.style.borderColor = '#000000';
         if (el.tagName === 'TH') {
             el.style.color = '#000000';
-            el.style.backgroundColor = '#e8f5e9'; // Banayad na berdeng header para pormal tingnan
+            el.style.backgroundColor = '#e8f5e9';
         } else if (el.tagName === 'TD') {
             if (!el.classList.contains('text-danger') && !el.classList.contains('text-success')) {
                 el.style.color = '#000000';
@@ -3009,33 +3019,39 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
     
-    tableResponsive.style.maxHeight = 'none';
-    tableResponsive.style.overflowX = 'visible';
+    if (tableResponsive) {
+        tableResponsive.style.maxHeight = 'none';
+        tableResponsive.style.overflowX = 'visible';
+    }
     
-// Ibinalik sa eksaktong sukat para pantay at walang sobrang puting espasyo sa kanan
-  targetElement.style.width = '750px';
-    targetElement.style.margin = '0 auto';
-    targetElement.style.padding = '15px'; 
-    targetElement.style.boxSizing = 'border-box';
+    tableCardElement.style.width = '750px';
+    tableCardElement.style.margin = '0 auto';
+    tableCardElement.style.padding = '15px'; 
+    tableCardElement.style.boxSizing = 'border-box';
     
-    const tableEl = targetElement.querySelector('table');
+    const tableEl = tableCardElement.querySelector('table');
     if (tableEl) {
         tableEl.style.width = '100%';
         tableEl.style.tableLayout = 'fixed';
     }
 
-    // Alisin muna pansamantala ang Clear button at Month arrows sa header bago mag-capture para mas malinis
-    const actionBtnsRight = targetElement.querySelector('.table-actions-right');
+    const actionBtnsRight = tableCardElement.querySelector('.table-actions-right');
     if (actionBtnsRight) actionBtnsRight.style.display = 'none';
+
+    // PANSAMANTALANG ITAGO ANG ENTRY FORM (Yung may Date of payment at buttons) SA CAPTURE
+    const entryFormCard = document.getElementById('entryForm') ? document.getElementById('entryForm').closest('.card') : null;
+    if (entryFormCard) entryFormCard.style.display = 'none';
 
     const currentDriverName = driverNameInput.value || 'Driver';
     const plateVal = plateNumberInput.value || 'N/A';
     const driverObj = driversList.find(d => d.id === currentDriverId);
     const codingVal = driverObj ? driverObj.coding : 'None';
 
-  // Kunin ang kasalukuyang halaga ng Previous Balances para maisama sa report header
     const prevRunningVal = previousBalanceInput.value || '0';
     const prevDailyVal = document.getElementById('dailyPreviousBalance') ? document.getElementById('dailyPreviousBalance').value : '0';
+    const currentTotalExp = document.getElementById('lblExpected').innerText;
+    const currentTotalGiven = document.getElementById('lblGiven').innerText;
+    const currentRunningBal = document.getElementById('lblBalance').innerText;
 
     const reportHeaderDiv = document.createElement('div');
     reportHeaderDiv.id = 'tempReportHeader';
@@ -3048,62 +3064,58 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         <h2 style="font-size: 1.2rem; color: #000000; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
         <p style="font-size: 0.9rem; font-weight: bold; color: #000000; margin-bottom: 3px;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
         <p style="font-size: 0.8rem; font-weight: 600; color: #000000; margin-bottom: 3px;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
-        <p style="font-size: 0.75rem; font-weight: bold; color: #c62828;">Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}</p>
+        <p style="font-size: 0.75rem; font-weight: bold; color: #c62828; margin-bottom: 8px;">Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}</p>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; text-align: center;">
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Expected</div>
+                <div style="font-size: 0.85rem; font-weight: bold; color: #000000;">${currentTotalExp}</div>
+            </div>
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Total Given</div>
+                <div style="font-size: 0.85rem; font-weight: bold; color: #000000;">${currentTotalGiven}</div>
+            </div>
+            <div style="background: #e8f5e9; border: 1px solid #c8e6c9; padding: 6px; border-radius: 4px;">
+                <div style="font-size: 0.6rem; color: #1b5e20; font-weight: bold; text-transform: uppercase;">Running Bal</div>
+                <div style="font-size: 0.85rem; font-weight: bold; color: #c62828;">${currentRunningBal}</div>
+            </div>
+        </div>
     `;
-    targetElement.prepend(reportHeaderDiv);
+    tableCardElement.prepend(reportHeaderDiv);
 
-   const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-input-cell');
+    const inputFields = tableCardElement.querySelectorAll('.table-expected-input, .table-input-cell');
     inputFields.forEach(input => {
-        if(input.offsetParent !== null) { // Kung visible ang input
+        if(input.offsetParent !== null) {
             let cellIndex = input.closest('td') ? input.closest('td').cellIndex : -1;
-            // Kung ito ang Wkly Remit / Date Covered column (cellIndex === 3), gawing green (#1b5e20)
             let textColor = (cellIndex === 3) ? '#1b5e20' : '#000000';
             input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: ${textColor};">${input.value}</div>`;
         }
     });
 
-    // Siguraduhing pulang-pula (#c62828) ang mga halaga ng Weekly Balance at URB sum sa image capture
-    targetElement.querySelectorAll('tr').forEach(tr => {
-        if (tr.innerHTML.includes('Weekly Balance') || tr.innerHTML.includes('Updated Running Balance')) {
-            const tds = tr.querySelectorAll('td');
-            if (tds.length >= 2) {
-                tds[tds.length - 1].style.color = '#c62828';
-                tds[tds.length - 1].style.fontWeight = 'bold';
-            }
-        }
-    });
-
-html2canvas(targetElement, {
+    html2canvas(tableCardElement, {
         scale: 3,
         useCORS: true,
         windowWidth: 780, 
-        backgroundColor: '#ffffff',
-        onclone: (clonedDoc) => {
-            const clonedEl = clonedDoc.getElementById('reportTableCard');
-            if (clonedEl) {
-                clonedEl.style.margin = '0 auto';
-                clonedEl.style.display = 'block';
-            }
-        }
+        backgroundColor: '#ffffff'
     }).then(canvas => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
         if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
         
-       targetElement.style.backgroundColor = originalBg;
-        targetElement.style.color = originalColor;
-        tableResponsive.style.maxHeight = originalMaxHeight;
-        tableResponsive.style.overflowX = originalOverflow;
-        targetElement.style.width = '';
-        if (tableEl) {
-            tableEl.style.width = '';
-            tableEl.style.tableLayout = '';
+        // Ibalik ang pagka-show ng entry form card pagkatapos mag-capture
+        if (entryFormCard) entryFormCard.style.display = 'block';
+        
+        tableCardElement.style.backgroundColor = originalBg;
+        tableCardElement.style.color = originalColor;
+        if (tableResponsive) {
+            tableResponsive.style.maxHeight = originalMaxHeight;
+            tableResponsive.style.overflowX = originalOverflow;
         }
+        tableCardElement.style.width = '';
         renderTable();
         
         const imageURL = canvas.toDataURL('image/png');
         const downloadLink = document.createElement('a');
-        
         downloadLink.href = imageURL;
         downloadLink.download = `Boundary_Report_${currentDriverName.replace(/\s+/g, '_')}_${selectMonth.value}_${selectYear.value}.png`;
         
@@ -3114,16 +3126,20 @@ html2canvas(targetElement, {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
         if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
-        targetElement.style.backgroundColor = originalBg;
-        targetElement.style.color = originalColor;
-        tableResponsive.style.maxHeight = originalMaxHeight;
-        tableResponsive.style.overflowX = originalOverflow;
-        targetElement.style.width = '';
+        
+        if (entryFormCard) entryFormCard.style.display = 'block';
+        
+        tableCardElement.style.backgroundColor = originalBg;
+        tableCardElement.style.color = originalColor;
+        if (tableResponsive) {
+            tableResponsive.style.maxHeight = originalMaxHeight;
+            tableResponsive.style.overflowX = originalOverflow;
+        }
+        tableCardElement.style.width = '';
         renderTable();
         console.error("Error sa pag-capture ng image:", error);
     });
 });
-
 
 
 // 1. Ayusin ang visualViewport resize para hindi mag-uga o tumalon ang screen pagka-tap ng next sa phone
