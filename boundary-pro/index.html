@@ -266,17 +266,7 @@
             color: var(--text-main);
         }
 
-        .table-expected-input, .table-given-input {
-            width: 75px;
-            padding: 3px 2px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.75rem;
-            background: var(--card-bg);
-            color: var(--text-main);
-            text-align: center;
-            text-align-last: center;
-        }
+      
 
 .table-input-cell {
     width: 100% !important;
@@ -416,18 +406,30 @@ table {
     border: none !important;
 }
 
-/* Unipormeng estilo para sa lahat ng input sa loob ng table para swak sa mobile */
-.table-input-cell, .table-expected-input, .table-given-input {
+/* Borderless na estilo para sa mga input cells para malinis tingnan */
+.table-input-cell, 
+.table-expected-input, 
+.table-given-input {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box;
-    padding: 6px 2px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
+    padding: 6px 2px !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
     font-size: 0.75rem;
-    background: var(--card-bg);
     color: var(--text-main);
     text-align: center;
+}
+
+/* Banayad na highlight lang sa ilalim kapag pinindot (focused) */
+.table-input-cell:focus, 
+.table-expected-input:focus, 
+.table-given-input:focus {
+    background: rgba(46, 125, 50, 0.08) !important;
+    border-bottom: 2px solid var(--primary) !important;
 }
 
 /* Pantanggal ng arrow (spinner) sa gilid ng number input */
@@ -634,57 +636,7 @@ th, td {
             color: var(--primary);
         }
 
-        @media print {
-            body {
-                background-color: #ffffff;
-                color: #000000;
-                padding: 0;
-            }
-            .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month {
-                display: none !important;
-            }
-            .card {
-                border: none;
-                box-shadow: none;
-                padding: 0;
-                margin-bottom: 0px;
-            }
-            .table-responsive {
-                max-height: none !important;
-                overflow: visible !important;
-            }
-            table {
-                font-size: 10pt !important;
-                width: 100% !important;
-                border-collapse: collapse !important;
-                table-layout: auto !important; /* Siguraduhing naka-auto para pantay ang hatian ng 7 kolum */
-                page-break-inside: auto;
-            }
-            tr {
-                page-break-inside: avoid;
-                page-break-after: auto;
-            }
-            th, td {
-                border: 1px solid #000;
-                color: #000;
-                padding: 5px;
-            }
-            th {
-                background-color: #e8f5e9 !important;
-                -webkit-print-color-adjust: exact;
-                position: static !important;
-            }
-            .table-given-input {
-    width: 100% !important;
-    max-width: 65px;
-    padding: 3px 2px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-size: 0.75rem;
-    background: var(--card-bg);
-    color: var(--text-main);
-    text-align: center;
-}
+       
 
 /* Pangkalahatang estilo para sa lahat ng input sa loob ng table cells */
 .table-given-input, 
@@ -700,16 +652,7 @@ th, td {
     color: var(--text-main);
     text-align: center;
 }
-            .print-signature {
-                display: block !important;
-                margin-top: 96px; 
-                text-align: right;
-                font-size: 0.9rem;
-                font-weight: bold;
-                color: #000;
-                page-break-inside: avoid;
-            }
-        }
+           
         .gcash-qr-img {
             width: 160px;
             height: 160px;
@@ -1034,20 +977,6 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
     text-align: center;
 }
 
-/* --- TANGGALIN ANG BOXES/BORDERS SA LOOB NG CELLS PARA MALUWAG TINGNAN --- */
-.table-input-cell, 
-.table-expected-input, 
-.table-given-input {
-    border: none !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    outline: none !important;
-    border-radius: 0 !important;
-    width: 100% !important;
-    padding: 6px 2px !important;
-    font-size: 0.75rem;
-    text-align: center;
-}
 
 /* Kapag pinindot (focused) ang input, magbibigay lang ng napaka-banayad na highlight sa ilalim nang walang mabigat na box */
 .table-input-cell:focus, 
@@ -1177,120 +1106,153 @@ input.table-input-cell {
     transition: none !important; 
 }
 
+
+
+
+/* --- PAGPAPALAWAK SA WEEKLY AMT / DATE COVERED --- */
+th:nth-child(1), td:nth-child(1) { width: 70px !important; min-width: 70px !important; } /* Days */
+th.date-col, td.date-col { width: 45px !important; min-width: 45px !important; }         /* Date */
+th:nth-child(3), td:nth-child(3) { width: 70px !important; min-width: 70px !important; } /* Daily Amt (Pinaikli) */
+th:nth-child(4), td:nth-child(4) { width: 135px !important; min-width: 135px !important; } /* Weekly Amt / Date Covered (Pinalawak nang buo) */
+th:nth-child(5), td:nth-child(5) { width: 100px !important; min-width: 100px !important; } /* MOP / Ref No. */
+th:nth-child(6), td:nth-child(6) { width: 80px !important; min-width: 80px !important; } /* Paid */
+th:nth-child(7), td:nth-child(7) { width: 80px !important; min-width: 80px !important; } /* Balance */
+
+/* Eksaktong hatian ng 7 columns para hindi maipit ang Balance sa dulo */
+th:nth-child(1), td:nth-child(1) { width: 11% !important; } /* Days */
+th.date-col, td.date-col { width: 7% !important; }         /* Date */
+th:nth-child(3), td:nth-child(3) { width: 12% !important; } /* Daily Amt */
+th:nth-child(4), td:nth-child(4) { width: 23% !important; } /* Weekly Amt / Date Covered */
+th:nth-child(5), td:nth-child(5) { width: 16% !important; } /* MOP / Ref No. */
+th:nth-child(6), td:nth-child(6) { width: 15% !important; } /* Paid */
+th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas maluwag na para hindi maputol) */
+
 @media print {
-    body {
-        background-color: #ffffff !important;
-        color: #000000 !important;
-        padding: 5px !important;
-        font-size: 10pt !important;
-    }
-    
-    /* Itago ang mga hindi kailangan sa pormal na PDF/Print */
-    .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1, .summary-grid {
-        display: none !important;
+        body {
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            padding: 5px !important;
+            font-size: 10pt !important;
+        }
+        
+        /* Itago ang mga hindi kailangan sa pormal na PDF/Print */
+        .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1, .summary-grid {
+            display: none !important;
+        }
+
+        .card {
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+            margin-bottom: 0px !important;
+            background: #ffffff !important;
+        }
+
+        /* Pormal na Header para sa PDF */
+        header::before {
+            content: "BOUNDARY MONITORING SYSTEM REPORT";
+            display: block;
+            font-size: 14pt;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 3px;
+            color: #000000;
+        }
+        
+        header p {
+            display: block !important;
+            font-size: 9.5pt !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            color: #000000 !important;
+            margin-bottom: 10px !important;
+        }
+
+        .table-responsive {
+            max-height: none !important;
+            overflow: visible !important;
+            width: 100% !important;
+        }
+
+        /* SAPILITANG IPALITAW ANG TABLE AT ROWS */
+        table {
+            display: table !important;
+            font-size: 8.5pt !important;
+            width: 100% !important;
+            border-collapse: collapse !important;
+            table-layout: fixed !important;
+            visibility: visible !important;
+        }
+
+        tbody {
+            display: table-row-group !important;
+            visibility: visible !important;
+        }
+
+        tr {
+            display: table-row !important;
+            page-break-inside: avoid;
+            page-break-after: auto;
+            visibility: visible !important;
+        }
+
+        th, td {
+            display: table-cell !important;
+            border: 1px solid #000000 !important;
+            color: #000000 !important;
+            padding: 4px 2px !important;
+            background-color: #ffffff !important;
+            visibility: visible !important;
+            word-break: break-word;
+        }
+
+        /* Eksaktong hatian ng 7 columns */
+        th:nth-child(1), td:nth-child(1) { width: 14% !important; } 
+        th.date-col, td.date-col { width: 9% !important; }         
+        th:nth-child(3), td:nth-child(3) { width: 16% !important; } 
+        th:nth-child(4), td:nth-child(4) { width: 18% !important; } 
+        th:nth-child(5), td:nth-child(5) { width: 16% !important; } 
+        th:nth-child(6), td:nth-child(6) { width: 14% !important; } 
+        th:nth-child(7), td:nth-child(7) { width: 13% !important; } 
+
+        th {
+            background-color: #e8f5e9 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        input.table-input-cell, input.table-expected-input, .table-given-input {
+            border: none !important;
+            background: transparent !important;
+            text-align: center !important;
+            font-weight: bold !important;
+            font-size: 8.5pt !important;
+            color: #000000 !important;
+            padding: 0 !important;
+            width: 100% !important;
+        }
+
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .print-signature {
+            display: block !important;
+            margin-top: 40px !important;
+            text-align: right !important;
+            font-size: 10pt !important;
+            font-weight: bold !important;
+            color: #000000 !important;
+            page-break-inside: avoid;
+        }
     }
 
-    .card {
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        margin-bottom: 0px !important;
-        background: #ffffff !important;
-    }
 
-    /* Pormal na Header para sa PDF */
-    header::before {
-        content: "BOUNDARY MONITORING SYSTEM REPORT";
-        display: block;
-        font-size: 14pt;
-        font-weight: bold;
-        text-align: center;
-        margin-bottom: 3px;
-        color: #000000;
-    }
-    
-    header p {
-        display: block !important;
-        font-size: 9.5pt !important;
-        font-weight: bold !important;
-        text-align: center !important;
-        color: #000000 !important;
-        margin-bottom: 10px !important;
-    }
-
-    .table-responsive {
-        max-height: none !important;
-        overflow: visible !important;
-        width: 100% !important;
-    }
-
-    /* Siguraduhing magkakasya ang buong table nang may tamang sukat sa bawat column */
-    table {
-        font-size: 8.5pt !important;
-        width: 100% !important;
-        border-collapse: collapse !important;
-        table-layout: fixed !important; /* Fixed para masunod ang eksaktong lapad ng columns */
-        page-break-inside: auto;
-    }
-
-    /* Eksaktong hatian ng 7 columns para magkasya ang Balance sa kanan */
-    th:nth-child(1), td:nth-child(1) { width: 14% !important; } /* Days */
-    th.date-col, td.date-col { width: 9% !important; }         /* Date */
-    th:nth-child(3), td:nth-child(3) { width: 16% !important; } /* Amount Given */
-    th:nth-child(4), td:nth-child(4) { width: 18% !important; } /* Date Covered */
-    th:nth-child(5), td:nth-child(5) { width: 16% !important; } /* MOP / Ref No. */
-    th:nth-child(6), td:nth-child(6) { width: 14% !important; } /* Paid */
-    th:nth-child(7), td:nth-child(7) { width: 13% !important; } /* Balance (Siguradong kasama na!) */
-
-    tr {
-        page-break-inside: avoid;
-        page-break-after: auto;
-    }
-
-    th, td {
-        border: 1px solid #000000 !important;
-        color: #000000 !important;
-        padding: 4px 2px !important;
-        background-color: #ffffff !important;
-        word-break: break-word;
-    }
-
-    th {
-        background-color: #e8f5e9 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* Pormal na hitsura ng mga input sa loob ng print table */
-    input.table-input-cell, input.table-expected-input, .table-given-input {
-        border: none !important;
-        background: transparent !important;
-        text-align: center !important;
-        font-weight: bold !important;
-        font-size: 8.5pt !important;
-        color: #000000 !important;
-        padding: 0 !important;
-        width: 100% !important;
-    }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-    }
-
-    .print-signature {
-        display: block !important;
-        margin-top: 40px !important;
-        text-align: right !important;
-        font-size: 10pt !important;
-        font-weight: bold !important;
-        color: #000000 !important;
-        page-break-inside: avoid;
-    }
-}
 
     </style>
+
 </head>
 <body data-theme="light">
 
@@ -1389,20 +1351,24 @@ input.table-input-cell {
             </div>
         </div>
         
-        <div class="form-row" style="margin-top: 6px;">
+     <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
-                <label>Daily Boundary Set:</label>
-                <input type="number" id="standardExpected" value="1000">
+                <label>Prev Running Bal:</label>
+                <input type="number" id="previousBalance" value="0" placeholder="0">
             </div>
-           <div class="form-group" style="margin-bottom: 0;">
-    <label>
-        Previous Running Balance: 
-        <button type="button" class="info-icon-btn" onclick="openPrevBalInfo()" title="Para saan ito?">ℹ️</button>
-    </label>
-    <input type="number" id="previousBalance" value="0" placeholder="URB simula sa itaas">
-</div>
+            <div class="form-group" style="margin-bottom: 0;">
+                <label>Prev Daily Bal:</label>
+                <input type="number" id="dailyPreviousBalance" value="0" placeholder="0">
+            </div>
         </div>
-    </div>
+
+     
+        <div class="form-row" style="margin-top: 6px;">
+            <div class="form-group" style="margin-bottom: 0;" style="grid-column: span 2;">
+                <label>Daily Boundary Set Up:</label>
+                <input type="number" id="standardExpected" value="1200" placeholder="1200">
+            </div>
+        </div>
 
     <div class="card">
         <div class="summary-grid">
@@ -1430,14 +1396,14 @@ input.table-input-cell {
                     <input type="number" id="dayDate" placeholder="Ex. 1, 5...">
                 </div>
                 <div class="form-group">
-                    <label>Amount Given:</label>
+                    <label>Amt to Distribute:</label>
                     <input type="number" id="givenAmt" placeholder="0">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>Date Covered:</label>
-                    <input type="text" id="dateCovered" placeholder="10/1 - 10/7">
+                    <label>Wkly Remit/Covered:</label>
+                    <input type="text" id="dateCovered" placeholder="Ex. 6000    10/1 - 10/7">
                 </div>
                 <div class="form-group">
                     <label>MOP:</label>
@@ -1471,10 +1437,10 @@ input.table-input-cell {
     <tr>
         <th>Days</th>
         <th class="date-col">Date</th> <!-- <--- Idagdag ito -->
-        <th>Amount Given</th>
-        <th>Date Covered</th>
+        <th>Allocated</th>
+        <th>Wkly Remit / Date Covered</th>
         <th>MOP / Ref No.</th>
-        <th>Paid</th>
+        <th>Amt Paid</th>
         <th>Balance</th>
     </tr>
 </thead>
@@ -2199,8 +2165,12 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
     );
 }
 
-    function getDriverMonthConfigKey() {
+   function getDriverMonthConfigKey() {
         return `boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
+    }
+
+    function getDriverDailyPrevBalKey() {
+        return `boundary_dailyprevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`;
     }
 
     function getDriverCodingRenderingKey() {
@@ -2234,8 +2204,14 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
         driver.coding = calculatedCoding;
         codingDisplay.innerText = calculatedCoding;
 
-        let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
+       let savedPrevBal = localStorage.getItem(getDriverMonthConfigKey());
         previousBalanceInput.value = savedPrevBal !== null ? savedPrevBal : 0;
+
+        let savedDailyPrevBal = localStorage.getItem(getDriverDailyPrevBalKey());
+        const dailyPreviousBalanceInput = document.getElementById('dailyPreviousBalance');
+        if (dailyPreviousBalanceInput) {
+            dailyPreviousBalanceInput.value = savedDailyPrevBal !== null ? savedDailyPrevBal : 0;
+        }
 
        let savedCodingRendering = localStorage.getItem(getDriverCodingRenderingKey());
         if (savedCodingRendering === 'include') {
@@ -2294,7 +2270,12 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
             driver.coding = getCodingFromPlate(plateNumberInput.value);
             driver.prevBal = parseFloat(previousBalanceInput.value) || 0;
             
-            localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
+           localStorage.setItem(`boundary_prevbal_${currentDriverId}_${monthsArray[activeMonthIndex]}_${activeYearVal}`, previousBalanceInput.value);
+            
+            const dailyPreviousBalanceInput = document.getElementById('dailyPreviousBalance');
+            if (dailyPreviousBalanceInput) {
+                localStorage.setItem(getDriverDailyPrevBalKey(), dailyPreviousBalanceInput.value);
+            }
             
            // Gawing Exclude ang default kung sakaling walang naka-check
             const renderingVal = codingIncludeRadio.checked ? 'include' : 'exclude';
@@ -2331,10 +2312,12 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
         el.addEventListener('blur', saveConfig);
     });
 
-    [standardExpectedInput, previousBalanceInput].forEach(el => {
+   [standardExpectedInput, previousBalanceInput, document.getElementById('dailyPreviousBalance')].forEach(el => {
+    if (el) {
         el.addEventListener('input', saveConfig);
         el.addEventListener('change', saveConfig);
-    });
+    }
+});
 
     selectMonth.addEventListener('change', function() {
         activeMonthIndex = monthsArray.indexOf(this.value);
@@ -2432,33 +2415,20 @@ form.addEventListener('submit', function(e) {
     let isExcludeCoding = codingExcludeRadio.checked;
 
     const topDate = parseInt(dayDateInput.value);
-    const topGiven = parseFloat(document.getElementById('givenAmt').value); // Kunin ang eksaktong value kahit 0 o blangko
+    const topGiven = parseFloat(document.getElementById('givenAmt5') || document.getElementById('givenAmt').value); 
     const topDateCovered = document.getElementById('dateCovered').value.trim();
     const topRefNo = document.getElementById('refNo').value.trim();
 
-    // I-save lamang ang record sa mismong Araw ng Pagbabayad (Date of payment) para sa MOP at Date Covered
+    // 1. I-save muna ang MOP at Date Covered sa mismong Date of payment (hal. Oct 5)
     if (topDate >= 1 && topDate <= 31) {
         if (!records[topDate]) records[topDate] = {};
-        
-        // Kung may inilagay na Amount Given (kahit 0 o higit pa), i-save ito
-        if (!isNaN(topGiven)) {
-            records[topDate].amountGiven = topGiven;
-            records[topDate].paid = topGiven;
-            // Kalkulahin ang balance para sa araw na ito kung may halaga
-            let dayOfWeek = getDayOfWeek(topDate, activeMonthIndex, activeYearVal);
-            let exp = boundarySet;
-            if (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding) {
-                exp = 0;
-            }
-            records[topDate].balance = exp - topGiven;
-        }
-
         if (topDateCovered) records[topDate].dateCovered = topDateCovered;
         if (topRefNo) records[topDate].mop = topRefNo;
     }
 
-    // Kung naglagay ng Date Covered na may range (hal. 10/1 - 10/7) at may Amount Given na > 0, saka lamang i-distribute
-    if (!isNaN(topGiven) && topGiven > 0 && topDateCovered && topDateCovered.includes('-')) {
+    // 2. Kung may Date Covered na range (hal. 10/1 - 10/4) at may Amount Given, i-distribute sa mga sakop na araw
+    let actualGivenVal = parseFloat(document.getElementById('givenAmt').value);
+    if (!isNaN(actualGivenVal) && actualGivenVal > 0 && topDateCovered && topDateCovered.includes('-')) {
         let parts = topDateCovered.split('-');
         let startPart = parts[0].trim();
         let endPart = parts[1].trim();
@@ -2476,8 +2446,8 @@ form.addEventListener('submit', function(e) {
                 }
             }
 
-           if (validDays.length > 0) {
-                let distributedPaid = Math.round(topGiven / validDays.length);
+            if (validDays.length > 0) {
+                let distributedPaid = Math.round(actualGivenVal / validDays.length);
 
                 validDays.forEach(d => {
                     let dayOfWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
@@ -2487,10 +2457,23 @@ form.addEventListener('submit', function(e) {
 
                     if (!records[d]) records[d] = {};
                     records[d].paid = (records[d].paid || 0) + distributedPaid;
-                    records[d].amountGiven = records[d].paid; // I-sync
+                    records[d].amountGiven = records[d].paid; 
                     records[d].balance = exp - records[d].paid;
                 });
             }
+        }
+    } else if (!isNaN(actualGivenVal)) {
+        // Kung WALANG range (iisang araw lang), saka lang ilagay sa mismong Date of Payment
+        if (topDate >= 1 && topDate <= 31) {
+            if (!records[topDate]) records[topDate] = {};
+            let dayOfWeek = getDayOfWeek(topDate, activeMonthIndex, activeYearVal);
+            let exp = boundarySet;
+            let isCodingDay = (isExcludeCoding && activeCoding !== 'None' && fullDayNames[dayOfWeek] === activeCoding);
+            if (isCodingDay) exp = 0;
+
+            records[topDate].amountGiven = actualGivenVal;
+            records[topDate].paid = actualGivenVal;
+            records[topDate].balance = exp - actualGivenVal;
         }
     }
 
@@ -2626,12 +2609,18 @@ window.updatePaid = function(dayNum, newPaidVal) {
     updateSummaryTotalsOnly();
 };
 
-    exportPdfBtn.addEventListener('click', function() {
+   exportPdfBtn.addEventListener('click', function() {
         if (!currentDriverId) {
             showCustomAlert("Babala", "Walang driver na napili para i-export.");
             return;
         }
-        window.print();
+        
+        // Sapilitang i-render muli ang table para hindi maging blanko
+        renderTable();
+        
+        setTimeout(() => {
+            window.print();
+        }, 300);
     });
 
 document.getElementById('exportCsvBtn').addEventListener('click', function() {
@@ -2654,7 +2643,7 @@ document.getElementById('exportCsvBtn').addEventListener('click', function() {
     let csvContent = "data:text/csv;charset=utf-8,";
     csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
     // Pagtugma ng headers sa kasalukuyang table layout
-    csvContent += "Day,Date,Amount Given,Date Covered,MOP / Ref No.,Paid,Balance\r\n";
+    csvContent += "Day,Date,Allocated,Wkly Remit / Date Covered,MOP / Ref No.,Amt Paid	Balance,Balance\r\n";
 
     let fullDayNames = { 'Mon': 'Monday', 'Tue': 'Tuesday', 'Wed': 'Wednesday', 'Thu': 'Thursday', 'Fri': 'Friday' };
 
@@ -2712,9 +2701,10 @@ function renderTable() {
     tableBody.innerHTML = '';
     
     let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let dailyPrevBal = parseFloat(document.getElementById('dailyPreviousBalance')?.value) || 0;
     let totalExpected = 0;
     let totalGiven = 0;
-    let runningBalance = initialBalance; 
+    let runningBalance = initialBalance;
 
     let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
     let boundarySet = parseFloat(standardExpectedInput.value) || 1200;
@@ -2761,30 +2751,22 @@ function renderTable() {
         let balanceDisplayHtml = '';
         let balanceClass = '';
 
-       if (hasPayment) {
+        if (hasPayment) {
             balanceVal = Math.round(expectedForDay - paidVal);
             if (isExcludeCoding && isCodingDay) {
                 balanceVal = 0;
-            }
-            
-            if (balanceVal < 0) {
-                balanceClass = 'text-success';
-            } else {
-                balanceClass = '';
             }
             
             let textColorStyle = balanceVal < 0 ? 'color: var(--success);' : 'color: var(--text-main);';
             balanceDisplayHtml = `<td style="font-weight: bold; text-align: center; ${textColorStyle}">${fmt(balanceVal)}</td>`;
             
             totalExpected += expectedForDay;
-            totalGiven += amountGiven;
+            totalGiven += parseFloat(amountGiven) || 0;
         } else {
             balanceDisplayHtml = `<td></td>`;
         }
 
         const row = document.createElement('tr');
-        balanceClass = balanceVal > 0 ? 'text-danger' : 'text-success';
-
         let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
         if (isCodingDay) {
             dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
@@ -2804,8 +2786,12 @@ function renderTable() {
         tableBody.appendChild(row);
 
         // Kapag tumama sa Linggo (Sunday)
-        if (dayOfWeek === 'Sun')  {
+        if (dayOfWeek === 'Sun') {
             let currentWeekBalance = 0;
+            let sundayDateObj = new Date(activeYearVal, activeMonthIndex, i);
+            let mondayDateObj = new Date(sundayDateObj);
+            mondayDateObj.setDate(sundayDateObj.getDate() - 6);
+            
             let startDay = i;
             for (let d = i; d >= 1; d--) {
                 startDay = d;
@@ -2813,8 +2799,15 @@ function renderTable() {
                 if (dWeek === 'Mon' || d === 1) break;
             }
 
-            let startMonthStr = monthsArray[activeMonthIndex].slice(0, 3);
-            let dateRangeStr = `${startMonthStr} ${startDay}-${i}, ${activeYearVal}`;
+            let startMonthName = monthsArray[mondayDateObj.getMonth()].slice(0, 3);
+            let endMonthName = monthsArray[sundayDateObj.getMonth()].slice(0, 3);
+            
+            let dateRangeStr = "";
+            if (mondayDateObj.getMonth() !== sundayDateObj.getMonth()) {
+                dateRangeStr = `${startMonthName} ${mondayDateObj.getDate()} - ${endMonthName} ${sundayDateObj.getDate()}, ${activeYearVal}`;
+            } else {
+                dateRangeStr = `${startMonthName} ${mondayDateObj.getDate()}-${sundayDateObj.getDate()}, ${activeYearVal}`;
+            }
 
             for (let d = startDay; d <= i; d++) {
                 let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
@@ -2831,44 +2824,28 @@ function renderTable() {
                 }
             }
 
-           
-            // Gamitin ang naka-save na manual override kung meron, kung wala ay ang computed sum
+            if (weekCounter === 1) {
+                currentWeekBalance += dailyPrevBal;
+            }
+
             let activeWeeklyVal = Math.round((weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance);
 
             accumulatedUrbForRunning += activeWeeklyVal;
-            
             let activeUrbVal = Math.round((urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning);
-
             accumulatedUrbForRunning = activeUrbVal;
+
            const weeklyBalRow = document.createElement('tr');
             weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
             
-            let isWeekComplete = true;
-            for (let d = startDay; d <= i; d++) {
-                let dData = records[d];
-                if (!dData || (dData.amountGiven === undefined || dData.amountGiven === '' || isNaN(dData.amountGiven)) && (dData.paid === undefined || dData.paid === '' || isNaN(dData.paid))) {
-                    let dWeek = getDayOfWeek(d, activeMonthIndex, activeYearVal);
-                    let dIsCoding = (activeCoding !== 'None' && fullDayNames[dWeek] === activeCoding);
-                    if (!isExcludeCoding || !dIsCoding) {
-                        isWeekComplete = false;
-                    }
-                }
-            }
-
             weeklyBalRow.innerHTML = `
                 <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 2px 6px !important; color: var(--text-main); vertical-align: middle;">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px;">
-                        <span class="weekly-header-text" style="line-height: 1.2;">(Week ${weekCounter} — ${dateRangeStr})</span>
+                        <span class="weekly-header-text" style="line-height: 1.2;">Week Covered: ${dateRangeStr}</span>
                         <span style="font-weight: bold; white-space: nowrap; font-size: 0.7rem; line-height: 1.2;">Weekly Balance:</span>
                     </div>
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle;">
-                    <input type="number" class="table-expected-input" style="width: 100%; font-weight: bold; text-align: center; color: var(--danger); padding: 2px !important; height: 26px; box-sizing: border-box; ${!isWeekComplete ? 'background-color: rgba(0,0,0,0.05); opacity: 0.7; cursor: not-allowed;' : ''}" 
-                    value="${activeWeeklyVal}" 
-                    ${!isWeekComplete ? 'readonly' : ''}
-                    onfocus="if(!${isWeekComplete}) { showCustomAlert('Paalala', 'Hintayin natin na makumpleto muna ang daily balance bago baguhin ang total amount.'); this.blur(); return; }"
-                    oninput="${isWeekComplete ? `updateCustomWeekly(${weekCounter}, this.value)` : ''}"
-                    onchange="${isWeekComplete ? `saveCustomWeekly(${weekCounter}, this.value)` : ''}">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle; font-weight: bold; color: var(--danger); font-size: 0.8rem;">
+                    ${fmt(activeWeeklyVal)}
                 </td>
             `;
             tableBody.appendChild(weeklyBalRow);
@@ -2880,6 +2857,14 @@ function renderTable() {
                     hasWeekData = true;
                     break;
                 }
+            }
+
+            // Isama sa check kung may laman ang Weekly Balance (gaya ng Daily Prev Balance o manual override)
+            if (weekCounter === 1 && dailyPrevBal !== 0) {
+                hasWeekData = true;
+            }
+            if (weeklyOverrides[`w${weekCounter}`] !== undefined && weeklyOverrides[`w${weekCounter}`] !== '') {
+                hasWeekData = true;
             }
 
             const urbRow = document.createElement('tr');
@@ -3039,12 +3024,16 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     tableResponsive.style.maxHeight = 'none';
     tableResponsive.style.overflowX = 'visible';
     
-    // Itakda ang sapat na lapad para magkasya ang lahat ng 7 kolum nang hindi napuputol
-    targetElement.style.width = '780px';
+// Ibinalik sa eksaktong sukat para pantay at walang sobrang puting espasyo sa kanan
+   targetElement.style.width = '800px';
+    targetElement.style.margin = '0 auto';
+    targetElement.style.padding = '20px'; 
+    targetElement.style.boxSizing = 'border-box';
+    
     const tableEl = targetElement.querySelector('table');
     if (tableEl) {
-        tableEl.style.width = '780px';
-        tableEl.style.tableLayout = 'auto';
+        tableEl.style.width = '100%';
+        tableEl.style.tableLayout = 'fixed';
     }
 
     // Alisin muna pansamantala ang Clear button at Month arrows sa header bago mag-capture para mas malinis
@@ -3056,6 +3045,9 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     const driverObj = driversList.find(d => d.id === currentDriverId);
     const codingVal = driverObj ? driverObj.coding : 'None';
 
+ const prevRunningVal = previousBalanceInput.value || '0';
+    const prevDailyVal = document.getElementById('dailyPreviousBalance').value || '0';
+
     const reportHeaderDiv = document.createElement('div');
     reportHeaderDiv.id = 'tempReportHeader';
     reportHeaderDiv.style.textAlign = 'center';
@@ -3066,7 +3058,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     reportHeaderDiv.innerHTML = `
         <h2 style="font-size: 1.2rem; color: #000000; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
         <p style="font-size: 0.9rem; font-weight: bold; color: #000000;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
-        <p style="font-size: 0.8rem; font-weight: 600; color: #000000;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+        <p style="font-size: 0.8rem; font-weight: 600; color: #000000;">Buwan: ${selectMonth.value} ${selectYear.value} | Prev Running Bal: ${prevRunningVal} | Prev Daily Bal: ${prevDailyVal}</p>
     `;
     targetElement.prepend(reportHeaderDiv);
 
@@ -3077,11 +3069,18 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         }
     });
 
-    html2canvas(targetElement, {
+html2canvas(targetElement, {
         scale: 3,
         useCORS: true,
-        windowWidth: 1024,
-        backgroundColor: '#ffffff'
+        windowWidth: 835, // Ibaba natin sa 835 para sumakto at maging pantay ang kaliwa at kanan
+        backgroundColor: '#ffffff',
+        onclone: (clonedDoc) => {
+            const clonedEl = clonedDoc.getElementById('reportTableCard');
+            if (clonedEl) {
+                clonedEl.style.margin = '0 auto';
+                clonedEl.style.display = 'block';
+            }
+        }
     }).then(canvas => {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
@@ -3142,16 +3141,6 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         });
     }
 
-  
-
-    // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
-    document.addEventListener('focusin', function(e) {
-        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
-            setTimeout(() => {
-                e.target.select();
-            }, 50);
-        }
-    });
 
  // Automatic na i-highlight ang laman ng input pagka-tap para madaling i-type
     document.addEventListener('focusin', function(e) {
@@ -3285,12 +3274,20 @@ function openPrevBalInfo() {
     );
 }
 
+function openDailyPrevBalInfo() {
+    showCustomAlert(
+        "Daily Previous Balance", 
+        "Dito ilagay ang nakaraang balanse para sa Daily/Weekly computation upang awtomatikong maidagdag sa unang linggo."
+    );
+}
+
 function updateSummaryTotalsOnly() {
     let records = JSON.parse(localStorage.getItem(getDriverRecordsKey())) || {};
     let initialBalance = parseFloat(previousBalanceInput.value) || 0;
+    let dailyPrevBal = parseFloat(document.getElementById('dailyPreviousBalance')?.value) || 0;
     let totalExpected = 0;
     let totalGiven = 0;
-    let runningBalance = initialBalance; 
+    let runningBalance = initialBalance;
 
     let daysInMonth = getDaysInMonth(activeMonthIndex, activeYearVal);
     let boundarySet = parseFloat(standardExpectedInput.value) || 1200;
@@ -3348,6 +3345,11 @@ function updateSummaryTotalsOnly() {
                     currentWeekBalance += dBal;
                 }
             }
+
+            if (weekCounter === 1) {
+                currentWeekBalance += dailyPrevBal;
+            }
+
             let activeWeeklyVal = Math.round((weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance);
             accumulatedUrbForRunning += activeWeeklyVal;
             let activeUrbVal = Math.round((urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning);
@@ -3360,7 +3362,6 @@ function updateSummaryTotalsOnly() {
     lblGiven.innerText = `${fmt(totalGiven)}`;
     lblBalance.innerText = `${fmt(accumulatedUrbForRunning)}`;
 }
-
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
