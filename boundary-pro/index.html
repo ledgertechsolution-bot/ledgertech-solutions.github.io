@@ -77,12 +77,11 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             transition: background 0.3s, color 0.3s;
         }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding: 12px;
-        }
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    padding: 16px 16px;
+}
 
         .container {
             max-width: 680px;
@@ -199,17 +198,15 @@
             color: white;
             border-color: var(--primary);
         }
-
-        .card {
-            background: var(--card-bg);
-            padding: 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            margin-bottom: 12px;
-            border: 1px solid var(--border-color);
-        }
-
-        .summary-grid {
+.card {
+    background: var(--card-bg);
+    padding: 16px; /* Nilagyan ng mas maluwag na padding sa loob ng card */
+    border-radius: 8px;
+    box-shadow: none !important;
+    margin-bottom: 12px;
+    border: none !important;
+}
+       .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 6px;
@@ -256,17 +253,31 @@
             opacity: 0.8;
         }
 
-        input, select {
-            width: 100%;
-            padding: 7px;
+       input, select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid transparent;
+    background: var(--bg-color);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: var(--text-main);
+}
+input:focus, select:focus {
+    border-color: var(--primary);
+    background: var(--card-bg);
+}
+
+        .table-expected-input, .table-given-input {
+            width: 75px;
+            padding: 3px 2px;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.85rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
             background: var(--card-bg);
             color: var(--text-main);
+            text-align: center;
+            text-align-last: center;
         }
-
-      
 
 .table-input-cell {
     width: 100% !important;
@@ -406,30 +417,16 @@ table {
     border: none !important;
 }
 
-/* Borderless na estilo para sa mga input cells para malinis tingnan */
-.table-input-cell, 
-.table-expected-input, 
-.table-given-input {
-    width: 100% !important;
-    max-width: 100% !important;
-    box-sizing: border-box;
-    padding: 6px 2px !important;
+
+.table-input-cell, .table-expected-input, .table-given-input {
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
-    outline: none !important;
-    border-radius: 0 !important;
+    width: 100% !important;
+    padding: 4px 2px !important;
     font-size: 0.75rem;
-    color: var(--text-main);
     text-align: center;
-}
-
-/* Banayad na highlight lang sa ilalim kapag pinindot (focused) */
-.table-input-cell:focus, 
-.table-expected-input:focus, 
-.table-given-input:focus {
-    background: rgba(46, 125, 50, 0.08) !important;
-    border-bottom: 2px solid var(--primary) !important;
+    color: var(--text-main);
 }
 
 /* Pantanggal ng arrow (spinner) sa gilid ng number input */
@@ -442,12 +439,15 @@ table {
 }
 
 th, td {
-    border: 1px solid var(--border-color);
-    padding: 5px 4px;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 2px 4px;
+    height: 34px !important; /* Eksaktong nakapirming taas para sa lahat ng rows */
+    max-height: 34px !important;
+    vertical-align: middle;
     text-align: center;
-    word-wrap: break-word;
-    overflow: hidden;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
+    box-sizing: border-box;
 }
 
         th {
@@ -457,16 +457,17 @@ th, td {
             top: 0;
             z-index: 1;
         }
-
-        .coding-badge {
-            background-color: var(--coding-bg);
-            color: var(--coding-text);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: bold;
-            display: inline-block;
-            font-size: 0.7rem;
-        }
+.coding-badge {
+    background-color: var(--coding-bg);
+    color: var(--coding-text);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+}
 
         .text-danger {
             color: var(--danger);
@@ -636,7 +637,18 @@ th, td {
             color: var(--primary);
         }
 
-       
+      
+            .table-given-input {
+    width: 100% !important;
+    max-width: 65px;
+    padding: 3px 2px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    background: var(--card-bg);
+    color: var(--text-main);
+    text-align: center;
+}
 
 /* Pangkalahatang estilo para sa lahat ng input sa loob ng table cells */
 .table-given-input, 
@@ -652,7 +664,7 @@ th, td {
     color: var(--text-main);
     text-align: center;
 }
-           
+          
         .gcash-qr-img {
             width: 160px;
             height: 160px;
@@ -977,6 +989,20 @@ th:nth-child(7), td:nth-child(7) { width: 90px; min-width: 90px; } /* Balance (M
     text-align: center;
 }
 
+.table-input-cell, 
+.table-expected-input, 
+.table-given-input {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border-radius: 0 !important;
+    width: 100% !important;
+    padding: 6px 2px !important;
+    font-size: 0.85rem;
+    text-align: center;
+    font-weight: bold;
+}
 
 /* Kapag pinindot (focused) ang input, magbibigay lang ng napaka-banayad na highlight sa ilalim nang walang mabigat na box */
 .table-input-cell:focus, 
@@ -1106,17 +1132,23 @@ input.table-input-cell {
     transition: none !important; 
 }
 
+.card {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 3px !important;
+        margin-bottom: 7px !important;
+        background: var(--card-bg) !important;
+    }
 
 
+    
+input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
 
-/* --- PAGPAPALAWAK SA WEEKLY AMT / DATE COVERED --- */
-th:nth-child(1), td:nth-child(1) { width: 70px !important; min-width: 70px !important; } /* Days */
-th.date-col, td.date-col { width: 45px !important; min-width: 45px !important; }         /* Date */
-th:nth-child(3), td:nth-child(3) { width: 70px !important; min-width: 70px !important; } /* Daily Amt (Pinaikli) */
-th:nth-child(4), td:nth-child(4) { width: 135px !important; min-width: 135px !important; } /* Weekly Amt / Date Covered (Pinalawak nang buo) */
-th:nth-child(5), td:nth-child(5) { width: 100px !important; min-width: 100px !important; } /* MOP / Ref No. */
-th:nth-child(6), td:nth-child(6) { width: 80px !important; min-width: 80px !important; } /* Paid */
-th:nth-child(7), td:nth-child(7) { width: 80px !important; min-width: 80px !important; } /* Balance */
+  
 
 /* Eksaktong hatian ng 7 columns para hindi maipit ang Balance sa dulo */
 th:nth-child(1), td:nth-child(1) { width: 11% !important; } /* Days */
@@ -1128,131 +1160,62 @@ th:nth-child(6), td:nth-child(6) { width: 15% !important; } /* Paid */
 th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas maluwag na para hindi maputol) */
 
 @media print {
-        body {
+        /* Alisin ang kulay sa buong background ng print view */
+        html, body {
+            background: #ffffff !important;
             background-color: #ffffff !important;
-            color: #000000 !important;
-            padding: 5px !important;
-            font-size: 10pt !important;
+        }
+
+        body * {
+            visibility: hidden;
         }
         
-        /* Itago ang mga hindi kailangan sa pormal na PDF/Print */
-        .theme-selector, #configCard, form, .button-group, .driver-dropdown-container, hr, .page-nav-right, .btn-clear-month, .menu-container, header h1, .summary-grid {
+        #reportTableCard, #reportTableCard * {
+            visibility: visible;
+        }
+        
+        #reportTableCard {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100% !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important; /* Pilit na gagawing plain white */
+            box-shadow: none !important;
+            border: none !important;
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+
+        /* Siguraduhing pati ang mga kasunod na container o card sa loob ay puti rin */
+        .card {
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .table-actions-right {
             display: none !important;
         }
 
-        .card {
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0 !important;
-            margin-bottom: 0px !important;
-            background: #ffffff !important;
-        }
-
-        /* Pormal na Header para sa PDF */
-        header::before {
-            content: "BOUNDARY MONITORING SYSTEM REPORT";
-            display: block;
-            font-size: 14pt;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 3px;
-            color: #000000;
-        }
-        
-        header p {
+        .print-driver-header {
             display: block !important;
-            font-size: 9.5pt !important;
-            font-weight: bold !important;
-            text-align: center !important;
-            color: #000000 !important;
-            margin-bottom: 10px !important;
-        }
-
-        .table-responsive {
-            max-height: none !important;
-            overflow: visible !important;
-            width: 100% !important;
-        }
-
-        /* SAPILITANG IPALITAW ANG TABLE AT ROWS */
-        table {
-            display: table !important;
-            font-size: 8.5pt !important;
-            width: 100% !important;
-            border-collapse: collapse !important;
-            table-layout: fixed !important;
-            visibility: visible !important;
-        }
-
-        tbody {
-            display: table-row-group !important;
-            visibility: visible !important;
-        }
-
-        tr {
-            display: table-row !important;
-            page-break-inside: avoid;
-            page-break-after: auto;
-            visibility: visible !important;
-        }
-
-        th, td {
-            display: table-cell !important;
-            border: 1px solid #000000 !important;
-            color: #000000 !important;
-            padding: 4px 2px !important;
-            background-color: #ffffff !important;
-            visibility: visible !important;
-            word-break: break-word;
-        }
-
-        /* Eksaktong hatian ng 7 columns */
-        th:nth-child(1), td:nth-child(1) { width: 14% !important; } 
-        th.date-col, td.date-col { width: 9% !important; }         
-        th:nth-child(3), td:nth-child(3) { width: 16% !important; } 
-        th:nth-child(4), td:nth-child(4) { width: 18% !important; } 
-        th:nth-child(5), td:nth-child(5) { width: 16% !important; } 
-        th:nth-child(6), td:nth-child(6) { width: 14% !important; } 
-        th:nth-child(7), td:nth-child(7) { width: 13% !important; } 
-
-        th {
-            background-color: #e8f5e9 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        input.table-input-cell, input.table-expected-input, .table-given-input {
-            border: none !important;
-            background: transparent !important;
-            text-align: center !important;
-            font-weight: bold !important;
-            font-size: 8.5pt !important;
-            color: #000000 !important;
-            padding: 0 !important;
-            width: 100% !important;
-        }
-
-        input::-webkit-outer-spin-button,
-        input::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 8px;
         }
 
         .print-signature {
             display: block !important;
-            margin-top: 40px !important;
-            text-align: right !important;
-            font-size: 10pt !important;
-            font-weight: bold !important;
-            color: #000000 !important;
-            page-break-inside: avoid;
+            margin-top: 40px;
+            text-align: right;
+            font-weight: bold;
         }
     }
 
-
-
     </style>
-
 </head>
 <body data-theme="light">
 
@@ -1354,11 +1317,11 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
      <div class="form-row" style="margin-top: 6px;">
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Prev Running Bal:</label>
-                <input type="number" id="previousBalance" value="0" placeholder="0">
+                <input type="number" id="previousBalance" value="0" placeholder="URB simula sa itaas">
             </div>
             <div class="form-group" style="margin-bottom: 0;">
                 <label>Prev Daily Bal:</label>
-                <input type="number" id="dailyPreviousBalance" value="0" placeholder="0">
+                <input type="number" id="dailyPreviousBalance" value="0" placeholder="Daily bal simula sa itaas">
             </div>
         </div>
 
@@ -1419,6 +1382,12 @@ th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas malu
     </div>
 
     <div class="card" id="reportTableCard">
+<div class="print-driver-header" style="display: none;">
+            <h2 style="font-size: 1.2rem; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
+            <p id="printHeaderInfo" style="font-size: 0.9rem; font-weight: bold; margin-bottom: 2px;"></p>
+            <p id="printHeaderMonth" style="font-size: 0.8rem; font-weight: 600; margin-bottom: 2px;"></p>
+            <p id="printHeaderBalances" style="font-size: 0.75rem; font-weight: bold; color: #c62828; display: none;"></p>
+        </div>
     	<div class="table-header-container">
             <span class="table-title-left">Record Up to the Last Payment / Balance</span>
             <div class="table-actions-right">
@@ -2415,7 +2384,7 @@ form.addEventListener('submit', function(e) {
     let isExcludeCoding = codingExcludeRadio.checked;
 
     const topDate = parseInt(dayDateInput.value);
-    const topGiven = parseFloat(document.getElementById('givenAmt5') || document.getElementById('givenAmt').value); 
+    const topGiven = parseFloat(document.getElementById('givenAmt').value); 
     const topDateCovered = document.getElementById('dateCovered').value.trim();
     const topRefNo = document.getElementById('refNo').value.trim();
 
@@ -2609,18 +2578,37 @@ window.updatePaid = function(dayNum, newPaidVal) {
     updateSummaryTotalsOnly();
 };
 
-   exportPdfBtn.addEventListener('click', function() {
+ exportPdfBtn.addEventListener('click', function() {
         if (!currentDriverId) {
             showCustomAlert("Babala", "Walang driver na napili para i-export.");
             return;
         }
         
-        // Sapilitang i-render muli ang table para hindi maging blanko
-        renderTable();
+        // Kunin ang detalye ng driver at mga balanse
+        const currentDriverName = driverNameInput.value || 'Driver';
+        const plateVal = plateNumberInput.value || 'N/A';
+        const driverObj = driversList.find(d => d.id === currentDriverId);
+        const codingVal = driverObj ? driverObj.coding : 'None';
         
-        setTimeout(() => {
-            window.print();
-        }, 300);
+        const prevRunningVal = previousBalanceInput.value || '0';
+        const prevDailyVal = document.getElementById('dailyPreviousBalance') ? document.getElementById('dailyPreviousBalance').value : '0';
+        
+        const printHeaderInfo = document.getElementById('printHeaderInfo');
+        const printHeaderMonth = document.getElementById('printHeaderMonth');
+        const printHeaderBalances = document.getElementById('printHeaderBalances');
+        
+        if (printHeaderInfo) {
+            printHeaderInfo.innerText = `Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}`;
+        }
+        if (printHeaderMonth) {
+            printHeaderMonth.innerText = `Buwan: ${selectMonth.value} ${selectYear.value}`;
+        }
+        if (printHeaderBalances) {
+            printHeaderBalances.innerText = `Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}`;
+            printHeaderBalances.style.display = 'block';
+        }
+
+        window.print();
     });
 
 document.getElementById('exportCsvBtn').addEventListener('click', function() {
@@ -2641,7 +2629,8 @@ document.getElementById('exportCsvBtn').addEventListener('click', function() {
     const limitDay = Math.min(maxRecordedDay, maxDaysInCurrentMonth);
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+ csvContent += `Boundary Monitoring - ${monthsArray[activeMonthIndex]} ${activeYearVal},Driver: ${currentDriverName},Plate: ${plateNumberInput.value},Coding: ${codingVal}\r\n`;
+    csvContent += "Day,Date,Allocated,Wkly Remit / Date Covered,MOP / Ref No.,Amt Paid,Balance\r\n";
     // Pagtugma ng headers sa kasalukuyang table layout
     csvContent += "Day,Date,Allocated,Wkly Remit / Date Covered,MOP / Ref No.,Amt Paid	Balance,Balance\r\n";
 
@@ -2767,7 +2756,7 @@ function renderTable() {
         }
 
         const row = document.createElement('tr');
-        let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
+   let dayDisplayHtml = `<strong>${dayOfWeek}</strong>`;
         if (isCodingDay) {
             dayDisplayHtml = `<span class="coding-badge">${dayOfWeek} (Coding)</span>`;
         }
@@ -2776,7 +2765,7 @@ function renderTable() {
             <td>${dayDisplayHtml}</td>
             <td class="date-col">${i < 10 ? '0' + i : i}</td>
             <td><input type="number" class="table-input-cell" style="text-align: center;" data-day="${i}" data-field="amountGiven" value="${amountGiven !== '' ? amountGiven : ''}" onchange="updateDailyGiven(${i}, this.value)"></td>
-            <td><input type="text" class="table-input-cell" style="text-align: center;" value="${dateCovered}" onchange="updateDateCovered(${i}, this.value)"></td>
+           <td><input type="text" class="table-input-cell" style="text-align: center; color: var(--success); font-weight: bold;" value="${dateCovered}" onchange="updateDateCovered(${i}, this.value)"></td>
             <td><input type="text" class="table-input-cell" style="text-align: center;" value="${mopRef}" onchange="updateMop(${i}, this.value)"></td>
             <td style="text-align: center;">
                 <input type="number" class="table-input-cell" style="font-weight: bold; text-align: center;" value="${paidVal !== '' ? paidVal : ''}" onchange="updatePaid(${i}, this.value)">
@@ -2833,18 +2822,17 @@ function renderTable() {
             accumulatedUrbForRunning += activeWeeklyVal;
             let activeUrbVal = Math.round((urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning);
             accumulatedUrbForRunning = activeUrbVal;
-
-           const weeklyBalRow = document.createElement('tr');
+const weeklyBalRow = document.createElement('tr');
             weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
             
             weeklyBalRow.innerHTML = `
-                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 2px 6px !important; color: var(--text-main); vertical-align: middle;">
+                <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: left; font-weight: bold; padding: 2px 8px !important; color: var(--text-main); vertical-align: middle; height: 30px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 4px;">
                         <span class="weekly-header-text" style="line-height: 1.2;">Week Covered: ${dateRangeStr}</span>
-                        <span style="font-weight: bold; white-space: nowrap; font-size: 0.7rem; line-height: 1.2;">Weekly Balance:</span>
+                        <span style="font-weight: bold; white-space: nowrap; font-size: 0.75rem; line-height: 1.2;">Weekly Balance:</span>
                     </div>
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle; font-weight: bold; color: var(--danger); font-size: 0.8rem;">
+                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle; font-weight: bold; color: var(--danger); font-size: 0.8rem; height: 30px;">
                     ${fmt(activeWeeklyVal)}
                 </td>
             `;
@@ -3025,9 +3013,9 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     tableResponsive.style.overflowX = 'visible';
     
 // Ibinalik sa eksaktong sukat para pantay at walang sobrang puting espasyo sa kanan
-   targetElement.style.width = '800px';
+  targetElement.style.width = '750px';
     targetElement.style.margin = '0 auto';
-    targetElement.style.padding = '20px'; 
+    targetElement.style.padding = '15px'; 
     targetElement.style.boxSizing = 'border-box';
     
     const tableEl = targetElement.querySelector('table');
@@ -3045,8 +3033,9 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     const driverObj = driversList.find(d => d.id === currentDriverId);
     const codingVal = driverObj ? driverObj.coding : 'None';
 
- const prevRunningVal = previousBalanceInput.value || '0';
-    const prevDailyVal = document.getElementById('dailyPreviousBalance').value || '0';
+  // Kunin ang kasalukuyang halaga ng Previous Balances para maisama sa report header
+    const prevRunningVal = previousBalanceInput.value || '0';
+    const prevDailyVal = document.getElementById('dailyPreviousBalance') ? document.getElementById('dailyPreviousBalance').value : '0';
 
     const reportHeaderDiv = document.createElement('div');
     reportHeaderDiv.id = 'tempReportHeader';
@@ -3057,22 +3046,37 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     reportHeaderDiv.style.backgroundColor = '#ffffff';
     reportHeaderDiv.innerHTML = `
         <h2 style="font-size: 1.2rem; color: #000000; margin-bottom: 4px; font-weight: bold;">BOUNDARY MONITORING REPORT</h2>
-        <p style="font-size: 0.9rem; font-weight: bold; color: #000000;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
-        <p style="font-size: 0.8rem; font-weight: 600; color: #000000;">Buwan: ${selectMonth.value} ${selectYear.value} | Prev Running Bal: ${prevRunningVal} | Prev Daily Bal: ${prevDailyVal}</p>
+        <p style="font-size: 0.9rem; font-weight: bold; color: #000000; margin-bottom: 3px;">Driver: ${currentDriverName} | Plate: ${plateVal} | Coding: ${codingVal}</p>
+        <p style="font-size: 0.8rem; font-weight: 600; color: #000000; margin-bottom: 3px;">Buwan: ${selectMonth.value} ${selectYear.value}</p>
+        <p style="font-size: 0.75rem; font-weight: bold; color: #c62828;">Prev Running Bal: ₱${prevRunningVal} | Prev Daily Bal: ₱${prevDailyVal}</p>
     `;
     targetElement.prepend(reportHeaderDiv);
 
-    const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-input-cell');
+   const inputFields = targetElement.querySelectorAll('.table-expected-input, .table-input-cell');
     inputFields.forEach(input => {
         if(input.offsetParent !== null) { // Kung visible ang input
-            input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: #000000;">${input.value}</div>`;
+            let cellIndex = input.closest('td') ? input.closest('td').cellIndex : -1;
+            // Kung ito ang Wkly Remit / Date Covered column (cellIndex === 3), gawing green (#1b5e20)
+            let textColor = (cellIndex === 3) ? '#1b5e20' : '#000000';
+            input.parentNode.innerHTML = `<div style="text-align: center; font-weight: bold; font-size: 0.8rem; padding: 4px 0; color: ${textColor};">${input.value}</div>`;
+        }
+    });
+
+    // Siguraduhing pulang-pula (#c62828) ang mga halaga ng Weekly Balance at URB sum sa image capture
+    targetElement.querySelectorAll('tr').forEach(tr => {
+        if (tr.innerHTML.includes('Weekly Balance') || tr.innerHTML.includes('Updated Running Balance')) {
+            const tds = tr.querySelectorAll('td');
+            if (tds.length >= 2) {
+                tds[tds.length - 1].style.color = '#c62828';
+                tds[tds.length - 1].style.fontWeight = 'bold';
+            }
         }
     });
 
 html2canvas(targetElement, {
         scale: 3,
         useCORS: true,
-        windowWidth: 835, // Ibaba natin sa 835 para sumakto at maging pantay ang kaliwa at kanan
+        windowWidth: 780, 
         backgroundColor: '#ffffff',
         onclone: (clonedDoc) => {
             const clonedEl = clonedDoc.getElementById('reportTableCard');
@@ -3141,6 +3145,16 @@ html2canvas(targetElement, {
         });
     }
 
+  
+
+    // 2. Automatic na i-highlight (select) ang laman ng box pagka-tap para madaling palitan nang hindi nagba-backspace
+    document.addEventListener('focusin', function(e) {
+        if (e.target.tagName === 'INPUT' && (e.target.type === 'number' || e.target.type === 'text')) {
+            setTimeout(() => {
+                e.target.select();
+            }, 50);
+        }
+    });
 
  // Automatic na i-highlight ang laman ng input pagka-tap para madaling i-type
     document.addEventListener('focusin', function(e) {
