@@ -99,13 +99,13 @@ body {
             margin-bottom: 2px;
         }
 
-        .table-header-container {
+      .table-header-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 6px;
-            flex-wrap: wrap;
-            gap: 6px;
+            gap: 4px;
+            flex-wrap: nowrap !important; /* Siguraduhing hindi sila kailanman mag-wrap o bumaba */
         }
 
         .table-title-left {
@@ -114,22 +114,25 @@ body {
             font-weight: bold;
         }
 
-        .table-actions-right {
+       .table-actions-right {
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
+            flex-shrink: 0;
         }
 
         .page-nav-right {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 2px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            padding: 2px 6px;
+            padding: 2px 4px;
             border-radius: 4px;
             font-size: 0.7rem;
             font-weight: bold;
+            white-space: nowrap; /* Pinipigilan maputol ang buwan */
+            flex-shrink: 0;
         }
         .top-action-btn {
             background-color: var(--primary);
