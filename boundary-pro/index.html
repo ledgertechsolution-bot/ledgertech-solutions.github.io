@@ -463,11 +463,11 @@ th, td {
 .coding-badge {
     background-color: var(--coding-bg);
     color: var(--coding-text);
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: 2px 3px;          /* Binawasan ang padding sa gilid */
+    border-radius: 3px;
     font-weight: bold;
     display: inline-block;
-    font-size: 0.75rem;
+    font-size: 0.68rem;        /* Pinaliit nang konti ang font para magkasya nang maayos */
     white-space: nowrap;
 }
 
@@ -1153,14 +1153,13 @@ input::-webkit-outer-spin-button,
 
   
 
-/* Eksaktong hatian ng 7 columns para hindi maipit ang Balance sa dulo */
-th:nth-child(1), td:nth-child(1) { width: 11% !important; } /* Days */
-th.date-col, td.date-col { width: 7% !important; }         /* Date */
-th:nth-child(3), td:nth-child(3) { width: 12% !important; } /* Daily Amt */
-th:nth-child(4), td:nth-child(4) { width: 23% !important; } /* Weekly Amt / Date Covered */
-th:nth-child(5), td:nth-child(5) { width: 16% !important; } /* MOP / Ref No. */
-th:nth-child(6), td:nth-child(6) { width: 15% !important; } /* Paid */
-th:nth-child(7), td:nth-child(7) { width: 16% !important; } /* Balance (Mas maluwag na para hindi maputol) */
+th:nth-child(1), td:nth-child(1) { width: 17% !important; min-width: 75px !important; } /* Days (Pinalaki para hindi maipit ang badge) */
+th.date-col, td.date-col { width: 8% !important; min-width: 35px !important; }         /* Date */
+th:nth-child(3), td:nth-child(3) { width: 11% !important; } /* Daily Amt */
+th:nth-child(4), td:nth-child(4) { width: 22% !important; } /* Weekly Amt / Date Covered */
+th:nth-child(5), td:nth-child(5) { width: 15% !important; } /* MOP / Ref No. */
+th:nth-child(6), td:nth-child(6) { width: 13% !important; } /* Paid */
+th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
 
 @media print {
     html, body {
@@ -3170,15 +3169,18 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     tableCardElement.style.padding = '15px'; 
     tableCardElement.style.boxSizing = 'border-box';
    
-    const tableEl = tableCardElement.querySelector('table');
+ const tableEl = tableCardElement.querySelector('table');
     if (tableEl) {
         tableEl.style.width = '100%';
         tableEl.style.tableLayout = 'fixed';
         
-        // Pinalaki natin ang unang column para hindi maipit ang Coding badge sa capture
         const firstCols = tableEl.querySelectorAll('th:nth-child(1), td:nth-child(1)');
         firstCols.forEach(col => {
-            col.style.width = '14%'; // Ginawang mas maluwag kaysa sa 11%
+            col.style.width = '18% !important'; 
+        });
+        const dateCols = tableEl.querySelectorAll('th.date-col, td.date-col');
+        dateCols.forEach(col => {
+            col.style.width = '8% !important'; 
         });
     }
     const actionBtnsRight = tableCardElement.querySelector('.table-actions-right');
