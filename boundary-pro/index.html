@@ -1187,7 +1187,7 @@ th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
         padding: 10px !important;
         margin: 0 !important;
     }
-	#reportTableCard th {
+    #reportTableCard th {
         background-color: #e8f5e9 !important;
         color: #2e7d32 !important;
         -webkit-print-color-adjust: exact !important;
@@ -1213,6 +1213,33 @@ th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
         font-weight: bold;
 
     }
+}
+
+/* Floating Back to Top Button Style */
+.back-to-top-btn {
+    display: none; /* Naka-tago muna habang nasa taas ka pa */
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 99999;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s, transform 0.2s;
+}
+
+.back-to-top-btn:hover {
+    transform: scale(1.08);
+    opacity: 0.9;
 }
 
     </style>
@@ -1419,13 +1446,15 @@ th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
                 </div>
             </div>
         </div>
-
-        <div class="table-header-container">
-            <span class="table-title-left">Record Up to the Last Payment / Balance</span>
-            <div class="table-actions-right">
-                <button class="btn-clear-month" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
-                <button class="btn-clear-month" style="background-color: var(--primary);" onclick="toggleCalculator()" title="Buksan ang Calculator">🧮 Calculator</button>
-                <div class="page-nav-right">
+<!-- Bagong ayos: Hiwalay na row, nakasentro, at magkapareho ang laki ng Clear at Calculator buttons -->
+        <div style="text-align: center; margin-bottom: 10px; width: 100%;">
+            <div style="font-size: 0.9rem; color: var(--primary); font-weight: bold; margin-bottom: 8px;">
+                Record Up to the Last Payment / Balance
+            </div>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn-clear-month" style="background-color: var(--danger); padding: 5px 12px; font-size: 0.75rem;" onclick="clearCurrentMonthData()" title="I-clear ang buwang ito">Clear</button>
+                <button type="button" class="btn-clear-month" style="background-color: var(--primary); padding: 5px 12px; font-size: 0.75rem;" onclick="toggleCalculator()" title="Buksan ang Calculator">🧮 Calculator</button>
+                <div class="page-nav-right" style="display: inline-flex; align-items: center;">
                     <button type="button" class="page-arrow-btn" id="prevMonthBtn" title="Previous Month">◀</button>
                     <span id="pageIndicator">September 2026</span>
                     <button type="button" class="page-arrow-btn" id="nextMonthBtn" title="Next Month">▶</button>
@@ -3547,6 +3576,31 @@ function updateSummaryTotalsOnly() {
     lblGiven.innerText = `${fmt(totalGiven)}`;
     lblBalance.innerText = `${fmt(accumulatedUrbForRunning)}`;
 }
+
+// --- UPDATED BACK TO TOP LOGIC (Laging visible sa sulok) ---
+const backToTopBtn = document.getElementById('backToTopBtn');
+
+// Gawin nating naka-display agad para makita mo sa laptop
+if (backToTopBtn) {
+    backToTopBtn.style.display = 'flex';
+}
+
+backToTopBtn.addEventListener('click', function() {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+    
+    // O kaya kung sa loob ng table ang nagse-scroll, pwede rin nating idagdag ito:
+    const tableContainer = document.querySelector('.table-responsive');
+    if (tableContainer) {
+        tableContainer.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+});
+
 </script>
 
 <div class="shopee-modal-overlay" id="shopeeModal">
@@ -3601,6 +3655,9 @@ function updateSummaryTotalsOnly() {
         <button type="button" class="calc-btn calc-btn-equal" onclick="calcCalculate()">=</button>
     </div>
 </div>
+
+<!-- Back to Top Button -->
+<button type="button" id="backToTopBtn" class="back-to-top-btn" title="Bumalik sa Taas">⬆</button>
 
 </body>
 </html>
