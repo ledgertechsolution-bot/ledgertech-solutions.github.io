@@ -470,7 +470,7 @@ th, td {
     font-size: 0.75rem;
     white-space: nowrap;
 }
-}
+
 
         .text-danger {
             color: var(--danger);
@@ -2975,12 +2975,13 @@ function renderTable() {
                 currentWeekBalance += dailyPrevBal;
             }
 
-            let activeWeeklyVal = Math.round((weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance);
+          let activeWeeklyVal = Math.round((weeklyOverrides[`w${weekCounter}`] !== undefined) ? weeklyOverrides[`w${weekCounter}`] : currentWeekBalance);
 
             accumulatedUrbForRunning += activeWeeklyVal;
             let activeUrbVal = Math.round((urbOverrides[`w${weekCounter}`] !== undefined) ? urbOverrides[`w${weekCounter}`] : accumulatedUrbForRunning);
             accumulatedUrbForRunning = activeUrbVal;
-const weeklyBalRow = document.createElement('tr');
+
+            const weeklyBalRow = document.createElement('tr');
             weeklyBalRow.style.backgroundColor = 'var(--primary-light)';
             
             weeklyBalRow.innerHTML = `
@@ -2990,7 +2991,7 @@ const weeklyBalRow = document.createElement('tr');
                         <span style="font-weight: bold; white-space: nowrap; font-size: 0.75rem; line-height: 1.2;">Weekly Balance:</span>
                     </div>
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle; font-weight: bold; color: var(--danger); font-size: 0.8rem; height: 30px;">
+                <td class="text-danger" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; vertical-align: middle; font-weight: bold; font-size: 0.8rem; height: 30px;">
                     ${fmt(activeWeeklyVal)}
                 </td>
             `;
@@ -3005,7 +3006,6 @@ const weeklyBalRow = document.createElement('tr');
                 }
             }
 
-            // Isama sa check kung may laman ang Weekly Balance (gaya ng Daily Prev Balance o manual override)
             if (weekCounter === 1 && dailyPrevBal !== 0) {
                 hasWeekData = true;
             }
@@ -3019,7 +3019,7 @@ const weeklyBalRow = document.createElement('tr');
                 <td colspan="6" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-right: none !important; text-align: right; font-weight: bold; padding: 2px 8px !important; font-size: 0.75rem; white-space: nowrap; vertical-align: middle; height: 30px;">
                     Updated Running Balance:
                 </td>
-                <td style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; font-weight: bold; color: var(--danger); font-size: 0.8rem; vertical-align: middle; height: 30px;">
+                <td class="text-danger" style="border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); border-left: none !important; padding: 2px 4px !important; text-align: center; font-weight: bold; font-size: 0.8rem; vertical-align: middle; height: 30px;">
                     ${hasWeekData ? fmt(activeUrbVal) : ''}
                 </td>
             `;
@@ -3169,13 +3169,18 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     tableCardElement.style.margin = '0 auto';
     tableCardElement.style.padding = '15px'; 
     tableCardElement.style.boxSizing = 'border-box';
-    
+   
     const tableEl = tableCardElement.querySelector('table');
     if (tableEl) {
         tableEl.style.width = '100%';
         tableEl.style.tableLayout = 'fixed';
+        
+        // Pinalaki natin ang unang column para hindi maipit ang Coding badge sa capture
+        const firstCols = tableEl.querySelectorAll('th:nth-child(1), td:nth-child(1)');
+        firstCols.forEach(col => {
+            col.style.width = '14%'; // Ginawang mas maluwag kaysa sa 11%
+        });
     }
-
     const actionBtnsRight = tableCardElement.querySelector('.table-actions-right');
     if (actionBtnsRight) actionBtnsRight.style.display = 'none';
 
