@@ -1923,9 +1923,13 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
 
     let currentDriverId = localStorage.getItem('boundary_current_driver_id') || (driversList.length > 0 ? driversList[0].id : null);
     
-    const currentDateObj = new Date();
-    let activeMonthIndex = currentDateObj.getMonth();
-    let activeYearVal = currentDateObj.getFullYear();
+   const currentDateObj = new Date();
+    // Kunin sa localStorage kung may huli kang binuksang buwan at taon, kung wala ay gamitin ang current
+    let savedMonthIdx = localStorage.getItem('boundary_active_month_idx');
+    let savedYearVal = localStorage.getItem('boundary_active_year');
+
+    let activeMonthIndex = savedMonthIdx !== null ? parseInt(savedMonthIdx) : currentDateObj.getMonth();
+    let activeYearVal = savedYearVal !== null ? parseInt(savedYearVal) : currentDateObj.getFullYear();
 
     const monthsArray = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
@@ -1999,6 +2003,20 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
 
     selectMonth.value = monthsArray[activeMonthIndex];
     selectYear.value = activeYearVal;
+
+selectMonth.addEventListener('change', function() {
+    activeMonthIndex = monthsArray.indexOf(this.value);
+    localStorage.setItem('boundary_active_month_idx', activeMonthIndex);
+    localStorage.setItem('boundary_active_year', activeYearVal);
+    loadActiveDriverConfig();
+});
+
+selectYear.addEventListener('input', function() {
+    activeYearVal = parseInt(this.value) || currentDateObj.getFullYear();
+    localStorage.setItem('boundary_active_month_idx', activeMonthIndex);
+    localStorage.setItem('boundary_active_year', activeYearVal);
+    loadActiveDriverConfig();
+});
 
     driverSelectBox.addEventListener('click', function(e) {
         e.stopPropagation();
@@ -2366,7 +2384,7 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
         }
     }
 
-    function changeMonth(direction) {
+ function changeMonth(direction) {
         activeMonthIndex += direction;
         if (activeMonthIndex > 11) {
             activeMonthIndex = 0;
@@ -2378,13 +2396,17 @@ document.getElementById('tierBadgeBtn').addEventListener('click', function(e) {
 
         selectMonth.value = monthsArray[activeMonthIndex];
         selectYear.value = activeYearVal;
+
+        // I-save agad sa localStorage
+        localStorage.setItem('boundary_active_month_idx', activeMonthIndex);
+        localStorage.setItem('boundary_active_year', activeYearVal);
+
         if (pageIndicator) {
             pageIndicator.innerText = `${monthsArray[activeMonthIndex]} ${activeYearVal}`;
         }
         
         loadActiveDriverConfig();
     }
-
     document.getElementById('prevMonthBtn').addEventListener('click', function() {
         changeMonth(-1);
     });
@@ -2410,23 +2432,41 @@ form.addEventListener('submit', function(e) {
     let isExcludeCoding = codingExcludeRadio.checked;
 
     const topDate = parseInt(dayDateInput.value);
-    const topGiven = parseFloat(document.getElementById('givenAmt').value); 
-    const topDateCovered = document.getElementById('dateCovered').value.trim();
+    let actualGivenVal = parseFloat(document.getElementById('givenAmt').value); 
+    let rawDateCoveredInput = document.getElementById('dateCovered').value.trim();
     const topRefNo = document.getElementById('refNo').value.trim();
 
-    // 1. I-save muna ang MOP at Date Covered sa mismong Date of payment (hal. Oct 5)
+    // 1. EXTRACTION & CLEANING: Kunin ang Amount at i-sanitize ang Date Covered para sa mga simbolo at spaces
+    let parsingDateCovered = rawDateCoveredInput;
+    
+    if (rawDateCoveredInput) {
+        let matchWithAmount = rawDateCoveredInput.match(/^([0-9,]+(\.[0-9]+)?)\s+([0-9a-zA-Z\/_-].*)$/);
+        if (matchWithAmount) {
+            parsingDateCovered = matchWithAmount[3].trim();
+        }
+    }
+
+    // 2. I-save muna ang MOP at ang BUONG rawDateCoveredInput (kasama ang amount sa unahan) sa mismong Date of payment
     if (topDate >= 1 && topDate <= 31) {
         if (!records[topDate]) records[topDate] = {};
-        if (topDateCovered) records[topDate].dateCovered = topDateCovered;
+        if (rawDateCoveredInput) records[topDate].dateCovered = rawDateCoveredInput; 
         if (topRefNo) records[topDate].mop = topRefNo;
     }
 
-  // 2. Tumpak na Pagsusuri at Pag-distribute ng Petsa at Buwan (Kasama ang Cross-Month Range Hal. 9/28 - 10/5)
-    let actualGivenVal = parseFloat(document.getElementById('givenAmt').value);
-    if (!isNaN(actualGivenVal) && actualGivenVal > 0 && topDateCovered && topDateCovered.includes('-')) {
-        let parts = topDateCovered.split('-');
-        let startPart = parts[0].trim();
-        let endPart = parts[1].trim();
+    // 3. Tumpak na Pagsusuri at Pag-distribute ng Petsa at Buwan 
+    if (!isNaN(actualGivenVal) && actualGivenVal > 0 && parsingDateCovered) {
+        
+        // LINISIN ANG MGA EXTRA SYMBOLS: Tanggalin ang (), *, o iba pang di-kailangang character para hindi malito
+        let sanitizedRange = parsingDateCovered.replace(/[\(\)\*]/g, '').trim();
+        
+        // HIWAIN ANG RANGE: Kayang basahin kahit may space o walang space sa paligid ng dash (-) o iba pang separator
+        let parts = sanitizedRange.split(/\s*-\s*/);
+        if (parts.length < 2) {
+            parts = sanitizedRange.split(/\s+/);
+        }
+
+        let startPart = parts[0] ? parts[0].trim() : '';
+        let endPart = parts[1] ? parts[1].trim() : '';
 
         // Suriin kung naglalaman ng slash format (Halimbawa: 9/28 - 10/5)
         let hasSlashStart = startPart.includes('/');
@@ -2439,7 +2479,7 @@ form.addEventListener('submit', function(e) {
         let startYearVal = activeYearVal;
         let endYearVal = activeYearVal;
 
-      // 1. Suriin nang maigi ang Start Part (Maaaring "9/28", "Sept 28", o "28")
+        // 4. Suriin nang maigi ang Start Part 
         let lowerStart = startPart.toLowerCase();
         let foundStartMonth = false;
         
@@ -2460,7 +2500,7 @@ form.addEventListener('submit', function(e) {
             startDay = parseInt(startPart.replace(/[^0-9]/g, ''));
         }
 
-        // 2. Suriin nang maigi ang End Part (Maaaring "10/5", "Oct 5", o "5")
+        // 5. Suriin nang maigi ang End Part 
         let lowerEnd = endPart.toLowerCase();
         let foundEndMonth = false;
 
@@ -2479,7 +2519,6 @@ form.addEventListener('submit', function(e) {
             endDay = parseInt(eParts[1]);
         } else {
             endDay = parseInt(endPart.replace(/[^0-9]/g, ''));
-            // Kung may nahanap na start month pero walang end month, isunod lang o i-check kung tumawid ng buwan
             if (foundStartMonth && !foundEndMonth && endDay < startDay) {
                 endMonthIdx = startMonthIdx + 1;
                 if (endMonthIdx > 11) {
@@ -2487,30 +2526,15 @@ form.addEventListener('submit', function(e) {
                     endYearVal++;
                 }
             } else {
-                endMonthIdx = startMonthIdx; // Kung walang ibang buwang binanggit, sa parehong buwan lang
+                endMonthIdx = startMonthIdx; 
             }
         }
 
-        // Kung sakaling format na "9/28-10/5" (May slash pareho)
         if (hasSlashStart && hasSlashEnd && endMonthIdx < startMonthIdx) {
-            endYearVal++; // Kung halimbawa tumawid ng taon (Dec to Jan)
+            endYearVal++; 
         }
 
-        // Kung sakaling may nabanggit na buwan sa text (Halimbawa: "Sept 28 - Oct 5")
-        const lowerCovered = topDateCovered.toLowerCase();
-        monthsArray.forEach((mName, mIdx) => {
-            let fullM = mName.toLowerCase();
-            let shortM = fullM.slice(0, 3);
-            if (lowerCovered.includes(fullM) || lowerCovered.includes(shortM)) {
-                // Kung dalawang buwan ang nabanggit o isa man
-                if (!hasSlashStart && !hasSlashEnd) {
-                    startMonthIdx = mIdx;
-                    endMonthIdx = mIdx;
-                }
-            }
-        });
-
-        // 3. Buuin ang listahan ng lahat ng valid days sa buong range na ito (kahit tumawid ng buwan)
+        // 6. Buuin ang listahan ng lahat ng valid days sa buong range na ito
         let totalValidDaysCount = 0;
         let dateScheduleList = [];
 
@@ -2530,15 +2554,12 @@ form.addEventListener('submit', function(e) {
             }
             dateScheduleList.push({ year: cYear, month: cMonth, day: cDay, isCoding: isCodingDay });
 
-            // Magdagdag ng 1 araw
             currIterDate.setDate(currIterDate.getDate() + 1);
         }
 
-        // 4. I-distribute ang halaga nang patas sa lahat ng valid days
+        // 7. I-distribute ang halaga nang patas sa lahat ng valid days
         if (totalValidDaysCount > 0 && dateScheduleList.length > 0) {
             let distributedPaidPerDay = Math.round(actualGivenVal / totalValidDaysCount);
-
-            // Group-in natin o isave per buwan para tama ang bagsak ng records
             let recordsPerMonthMap = {};
 
             dateScheduleList.forEach(item => {
@@ -2547,9 +2568,8 @@ form.addEventListener('submit', function(e) {
                     let recKey = `boundary_records_${currentDriverId}_${mNameKey}_${item.year}`;
                     
                     if (!recordsPerMonthMap[recKey]) {
-                        // Kunin ang kasalukuyang records ng buwang iyon (kung meron na) o kaya'y i-load mula sa localStorage
                         if (item.month === activeMonthIndex && item.year === activeYearVal) {
-                            recordsPerMonthMap[recKey] = records; // Gamitin ang active records kung sakaling kasalukuyang buwan
+                            recordsPerMonthMap[recKey] = records; 
                         } else {
                             recordsPerMonthMap[recKey] = JSON.parse(localStorage.getItem(recKey)) || {};
                         }
@@ -2567,10 +2587,9 @@ form.addEventListener('submit', function(e) {
                 }
             });
 
-            // Isulat pabalik ang lahat ng na-update na records sa kani-kanilang storage keys sa localStorage
             for (let rKey in recordsPerMonthMap) {
                 if (rKey === getDriverRecordsKey()) {
-                    records = recordsPerMonthMap[rKey]; // I-update ang main records reference kung kasama ang active month
+                    records = recordsPerMonthMap[rKey]; 
                 } else {
                     localStorage.setItem(rKey, JSON.stringify(recordsPerMonthMap[rKey]));
                 }
@@ -2578,7 +2597,6 @@ form.addEventListener('submit', function(e) {
         }
     }
     else if (!isNaN(actualGivenVal)) {
-        // Kung walang range (iisang araw lang), ilagay sa mismong Date of Payment
         if (topDate >= 1 && topDate <= 31) {
             if (!records[topDate]) records[topDate] = {};
             let dayOfWeek = getDayOfWeek(topDate, activeMonthIndex, activeYearVal);
