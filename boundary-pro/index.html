@@ -1194,7 +1194,7 @@ th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
         print-color-adjust: exact !important;
     }
 
-    .table-actions-right, #entryForm {
+   .table-actions-right, #entryForm, #tableControlHeader {
         display: none !important;
     }
 
@@ -1446,8 +1446,8 @@ th:nth-child(7), td:nth-child(7) { width: 14% !important; } /* Balance */
                 </div>
             </div>
         </div>
-<!-- Bagong ayos: Hiwalay na row, nakasentro, at magkapareho ang laki ng Clear at Calculator buttons -->
-        <div style="text-align: center; margin-bottom: 10px; width: 100%;">
+
+	    <div id="tableControlHeader" style="text-align: center; margin-bottom: 10px; width: 100%;">
             <div style="font-size: 0.9rem; color: var(--primary); font-weight: bold; margin-bottom: 8px;">
                 Record Up to the Last Payment / Balance
             </div>
@@ -3221,6 +3221,8 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
     }
     const actionBtnsRight = tableCardElement.querySelector('.table-actions-right');
     if (actionBtnsRight) actionBtnsRight.style.display = 'none';
+    const tableControlHeader = document.getElementById('tableControlHeader');
+    if (tableControlHeader) tableControlHeader.style.display = 'none';
 
     // PANSAMANTALANG ITAGO ANG ENTRY FORM (Yung may Date of payment at buttons) SA CAPTURE
     const entryFormCard = document.getElementById('entryForm') ? document.getElementById('entryForm').closest('.card') : null;
@@ -3285,6 +3287,7 @@ document.getElementById('downloadImgBtn').addEventListener('click', function() {
         const tempHeader = document.getElementById('tempReportHeader');
         if (tempHeader) tempHeader.remove();
         if (actionBtnsRight) actionBtnsRight.style.display = 'flex';
+	if (tableControlHeader) tableControlHeader.style.display = 'block';
         
         // Ibalik ang pagka-show ng entry form card pagkatapos mag-capture
         if (entryFormCard) entryFormCard.style.display = 'block';
